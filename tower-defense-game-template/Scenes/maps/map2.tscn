@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bsasxqvr8q0gk"]
 
 [ext_resource type="Script" uid="uid://dtjlfg2gkj83a" path="res://Scenes/maps/baseMap.gd" id="1_gpdsc"]
-[ext_resource type="Texture2D" uid="uid://c08ieo1nh44dc" path="res://Assets/maps/map2.png" id="2_4tkgh"]
+[ext_resource type="Texture2D" uid="uid://ng0ipbgnh3kj" path="res://Assets/maps/map2.png" id="2_4tkgh"]
 [ext_resource type="Script" uid="uid://dsb0uhqua3swo" path="res://Scenes/maps/EnemySpawner.gd" id="3_1nn7n"]
 
 [sub_resource type="Curve2D" id="Curve2D_bs0b4"]

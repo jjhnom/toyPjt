@@ -16,7 +16,16 @@ func animate_appear():
 	tween.tween_property(self, "position", Vector2(-500,0), 0.3).as_relative()
 
 func set_props():
-	%TurretTexture.texture = load(Data.turrets[turret.turret_type]["sprite"])
+	# SpriteFrames인 경우 해당 터렛의 idle 애니메이션 첫 번째 프레임을 사용
+	var sprite_resource = load(Data.turrets[turret.turret_type]["sprite"])
+	if sprite_resource is SpriteFrames:
+		# 해당 터렛의 idle 애니메이션을 사용
+		var animation_name = Data.turrets[turret.turret_type]["animation"]
+		var first_frame = sprite_resource.get_frame_texture(animation_name, 0)
+		%TurretTexture.texture = first_frame
+	else:
+		%TurretTexture.texture = sprite_resource
+	
 	%TurretName.text = Data.turrets[turret.turret_type]["name"]
 	%TurretLevel.text = "Level "+str(turret.turret_level)
 	%UpgradeButton.text = "Upgrade for "+str(get_upgrade_price())

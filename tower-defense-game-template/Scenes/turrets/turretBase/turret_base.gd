@@ -6,8 +6,16 @@ signal turretUpdated
 var turret_type := "":
 	set(value):
 		turret_type = value
-		$Sprite2D.texture = load(Data.turrets[value]["sprite"])
-		$Sprite2D.scale = Vector2(Data.turrets[value]["scale"],Data.turrets[value]["scale"])
+		# Sprite2D와 AnimatedSprite2D 모두 지원
+		if has_node("Sprite2D"):
+			$Sprite2D.texture = load(Data.turrets[value]["sprite"])
+			$Sprite2D.scale = Vector2(Data.turrets[value]["scale"],Data.turrets[value]["scale"])
+		elif has_node("AnimatedSprite2D"):
+			$AnimatedSprite2D.sprite_frames = load(Data.turrets[value]["sprite"])
+			$AnimatedSprite2D.scale = Vector2(Data.turrets[value]["scale"],Data.turrets[value]["scale"])
+			# 애니메이션 설정
+			if "animation" in Data.turrets[value]:
+				$AnimatedSprite2D.play(Data.turrets[value]["animation"])
 		rotates = Data.turrets[value]["rotates"]
 		for stat in Data.turrets[value]["stats"].keys():
 			set(stat, Data.turrets[value]["stats"][stat])

@@ -70,3 +70,10 @@ attack={
 "type": 0
 }]
 }
+ui_accept={
+"deadzone": 0.5,
+"events": [{
+"scancode": 32,
+"type": 0
+}]
+}

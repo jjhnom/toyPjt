@@ -7,3 +7,6 @@ res://scripts/Player.gd
 res://scripts/Projectile.gd
 res://scripts/Spawner.gd
 res://scenes/Projectile.tscn
+res://scripts/Tower.gd
+res://scripts/PlayerUpgradeUI.gd
+res://scripts/PathVisualizer.gd

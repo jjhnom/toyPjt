@@ -75,10 +75,9 @@ func _process(delta):
 				spawn_timer = 0.0
 				enemies_spawned += 1
 		
-		# 모든 적을 스폰했고, 모든 적이 죽었으면 웨이브 클리어
-		elif enemies_killed >= default_enemy_count:
-			print("웨이브 클리어 조건 만족: %d/%d" % [enemies_killed, default_enemy_count])
-			notify_wave_cleared()
+		# 모든 적을 스폰했고, 모든 적이 처리되었으면 웨이브 클리어
+		elif enemies_spawned >= default_enemy_count:
+			check_wave_clear()
 		return
 		
 	var wave_info = wave_data[wave_key]
@@ -93,16 +92,15 @@ func _process(delta):
 			spawn_timer = 0.0
 			enemies_spawned += 1
 	
-	# 모든 적을 스폰했고, 모든 적이 죽었으면 웨이브 클리어
-	elif enemies_killed >= enemy_count:
-		print("웨이브 클리어 조건 만족: %d/%d" % [enemies_killed, enemy_count])
-		notify_wave_cleared()
+	# 모든 적을 스폰했고, 모든 적이 처리되었으면 웨이브 클리어
+	elif enemies_spawned >= enemy_count:
+		check_wave_clear()
 
 func spawn_enemy(hp_scale):
 	var enemy = enemy_scene.instantiate()
 	get_tree().current_scene.add_child(enemy)
 	
-	# 적 위치 설정 (화면 오른쪽에서 시작)
+	# 적 위치 설정 (경로의 시작점)
 	enemy.position = Vector2(1200, 360)
 	
 	# HP 스케일 적용 (Enemy 스크립트에 hp_scale 변수가 있다고 가정)
@@ -130,8 +128,36 @@ func on_enemy_killed():
 		main_node.on_enemy_killed(5)  # 5골드 보상
 	else:
 		print("Main 노드를 찾을 수 없거나 on_enemy_killed 메서드가 없습니다!")
+	
+	# 웨이브 클리어 체크
+	check_wave_clear()
+
+func on_enemy_reach_base():
+	# 적이 베이스에 도달했을 때도 처치된 것으로 카운트 (웨이브 클리어를 위해)
+	enemies_killed += 1
+	print("Spawner: 적이 베이스에 도달! %d/%d" % [enemies_killed, enemies_spawned])
+	
+	# 웨이브 클리어 체크
+	check_wave_clear()
 
 func notify_wave_cleared():
 	print("웨이브 %d 클리어!" % current_wave)
 	if main_node and main_node.has_method("notify_wave_cleared"):
 		main_node.notify_wave_cleared()
+
+func check_wave_clear():
+	# 웨이브 데이터 확인
+	var wave_key = str(current_wave)
+	var enemy_count = 0
+	
+	if wave_data.has(wave_key):
+		var wave_info = wave_data[wave_key]
+		enemy_count = wave_info.get("count", 1)
+	else:
+		# 기본값으로 웨이브 진행
+		enemy_count = 10 + current_wave * 2
+	
+	# 모든 적을 스폰했고, 모든 적이 처리되었으면 웨이브 클리어
+	if enemies_spawned >= enemy_count and enemies_killed >= enemy_count:
+		print("웨이브 클리어 조건 만족: %d/%d" % [enemies_killed, enemy_count])
+		notify_wave_cleared()

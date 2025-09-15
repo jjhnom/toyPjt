@@ -2,6 +2,7 @@ extends CanvasLayer
 @onready var wave_label=$WaveLabel
 @onready var gold_label=$GoldLabel
 @onready var base_label=$BaseLabel
+@onready var player_stats_label=$PlayerStatsLabel
 
 # 게임 상태 변수들
 var current_gold = 100  # 초기 골드
@@ -54,3 +55,7 @@ func spend_gold(amount):
 # 게임 오버 체크
 func is_game_over():
 	return base_hp <= 0
+
+# 플레이어 스탯 업데이트
+func update_player_stats(damage, cooldown, range_value):
+	player_stats_label.text = "플레이어 스탯:\n공격력: %d\n공격속도: %.1f초\n사거리: %d" % [damage, cooldown, range_value]

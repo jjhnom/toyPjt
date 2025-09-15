@@ -60,17 +60,36 @@ func _process(delta):
 	# 웨이브 데이터 확인
 	var wave_key = str(current_wave)
 	if not wave_data.has(wave_key):
+		print("웨이브 %d 데이터가 없습니다! 기본값 사용" % current_wave)
+		# 기본값으로 웨이브 진행
+		var default_enemy_count = 10 + current_wave * 2  # 웨이브마다 적 수 증가
+		var default_hp_scale = 1.0 + current_wave * 0.2  # 웨이브마다 HP 증가
+		var default_spawn_rate = 1.0 + current_wave * 0.1  # 웨이브마다 스폰 속도 증가
+		
+		# 아직 스폰할 적이 남아있고, 스폰 타이머가 되었으면
+		if enemies_spawned < default_enemy_count:
+			spawn_timer += delta
+			var current_spawn_interval = 1.0 / default_spawn_rate
+			if spawn_timer >= current_spawn_interval:
+				spawn_enemy(default_hp_scale)
+				spawn_timer = 0.0
+				enemies_spawned += 1
+		
+		# 모든 적을 스폰했고, 모든 적이 죽었으면 웨이브 클리어
+		elif enemies_killed >= default_enemy_count:
+			print("웨이브 클리어 조건 만족: %d/%d" % [enemies_killed, default_enemy_count])
+			notify_wave_cleared()
 		return
 		
 	var wave_info = wave_data[wave_key]
 	var enemy_count = wave_info.get("count", 1)
-	var hp_scale = wave_info.get("hp_scale", 1.0)
+	var wave_hp_scale = wave_info.get("hp_scale", 1.0)
 	
 	# 아직 스폰할 적이 남아있고, 스폰 타이머가 되었으면
 	if enemies_spawned < enemy_count:
 		spawn_timer += delta
 		if spawn_timer >= spawn_interval:
-			spawn_enemy(hp_scale)
+			spawn_enemy(wave_hp_scale)
 			spawn_timer = 0.0
 			enemies_spawned += 1
 	

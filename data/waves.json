@@ -3,5 +3,25 @@
     "count": 8,
     "hp_scale": 1.0,
     "spawn_rate": 0.8
+  },
+  "2": {
+    "count": 12,
+    "hp_scale": 1.2,
+    "spawn_rate": 1.0
+  },
+  "3": {
+    "count": 15,
+    "hp_scale": 1.5,
+    "spawn_rate": 1.2
+  },
+  "4": {
+    "count": 18,
+    "hp_scale": 1.8,
+    "spawn_rate": 1.5
+  },
+  "5": {
+    "count": 20,
+    "hp_scale": 2.0,
+    "spawn_rate": 2.0
   }
 }

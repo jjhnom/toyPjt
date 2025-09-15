@@ -7,7 +7,7 @@ var hp_scale = 1.0
 var gold_reward = 5
 
 # 죽음 신호
-signal enemy_died(enemy)
+signal enemy_died
 
 func _ready():
 	# HP 스케일 적용
@@ -49,9 +49,9 @@ func die():
 	else:
 		print("Main 노드를 찾을 수 없거나 on_enemy_killed 메서드가 없습니다!")
 	
-	# 죽음 신호도 발생 (기존 방식)
+	# 죽음 신호도 발생 (기존 방식) - 인수 없이 발생
 	print("죽음 신호 발생 시도...")
-	enemy_died.emit(self)
+	enemy_died.emit()
 	print("죽음 신호 발생 완료")
 	print("적 처치: HP 0")
 	queue_free()

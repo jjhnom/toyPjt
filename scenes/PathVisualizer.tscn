@@ -1,5 +1,0 @@
-[gd_scene load_steps=2]
-[ext_resource type="Script" path="res://scripts/PathVisualizer.gd" id="1"]
-
-[node name="PathVisualizer" type="Node2D"]
-script=ExtResource("1")

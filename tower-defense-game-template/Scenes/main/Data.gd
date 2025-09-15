@@ -19,7 +19,7 @@ const turrets := {
 		"max_level": 2,
 		"scene": "res://Scenes/turrets/projectileTurret/projectileTurret.tscn",
 		"sprite": "res://Assets/turrets/technoturret.png",
-		"scale": 4.0,
+		"scale": 1.0,
 		"rotates": true,
 		"bullet": "fire",
 	},
@@ -87,6 +87,78 @@ const turrets := {
 		"scale": 1.0,
 		"rotates": false,
 	},
+	"archer": {
+		"stats": {
+			"damage": 15.0,
+			"attack_speed": 1.5,
+			"attack_range": 300.0,
+			"bulletSpeed": 300.0,
+			"bulletPierce": 1,
+		},
+		"upgrades": {
+			"damage": {"amount": 5.0, "multiplies": false},
+			"attack_speed": {"amount": 1.3, "multiplies": true},
+			"attack_range": {"amount": 50.0, "multiplies": false},
+		},
+		"name": "Archer Tower",
+		"cost": 60,
+		"upgrade_cost": 40,
+		"max_level": 3,
+		"scene": "res://Scenes/turrets/archerTurret/archerTurret.tscn",
+		"sprite": "res://Assets/turrets/spriteframes_96x96.tres",
+		"scale": 1.0,
+		"rotates": true,
+		"bullet": "arrow",
+		"animation": "archer_idle",
+		"attack_animation": "archer_attack",
+	},
+	"wizard": {
+		"stats": {
+			"damage": 8.0,
+			"attack_speed": 1.0,
+			"attack_range": 250.0,
+			"bulletSpeed": 200.0,
+			"bulletPierce": 3,
+		},
+		"upgrades": {
+			"damage": {"amount": 3.0, "multiplies": false},
+			"attack_speed": {"amount": 1.2, "multiplies": true},
+			"bulletPierce": {"amount": 1, "multiplies": false},
+		},
+		"name": "Wizard Tower",
+		"cost": 80,
+		"upgrade_cost": 60,
+		"max_level": 3,
+		"scene": "res://Scenes/turrets/wizardTurret/wizardTurret.tscn",
+		"sprite": "res://Assets/turrets/spriteframes_96x96.tres",
+		"scale": 1.0,
+		"rotates": true,
+		"bullet": "magic",
+		"animation": "wizard_ice_idle",
+		"attack_animation": "wizard_ice_attack",
+	},
+	"warrior": {
+		"stats": {
+			"damage": 25.0,
+			"attack_speed": 0.8,
+			"attack_range": 120.0,
+		},
+		"upgrades": {
+			"damage": {"amount": 8.0, "multiplies": false},
+			"attack_speed": {"amount": 1.4, "multiplies": true},
+			"attack_range": {"amount": 20.0, "multiplies": false},
+		},
+		"name": "Warrior Tower",
+		"cost": 90,
+		"upgrade_cost": 70,
+		"max_level": 3,
+		"scene": "res://Scenes/turrets/warriorTurret/warriorTurret.tscn",
+		"sprite": "res://Assets/turrets/spriteframes_96x96.tres",
+		"scale": 1.0,
+		"rotates": false,
+		"animation": "warrior_idle",
+		"attack_animation": "warrior_attack",
+	},
 }
 
 const stats := {
@@ -104,6 +176,12 @@ const bullets := {
 		"frames": "res://Assets/bullets/bullet1.tres",
 	},
 	"laser": {
+		"frames": "res://Assets/bullets/bullet2.tres",
+	},
+	"arrow": {
+		"frames": "res://Assets/bullets/bullet1.tres",
+	},
+	"magic": {
 		"frames": "res://Assets/bullets/bullet2.tres",
 	}
 }

@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://dt6co1djyl8aq"]
+
+[ext_resource type="Script" path="res://Scenes/turrets/wizardTurret/wizardTurret.gd" id="1_7ca8v"]
+[ext_resource type="SpriteFrames" path="res://Assets/turrets/spriteframes_96x96.tres" id="2_2x7ix"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_aicnu"]
+radius = 22.8
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kae7m"]
+radius = 250.0
+
+[node name="Turret" type="Node2D"]
+script = ExtResource("1_7ca8v")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 2
+sprite_frames = ExtResource("2_2x7ix")
+animation = "wizard_ice_idle"
+
+[node name="CollisionArea" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CollisionArea"]
+shape = SubResource("CircleShape2D_aicnu")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_kae7m")
+
+[node name="AttackCooldown" type="Timer" parent="."]
+autostart = true
+
+[connection signal="input_event" from="CollisionArea" to="." method="_on_collision_area_input_event"]
+[connection signal="area_entered" from="DetectionArea" to="." method="_on_detection_area_area_entered"]
+[connection signal="area_exited" from="DetectionArea" to="." method="_on_detection_area_area_exited"]
+[connection signal="timeout" from="AttackCooldown" to="." method="attack"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

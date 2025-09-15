@@ -1,0 +1,9 @@
+res://scenes/Main.tscn
+res://scenes/Enemy.tscn
+res://scripts/Enemy.gd
+res://scripts/HUD.gd
+res://scripts/Main.gd
+res://scripts/Player.gd
+res://scripts/Projectile.gd
+res://scripts/Spawner.gd
+res://scenes/Projectile.tscn

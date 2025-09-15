@@ -1,0 +1,14 @@
+{
+  "attack": [
+    {
+      "cost": 30,
+      "delta": 5
+    }
+  ],
+  "speed": [
+    {
+      "cost": 25,
+      "delta": 20
+    }
+  ]
+}

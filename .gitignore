@@ -1,0 +1,10 @@
+# Godot executable files
+Godot_v*.exe
+*.exe
+
+# Godot build files
+*.pck
+*.zip
+
+# Test files
+test.*

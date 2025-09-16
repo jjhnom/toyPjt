@@ -20,8 +20,8 @@ func attack():
 		projectile.speed = bulletSpeed
 		projectile.pierce = bulletPierce
 		Globals.projectilesNode.add_child(projectile)
-		projectile.position = position
-		projectile.target = current_target.position
+		projectile.position = get_muzzle_position()
+		projectile.target = current_target.global_position
 	else:
 		try_get_closest_target()
 

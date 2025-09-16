@@ -1,92 +1,6 @@
 extends Node
 
 const turrets := {
-	"gatling": {
-		"stats": {
-			"damage": 10,
-			"attack_speed": 2.0,
-			"attack_range": 200.0,
-			"bulletSpeed": 200.0,
-			"bulletPierce": 1,
-		},
-		"upgrades": {
-			"damage": {"amount": 2.5, "multiplies": false},
-			"attack_speed": {"amount": 1.5, "multiplies": true},
-		},
-		"name": "Gatling Gun",
-		"cost": 50,
-		"upgrade_cost": 50,
-		"max_level": 2,
-		"scene": "res://Scenes/turrets/projectileTurret/projectileTurret.tscn",
-		"sprite": "res://Assets/turrets/technoturret.png",
-		"scale": 1.0,
-		"rotates": true,
-		"bullet": "fire",
-	},
-	"laser": {
-		"stats": {
-			"damage": 0.5,
-			"attack_speed": 20.0,
-			"attack_range": 250.0,
-			"bulletSpeed": 400.0,
-			"bulletPierce": 4,
-		},
-		"upgrades": {
-			"damage": {"amount": 2.5, "multiplies": false},
-			"attack_speed": {"amount": 1.5, "multiplies": true},
-		},
-		"name": "Flamethrower",
-		"cost": 70,
-		"upgrade_cost": 50,
-		"max_level": 3,
-		"scene": "res://Scenes/turrets/projectileTurret/projectileTurret.tscn",
-		"sprite": "res://Assets/turrets/laserturret.png",
-		"scale": 1.0,
-		"rotates": false,
-		"bullet": "laser",
-	},
-	"ray": {
-		"stats": {
-			"damage": 0.5,
-			"attack_speed": 0.5,
-			"attack_range": 300.0,
-			"ray_duration": 1.0,
-			"ray_length": 300.0,
-		},
-		"upgrades": {
-			"damage": {"amount": 1.0, "multiplies": false},
-			"attack_speed": {"amount": 1.5, "multiplies": true},
-			"ray_length": {"amount": 1.5, "multiplies": true},
-			"ray_duration": {"amount": 1.5, "multiplies": true},
-		},
-		"name": "Raygun",
-		"cost": 30,
-		"upgrade_cost": 50,
-		"max_level": 3,
-		"scene": "res://Scenes/turrets/rayTurret/rayTurret.tscn",
-		"sprite": "res://Assets/turrets/reallaser.png",
-		"scale": 1.0,
-		"rotates": true,
-	},
-	"melee": {
-		"stats": {
-			"damage": 5.0,
-			"attack_speed": 1.0,
-			"attack_range": 100.0,
-		},
-		"upgrades": {
-			"damage": {"amount": 2.5, "multiplies": false},
-			"attack_speed": {"amount": 1.5, "multiplies": true},
-		},
-		"name": "Explosive",
-		"cost": 70,
-		"upgrade_cost": 50,
-		"max_level": 3,
-		"scene": "res://Scenes/turrets/meleeTurret/meleeTurret.tscn",
-		"sprite": "res://Assets/turrets/dynamite.png",
-		"scale": 1.0,
-		"rotates": false,
-	},
 	"archer": {
 		"stats": {
 			"damage": 15.0,
@@ -126,7 +40,7 @@ const turrets := {
 			"bulletPierce": {"amount": 1, "multiplies": false},
 		},
 		"name": "Wizard Tower",
-		"cost": 80,
+		"cost": 70,
 		"upgrade_cost": 60,
 		"max_level": 3,
 		"scene": "res://Scenes/turrets/wizardTurret/wizardTurret.tscn",
@@ -149,7 +63,7 @@ const turrets := {
 			"attack_range": {"amount": 20.0, "multiplies": false},
 		},
 		"name": "Warrior Tower",
-		"cost": 90,
+		"cost": 50,
 		"upgrade_cost": 70,
 		"max_level": 3,
 		"scene": "res://Scenes/turrets/warriorTurret/warriorTurret.tscn",
@@ -167,17 +81,9 @@ const stats := {
 	"attack_range": {"name": "Range"},
 	"bulletSpeed": {"name": "Bullet Speed"},
 	"bulletPierce": {"name": "Bullet Pierce"},
-	"ray_length": {"name": "Ray Length"},
-	"ray_duration": {"name": "Ray Duration"},
 }
 
 const bullets := {
-	"fire": {
-		"frames": "res://Assets/bullets/bullet1.tres",
-	},
-	"laser": {
-		"frames": "res://Assets/bullets/bullet2.tres",
-	},
 	"arrow": {
 		"frames": "res://Assets/bullets/bullet1.tres",
 	},
@@ -230,6 +136,20 @@ const enemies := {
 }
 
 const maps := {
+	"map0": {
+		"name": "Castle Map",
+		"bg": "res://Assets/maps/map0.png",
+		"scene": "res://Scenes/maps/map0.tscn",
+		"baseHp": 20,
+		"startingGold": 150,
+		"spawner_settings":
+			{
+			"difficulty": {"initial": 1.5, "increase": 1.3, "multiplies": true},
+			"max_waves": 12,
+			"wave_spawn_count": 12,
+			"special_waves": {},
+			},
+	},
 	"map1": {
 		"name": "Grass Map",
 		"bg": "res://Assets/maps/map1.webp",

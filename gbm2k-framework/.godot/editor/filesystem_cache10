@@ -1,5 +1,6 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1757921061
+::res://::1757922522
+export_presets.cfg::TextFile::-1::1757921168::0::1::::<><><>0<>0<><>::
 icon.png::CompressedTexture2D/CompressedTexture2D::1173201585807753488::1757920988::1757921000::1::::<><><>0<>0<>9dfd2b34f98337d960c9567b98d42ee0<>res://.godot/imported/icon.png-487276ed1e3a0c39cad0279d744ee560.ctex::
 README.md::TextFile/TextFile::-1::1757920988::0::1::::<><><>0<>0<><>::
 ::res://Graphics/::1757920988
@@ -11,11 +12,11 @@ obstacle.png::CompressedTexture2D/CompressedTexture2D::1520137885184959144::1757
 actor_man.png::CompressedTexture2D/CompressedTexture2D::972800117828347304::1757920988::1757921000::1::::<><><>0<>0<>d16db1327772604cd6626c773cee0c28<>res://.godot/imported/actor_man.png-f4ac9a3c36c1b0de2e16bad903ceb88f.ctex::
 ::res://Graphics/Tilesets/::1757921000
 tileset_dungeon.png::CompressedTexture2D/CompressedTexture2D::218547160139508517::1757920988::1757921000::1::::<><><>0<>0<>b9aafdede83dd8e29fa035ae9b0594dc<>res://.godot/imported/tileset_dungeon.png-e97ee6881c0dfcf04d9957193bc2a987.ctex::
-::res://Scenes/::1757920988
-gameview.tscn::PackedScene::5571671025209194351::1757921062::0::1::::<><><>0<>0<><>::uid://cktlplg0urpum::::res://Scenes/Maps/world.tscn<>uid://g161x23dybak::::res://Scripts/Dialogue/Types/dialogue_ow.gd<>uid://binxeu3c3m5kf::::res://Scripts/Dialogue/writer.gd
-::res://Scenes/Maps/::1757920988
+::res://Scenes/::1757921074
+gameview.tscn::PackedScene::5571671025209194351::1757921074::0::1::::<><><>0<>0<><>::uid://cktlplg0urpum::::res://Scenes/Maps/world.tscn<>uid://g161x23dybak::::res://Scripts/Dialogue/Types/dialogue_ow.gd<>uid://binxeu3c3m5kf::::res://Scripts/Dialogue/writer.gd
+::res://Scenes/Maps/::1757921062
 world.tscn::PackedScene::5514648243111642840::1757921062::0::1::::<><><>0<>0<><>::uid://clolt0da1hneb::::res://Graphics/CollisionTiles/actor.png<>uid://0tfdek87iic0::::res://Scripts/setup.gd<>uid://dd4o7n2bo12h::::res://Graphics/Tilesets/tileset_dungeon.png<>uid://vwmpi5st1if5::::res://Graphics/CollisionTiles/obstacle.png<>uid://bpgue5nprlx3l::::res://Scripts/Grid/grid_manager.gd<>uid://82egl20vpf7n::::res://Scenes/Pawns/player.tscn<>uid://d3xeykecmo176::::res://Scenes/Pawns/actor.tscn<>uid://d4fbkd6uebiv1::::res://Scripts/Pawns/Types/event.gd<>uid://baxy6fqvtlg4q::::res://Scripts/Pawns/Types/object.gd<>uid://fhhrc5ktpq0l::::res://Graphics/CollisionTiles/event.png
-::res://Scenes/Pawns/::1757920988
+::res://Scenes/Pawns/::1757921062
 actor.tscn::PackedScene::9172316619832575543::1757921062::0::1::::<><><>0<>0<><>::uid://bym4fi5reply3::::res://Scripts/Pawns/Types/npc.gd<>uid://n4h41o7d7rbs::::res://Graphics/Pawns/actor_man.png
 player.tscn::PackedScene::2372224242780293769::1757921062::0::1::::<><><>0<>0<><>::uid://b3et66iu4ccp8::::res://Scripts/Pawns/Types/player.gd<>uid://n4h41o7d7rbs::::res://Graphics/Pawns/actor_man.png
 ::res://Scripts/::1757921000
@@ -39,5 +40,5 @@ player.gd::GDScript/GDScript::4361176440577694983::1757920988::0::1::::<>PawnMob
 gbm_utils.gd::GDScript/GDScript::6372409348220242477::1757920988::0::1::::GbmUtils<>Object<><>0<>0<><>::
 ::res://Text/::1757921000
 game_text.csv::Translation/Translation::6158950087817157930::1757920988::1757921000::1::::<><><>0<>0<>87eb5f67405e25c38e608396fae45763<>res://Text/game_text.en.translation<*>res://Text/game_text.fr.translation::
-game_text.en.translation::OptimizedTranslation::5598882351979145955::1757921000::0::1::::<><><>0<>0<><>::
-game_text.fr.translation::OptimizedTranslation::7206842742893797013::1757921000::0::1::::<><><>0<>0<><>::
+game_text.en.translation::OptimizedTranslation/OptimizedTranslation::5598882351979145955::1757921000::0::1::::<><><>0<>0<><>::
+game_text.fr.translation::OptimizedTranslation/OptimizedTranslation::7206842742893797013::1757921000::0::1::::<><><>0<>0<><>::

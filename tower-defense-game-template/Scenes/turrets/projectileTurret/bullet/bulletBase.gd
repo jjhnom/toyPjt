@@ -24,6 +24,11 @@ func _on_area_2d_area_entered(area):
 	if obj.is_in_group("enemy"):
 		pierce -= 1
 		obj.get_damage(damage)
+		
+		# 위자드 불릿인 경우 슬로우 효과 적용
+		if bullet_type == "magic":
+			obj.apply_slow(0.5, 2.0)  # 50% 속도로 2초간 슬로우
+		
 	if pierce == 0:
 		queue_free()
 

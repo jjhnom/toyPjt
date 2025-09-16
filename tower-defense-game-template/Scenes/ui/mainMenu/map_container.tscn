@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://v27byrwdrux5"]
 
-[ext_resource type="Texture2D" uid="uid://7nm603ro1bmi" path="res://Assets/maps/map1.webp" id="1_6vcye"]
+[ext_resource type="Texture2D" uid="uid://b8725vkgyjjo8" path="res://Assets/maps/map1.webp" id="1_6vcye"]
 [ext_resource type="Script" uid="uid://c77jvk7a6rbs2" path="res://Scenes/ui/mainMenu/map_container.gd" id="1_yc64c"]
 
 [node name="MapContainer" type="PanelContainer"]

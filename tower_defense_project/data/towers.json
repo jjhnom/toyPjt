@@ -1,0 +1,49 @@
+{
+  "archer": {
+    "price": 60,
+    "range": 120,
+    "fire_rate": 0.8,
+    "damage": 12,
+    "upgrade": [
+      {"gold": 70, "range": 130, "damage": 15},
+      {"gold": 100, "range": 140, "damage": 20, "unlock": "pierce"}
+    ],
+    "target_modes": ["first", "strong", "close"],
+    "description": "빠른 단일 공격, 업그레이드 시 독 화살/관통 화살"
+  },
+  "barracks": {
+    "price": 80,
+    "spawn_cd": 6.0,
+    "unit_hp": 80,
+    "unit_atk": 8,
+    "upgrade": [
+      {"gold": 90, "unit_hp": 100, "unit_atk": 10},
+      {"gold": 130, "spawn_cd": 5.0, "unit_hp": 120}
+    ],
+    "description": "근접 병사 소환, 길을 막아 적을 지연"
+  },
+  "mage": {
+    "price": 90,
+    "range": 110,
+    "fire_rate": 1.2,
+    "damage": 30,
+    "penetration": 0.5,
+    "upgrade": [
+      {"gold": 110, "damage": 40},
+      {"gold": 150, "damage": 50, "unlock": "burn"}
+    ],
+    "description": "높은 데미지, 방어 무시, 업그레이드 시 광역 마법"
+  },
+  "cannon": {
+    "price": 100,
+    "range": 105,
+    "fire_rate": 1.4,
+    "damage": 40,
+    "aoe_radius": 20,
+    "upgrade": [
+      {"gold": 120, "damage": 55, "aoe_radius": 32},
+      {"gold": 170, "damage": 70, "aoe_radius": 40, "unlock": "stun"}
+    ],
+    "description": "범위 공격, 슬로우/스턴 효과"
+  }
+}

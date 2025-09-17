@@ -1,0 +1,16 @@
+res://scripts/GameManager.gd
+res://scripts/SkillManager.gd
+res://scripts/Tower.gd
+res://scenes/Main.tscn
+res://scenes/Enemy.tscn
+res://scripts/DataHub.gd
+res://scripts/Enemy.gd
+res://scripts/PlacementController.gd
+res://scripts/WaveManager.gd
+res://scripts/UIManager.gd
+res://scenes/map1.tscn
+res://scenes/Tower_Archer.tscn
+res://scenes/Tower_Barracks.tscn
+res://scenes/Tower_Cannon.tscn
+res://scenes/Tower_Mage.tscn
+res://scripts/Projectile.gd

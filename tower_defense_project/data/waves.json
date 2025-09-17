@@ -1,0 +1,14 @@
+{
+  "list": [
+    {"id": 1, "route":"A", "groups":[{"enemy":"goblin","count":10,"interval":0.6}]},
+    {"id": 2, "route":"A", "groups":[{"enemy":"goblin","count":8,"interval":0.8},{"enemy":"orc","count":3,"interval":0.9}]},
+    {"id": 3, "route":"A", "groups":[{"enemy":"orc","count":10,"interval":0.8},{"enemy":"troll","count":3,"interval":1.2}]},
+    {"id": 4, "route":"A", "groups":[{"enemy":"troll","count":3,"interval":1.2},{"enemy":"orc","count":5,"interval":0.9}]},
+    {"id": 5, "route":"B", "groups":[{"enemy":"wyvern","count":6,"interval":0.8}]},
+    {"id": 6, "route":"A", "groups":[{"enemy":"orc","count":12,"interval":0.7},{"enemy":"troll","count":4,"interval":1.1}]},
+    {"id": 7, "route":"A", "groups":[{"enemy":"troll","count":4,"interval":1.1},{"enemy":"wyvern","count":10,"interval":0.7}]},
+    {"id": 8, "route":"B", "groups":[{"enemy":"wyvern","count":10,"interval":0.7},{"enemy":"undead","count":12,"interval":0.6}]},
+    {"id": 9, "route":"B", "groups":[{"enemy":"undead","count":12,"interval":0.6},{"enemy":"orc","count":12,"interval":0.6}]},
+    {"id": 10,"route":"A", "groups":[{"enemy":"ogre_boss","count":1,"interval":0.0}]}
+  ]
+}

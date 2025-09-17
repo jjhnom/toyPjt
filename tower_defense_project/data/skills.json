@@ -1,0 +1,22 @@
+{
+  "arrow_rain": {
+    "cost": 40, 
+    "cooldown": 20, 
+    "aoe": 160, 
+    "damage": 120,
+    "description": "광역 데미지 - 지정 위치에 화살비 공격"
+  },
+  "knight_charge": {
+    "cost": 35, 
+    "cooldown": 25, 
+    "duration": 6, 
+    "block": true,
+    "description": "기사 돌격 - 일시적으로 길을 막는 강력 유닛 등장"
+  },
+  "heal_gate": {
+    "cost": 30, 
+    "cooldown": 30, 
+    "heal": 20,
+    "description": "힐링 - 성문 HP 회복"
+  }
+}

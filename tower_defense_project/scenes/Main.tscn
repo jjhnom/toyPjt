@@ -1,0 +1,205 @@
+[gd_scene load_steps=9 format=3 uid="uid://1b04msaapi28"]
+
+[ext_resource type="Script" uid="uid://bghb1p1lnypgr" path="res://scripts/GameManager.gd" id="1"]
+[ext_resource type="Script" uid="uid://be801lbbr4up2" path="res://scripts/DataHub.gd" id="2"]
+[ext_resource type="Script" uid="uid://ddxva4ynw4uy3" path="res://scripts/WaveManager.gd" id="3"]
+[ext_resource type="Script" uid="uid://cxpskqonbpxe5" path="res://scripts/SkillManager.gd" id="4"]
+[ext_resource type="Script" uid="uid://sljclstoxb6a" path="res://scripts/PlacementController.gd" id="5"]
+[ext_resource type="Script" uid="uid://cb0j4lvirur8m" path="res://scripts/UIManager.gd" id="6"]
+[ext_resource type="PackedScene" uid="uid://bbo8v5oyiysmg" path="res://scenes/map1.tscn" id="7"]
+[ext_resource type="Texture2D" path="res://sprites/Tower_Archer.png" id="8"]
+
+[node name="Main" type="Node2D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1")
+
+[node name="DataHub" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("3")
+
+[node name="SkillManager" type="Node" parent="."]
+script = ExtResource("4")
+
+[node name="ObjectPool" type="Node" parent="."]
+
+[node name="Map" parent="." instance=ExtResource("7")]
+
+[node name="EnemyLayer" type="Node2D" parent="Map"]
+
+[node name="PlacementController" type="Node2D" parent="."]
+script = ExtResource("5")
+
+[node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("6")
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopPanel" type="Panel" parent="UI/HUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 70.0
+offset_bottom = 150.0
+grow_horizontal = 2
+
+[node name="StatusContainer" type="HBoxContainer" parent="UI/HUD/TopPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 5.0
+offset_right = -10.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftStatus" type="VBoxContainer" parent="UI/HUD/TopPanel/StatusContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GoldLabel" type="Label" parent="UI/HUD/TopPanel/StatusContainer/LeftStatus"]
+layout_mode = 2
+text = "Gold: 100"
+horizontal_alignment = 1
+
+[node name="LifeLabel" type="Label" parent="UI/HUD/TopPanel/StatusContainer/LeftStatus"]
+layout_mode = 2
+text = "Life: 20"
+horizontal_alignment = 1
+
+[node name="RightStatus" type="VBoxContainer" parent="UI/HUD/TopPanel/StatusContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ManaLabel" type="Label" parent="UI/HUD/TopPanel/StatusContainer/RightStatus"]
+layout_mode = 2
+text = "Mana: 50"
+horizontal_alignment = 1
+
+[node name="WaveLabel" type="Label" parent="UI/HUD/TopPanel/StatusContainer/RightStatus"]
+layout_mode = 2
+text = "Wave: 1"
+horizontal_alignment = 1
+
+[node name="BottomPanel" type="Panel" parent="UI/HUD"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -160.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ShopPanel" type="VBoxContainer" parent="UI/HUD/BottomPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 5.0
+offset_right = -10.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TowerSection" type="VBoxContainer" parent="UI/HUD/BottomPanel/ShopPanel"]
+layout_mode = 2
+
+[node name="TowerLabel" type="Label" parent="UI/HUD/BottomPanel/ShopPanel/TowerSection"]
+layout_mode = 2
+text = "TOWERS"
+horizontal_alignment = 1
+
+[node name="TowerButtons" type="HBoxContainer" parent="UI/HUD/BottomPanel/ShopPanel/TowerSection"]
+layout_mode = 2
+
+[node name="ArcherButton" type="Button" parent="UI/HUD/BottomPanel/ShopPanel/TowerSection/TowerButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(32, 32)
+icon = ExtResource("8")
+expand_icon = true
+tooltip_text = "Archer Tower
+60 Gold"
+
+[node name="BarracksButton" type="Button" parent="UI/HUD/BottomPanel/ShopPanel/TowerSection/TowerButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Barracks
+80 Gold"
+
+[node name="MageButton" type="Button" parent="UI/HUD/BottomPanel/ShopPanel/TowerSection/TowerButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Mage
+90 Gold"
+
+[node name="CannonButton" type="Button" parent="UI/HUD/BottomPanel/ShopPanel/TowerSection/TowerButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cannon
+100 Gold"
+
+[node name="SkillSection" type="VBoxContainer" parent="UI/HUD/BottomPanel/ShopPanel"]
+layout_mode = 2
+
+[node name="SkillLabel" type="Label" parent="UI/HUD/BottomPanel/ShopPanel/SkillSection"]
+layout_mode = 2
+text = "SKILLS"
+horizontal_alignment = 1
+
+[node name="SkillPanel" type="HBoxContainer" parent="UI/HUD/BottomPanel/ShopPanel/SkillSection"]
+layout_mode = 2
+
+[node name="ArrowRainButton" type="Button" parent="UI/HUD/BottomPanel/ShopPanel/SkillSection/SkillPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Arrow Rain
+40 Mana"
+
+[node name="KnightChargeButton" type="Button" parent="UI/HUD/BottomPanel/ShopPanel/SkillSection/SkillPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Knight Charge
+35 Mana"
+
+[node name="HealGateButton" type="Button" parent="UI/HUD/BottomPanel/ShopPanel/SkillSection/SkillPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Heal Gate
+30 Mana"
+
+[node name="GameControls" type="HBoxContainer" parent="UI/HUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 10.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="StartWaveButton" type="Button" parent="UI/HUD/GameControls"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start Wave"
+
+[node name="PauseButton" type="Button" parent="UI/HUD/GameControls"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pause"
+
+[node name="SpeedButton" type="Button" parent="UI/HUD/GameControls"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Speed x1"

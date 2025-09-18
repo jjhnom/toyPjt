@@ -22,7 +22,15 @@ Data="*res://Scenes/main/Data.gd"
 
 [display]
 
+<<<<<<< HEAD
 window/stretch/mode="viewport"
+=======
+window/size/viewport_width=1080
+window/size/viewport_height=1080
+window/size/resizable=true
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 
 [input]
 

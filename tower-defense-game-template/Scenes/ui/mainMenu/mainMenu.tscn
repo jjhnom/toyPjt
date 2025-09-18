@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 [gd_scene load_steps=3 format=3 uid="uid://duvsvsvu8biwm"]
 
 [ext_resource type="Script" uid="uid://ddgh27fn5fscl" path="res://Scenes/ui/mainMenu/main_menu.gd" id="1_lnqmy"]
 [ext_resource type="Texture2D" uid="uid://draui3vdun220" path="res://Assets/menu/bg.png" id="2_jl1fa"]
+=======
+[gd_scene load_steps=2 format=3 uid="uid://duvsvsvu8biwm"]
+
+[ext_resource type="Script" uid="uid://ddgh27fn5fscl" path="res://Scenes/ui/mainMenu/main_menu.gd" id="1_lnqmy"]
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -12,6 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_lnqmy")
 
+<<<<<<< HEAD
 [node name="TextureRect" type="TextureRect" parent="."]
 texture_filter = 1
 layout_mode = 1
@@ -22,6 +29,8 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_jl1fa")
 
+=======
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 [node name="MenuButtons" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(200, 150)
 layout_mode = 1

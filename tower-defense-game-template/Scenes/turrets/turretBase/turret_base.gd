@@ -66,6 +66,28 @@ func not_colliding():
 	can_place = true
 	modulate = Color("6eff297a")
 
+<<<<<<< HEAD
+=======
+# 미사일 발사 위치를 계산하는 함수
+func get_muzzle_position() -> Vector2:
+	var muzzle_offset = Vector2.ZERO
+	
+	# 터렛 타입에 따라 발사점 오프셋 조정
+	if turret_type == "archer":
+		muzzle_offset = Vector2(0, -15)  # 아처는 위쪽에서 발사
+	elif turret_type == "wizard":
+		muzzle_offset = Vector2(0, -10)  # 위자드는 중앙에서 발사
+	elif turret_type == "warrior":
+		muzzle_offset = Vector2(0, -5)   # 워리어는 약간 위에서 발사
+	
+	# 터렛이 회전할 때 발사점도 함께 회전
+	if rotates and is_instance_valid(current_target):
+		var direction = (current_target.global_position - global_position).normalized()
+		muzzle_offset = muzzle_offset.rotated(direction.angle())
+	
+	return global_position + muzzle_offset
+
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 func _on_detection_area_area_entered(area):
 	if deployed and not current_target:
 		var area_parent = area.get_parent()

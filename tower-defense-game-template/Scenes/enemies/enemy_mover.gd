@@ -13,13 +13,33 @@ var goldYield := 10.0
 var hp := 10.0
 var baseDamage := 5.0
 var speed := 1.0
+<<<<<<< HEAD
+=======
+var base_speed := 1.0
+var slow_factor := 1.0
+var slow_duration := 0.0
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 var is_destroyed := false
 
 @onready var spawner := get_parent() as EnemyPath
 func _ready():
 	add_to_group("enemy")
+<<<<<<< HEAD
 
 func _process(_delta):
+=======
+	base_speed = speed
+
+func _process(delta):
+	# 슬로우 효과 처리
+	if slow_duration > 0:
+		slow_duration -= delta
+		speed = base_speed * slow_factor
+		if slow_duration <= 0:
+			speed = base_speed
+			slow_factor = 1.0
+	
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 	if state == State.walking:
 		#Move
 		progress_ratio += 0.0005 * speed
@@ -60,3 +80,11 @@ func damage_animation():
 	tween.tween_property(self, "v_offset", -5, 0.2)
 	tween.set_parallel(false)
 	tween.tween_property(self, "v_offset", 0, 0.2)
+<<<<<<< HEAD
+=======
+
+func apply_slow(slow_amount: float, duration: float):
+	slow_factor = slow_amount
+	slow_duration = duration
+	speed = base_speed * slow_factor
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd

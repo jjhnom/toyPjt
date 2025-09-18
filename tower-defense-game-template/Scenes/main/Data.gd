@@ -1,6 +1,7 @@
 extends Node
 
 const turrets := {
+<<<<<<< HEAD
 	"gatling": {
 		"stats": {
 			"damage": 10,
@@ -87,6 +88,8 @@ const turrets := {
 		"scale": 1.0,
 		"rotates": false,
 	},
+=======
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 	"archer": {
 		"stats": {
 			"damage": 15.0,
@@ -126,7 +129,11 @@ const turrets := {
 			"bulletPierce": {"amount": 1, "multiplies": false},
 		},
 		"name": "Wizard Tower",
+<<<<<<< HEAD
 		"cost": 80,
+=======
+		"cost": 70,
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 		"upgrade_cost": 60,
 		"max_level": 3,
 		"scene": "res://Scenes/turrets/wizardTurret/wizardTurret.tscn",
@@ -149,7 +156,11 @@ const turrets := {
 			"attack_range": {"amount": 20.0, "multiplies": false},
 		},
 		"name": "Warrior Tower",
+<<<<<<< HEAD
 		"cost": 90,
+=======
+		"cost": 50,
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 		"upgrade_cost": 70,
 		"max_level": 3,
 		"scene": "res://Scenes/turrets/warriorTurret/warriorTurret.tscn",
@@ -167,6 +178,7 @@ const stats := {
 	"attack_range": {"name": "Range"},
 	"bulletSpeed": {"name": "Bullet Speed"},
 	"bulletPierce": {"name": "Bullet Pierce"},
+<<<<<<< HEAD
 	"ray_length": {"name": "Ray Length"},
 	"ray_duration": {"name": "Ray Duration"},
 }
@@ -178,6 +190,11 @@ const bullets := {
 	"laser": {
 		"frames": "res://Assets/bullets/bullet2.tres",
 	},
+=======
+}
+
+const bullets := {
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 	"arrow": {
 		"frames": "res://Assets/bullets/bullet1.tres",
 	},
@@ -230,6 +247,23 @@ const enemies := {
 }
 
 const maps := {
+<<<<<<< HEAD
+=======
+	"map0": {
+		"name": "Castle Map",
+		"bg": "res://Assets/maps/map0.png",
+		"scene": "res://Scenes/maps/map0.tscn",
+		"baseHp": 20,
+		"startingGold": 150,
+		"spawner_settings":
+			{
+			"difficulty": {"initial": 1.5, "increase": 1.3, "multiplies": true},
+			"max_waves": 12,
+			"wave_spawn_count": 12,
+			"special_waves": {},
+			},
+	},
+>>>>>>> 738a78b3e1d993b7597c88e2346f98da02a097fd
 	"map1": {
 		"name": "Grass Map",
 		"bg": "res://Assets/maps/map1.webp",

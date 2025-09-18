@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://brrdaxu6y8mec"]
+
+[sub_resource type="Curve2D" id="1"]
+_data = {
+"points": PackedVector2Array(0, 300, 0, 0, 200, 300, 0, 0, 0, 0, 600, 280, 0, 0, 0, 0, 1100, 340)
+}
+point_count = 3
+
+[node name="Map" type="Node2D"]
+
+[node name="Path2D_A" type="Path2D" parent="."]
+curve = SubResource("1")
+
+[node name="EnemyLayer" type="Node2D" parent="."]
+
+[node name="CharacterLayer" type="Node2D" parent="."]

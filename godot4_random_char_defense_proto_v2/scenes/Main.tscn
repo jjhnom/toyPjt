@@ -1,0 +1,118 @@
+[gd_scene load_steps=10 format=3 uid="uid://b3pxkytqg34p1"]
+
+[ext_resource type="Script" uid="uid://bkopah31btx15" path="res://scripts/core/GameManager.gd" id="1"]
+[ext_resource type="Script" uid="uid://epdnowp06wv6" path="res://scripts/core/WaveManager.gd" id="2"]
+[ext_resource type="Script" uid="uid://bbxvr4k0tdg3b" path="res://scripts/ui/UIManager.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://tcmbmj8sku3m" path="res://scenes/Enemy.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bqi8b8pihg47r" path="res://scenes/dice_rect_map.tscn" id="5"]
+[ext_resource type="Script" uid="uid://5vim2ibpx5c" path="res://scripts/core/DataHub.gd" id="7"]
+[ext_resource type="Script" uid="uid://diweat8nbkxde" path="res://scripts/core/ObjectPool.gd" id="8"]
+[ext_resource type="Script" uid="uid://bhctree1nwu3l" path="res://scripts/core/CharacterManager.gd" id="9"]
+[ext_resource type="Script" uid="uid://56q406grp8xa" path="res://scripts/core/SkillManager.gd" id="10"]
+
+[node name="Main" type="Node2D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1")
+
+[node name="DataHub" type="Node" parent="GameManager"]
+script = ExtResource("7")
+
+[node name="ObjectPool" type="Node" parent="GameManager"]
+script = ExtResource("8")
+
+[node name="WaveManager" type="Node" parent="GameManager"]
+script = ExtResource("2")
+enemy_scene = ExtResource("4")
+
+[node name="SkillManager" type="Node" parent="GameManager"]
+script = ExtResource("10")
+
+[node name="CharacterManager" type="Node" parent="GameManager"]
+script = ExtResource("9")
+
+[node name="Map" parent="." instance=ExtResource("5")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("3")
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Gold" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 120.0
+offset_bottom = 40.0
+text = "Gold: 150"
+
+[node name="Life" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 16.0
+offset_right = 217.0
+offset_bottom = 39.0
+text = "Life: 20"
+
+[node name="Wave" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 269.0
+offset_top = 16.0
+offset_right = 373.0
+offset_bottom = 40.0
+text = "Wave: 1"
+
+[node name="Timer" type="Label" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 190.0
+offset_top = 16.0
+offset_right = 270.0
+offset_bottom = 52.0
+text = "Time: 0"
+
+[node name="Summon" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 640.0
+offset_right = 156.0
+offset_bottom = 696.0
+text = "Summon (50)"
+
+[node name="Merge" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 640.0
+offset_right = 316.0
+offset_bottom = 696.0
+text = "Merge (tap 2 slots)"
+
+[node name="Skill1" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 336.0
+offset_top = 640.0
+offset_right = 456.0
+offset_bottom = 696.0
+text = "ArrowRain"
+
+[node name="Skill2" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 466.0
+offset_top = 640.0
+offset_right = 586.0
+offset_bottom = 696.0
+text = "GlobalSlow"
+
+[node name="Skill3" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 596.0
+offset_top = 640.0
+offset_right = 716.0
+offset_bottom = 696.0
+text = "HealGate"

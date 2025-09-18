@@ -1,0 +1,38 @@
+{
+  "goblin": {
+    "hp": 40,
+    "speed": 10,
+    "reward": 5,
+    "type": "dino1",
+    "frame": 0,
+    "base_damage": 5,
+    "sprite_path": "res://assets/enemies/dino1.png"
+  },
+  "orc": {
+    "hp": 90,
+    "speed": 8,
+    "reward": 8,
+    "type": "dino2",
+    "frame": 1,
+    "base_damage": 8,
+    "sprite_path": "res://assets/enemies/dino2.png"
+  },
+  "troll": {
+    "hp": 220,
+    "speed": 6,
+    "reward": 15,
+    "type": "dino3",
+    "frame": 2,
+    "base_damage": 15,
+    "sprite_path": "res://assets/enemies/dino3.png"
+  },
+  "dragon": {
+    "hp": 600,
+    "speed": 7,
+    "reward": 50,
+    "type": "dino4",
+    "frame": 3,
+    "base_damage": 25,
+    "sprite_path": "res://assets/enemies/dino4.png"
+  }
+}

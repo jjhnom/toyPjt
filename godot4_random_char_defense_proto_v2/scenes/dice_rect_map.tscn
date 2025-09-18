@@ -1,0 +1,139 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqi8b8pihg47r"]
+
+[ext_resource type="Script" uid="uid://p176slywifbb" path="res://scripts/core/SlotOverlay.gd" id="1"]
+
+[sub_resource type="GDScript" id="1"]
+script/source = "extends Node
+
+# ===== Board Config =====
+@export var cols := 10
+@export var rows := 16
+@export var tile := 32
+@export var margin := 1
+@export var random_seed := 1
+
+# ===== Node Paths =====
+@export var ground_tm_path: NodePath = ^\"../Ground\"
+@export var road_tm_path: NodePath = ^\"../Road\"
+@export var decor_tm_path: NodePath = ^\"../Decor\"
+@export var path2d_path: NodePath = ^\"../Path2D\"
+@export var preview_line_path: NodePath = ^\"../PathPreview\"
+@export var slots_root_path: NodePath = ^\"../Slots\"
+
+# ===== Painting Options =====
+@export var paint_ground := true
+@export var ground_source_id := 0
+@export var ground_atlas := Vector2i(0,0)
+
+@export var paint_road := true
+@export var road_source_id := 0
+@export var road_atlas := Vector2i(1,0)
+
+@export var paint_decor := false
+@export var decor_source_id := 0
+@export var decor_atlases: Array[Vector2i] = [Vector2i(2,0), Vector2i(3,0)]
+@export_range(0.0,1.0,0.01) var decor_density := 0.1
+
+@export var create_slots := true
+
+func _rect_loop_cells() -> Array[Vector2i]:
+	var left := margin
+	var right := cols - 1 - margin
+	var top := margin
+	var bottom := rows - 1 - margin
+	var cells: Array[Vector2i] = []
+	if left >= right or top >= bottom:
+		return cells
+	for x in range(left, right+1): cells.append(Vector2i(x, top))
+	for y in range(top+1, bottom+1): cells.append(Vector2i(right, y))
+	for x in range(right-1, left-1, -1): cells.append(Vector2i(x, bottom))
+	for y in range(bottom-1, top, -1): cells.append(Vector2i(left, y))
+	return cells
+
+func _points_from_cells(cells: Array[Vector2i]) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for c in cells: pts.append(Vector2((c.x+0.5)*tile, (c.y+0.5)*tile))
+	return pts
+
+func _interior_cells(loop_cells: Array[Vector2i]) -> Array[Vector2i]:
+	var set := {}
+	for c in loop_cells: set[c] = true
+	var left := margin
+	var right := cols - 1 - margin
+	var top := margin
+	var bottom := rows - 1 - margin
+	var result: Array[Vector2i] = []
+	for y in range(top+1, bottom):
+		for x in range(left+1, right):
+			var v := Vector2i(x,y)
+			if not set.has(v): result.append(v)
+	return result
+
+func _ready():
+	var ground := get_node_or_null(ground_tm_path) as TileMapLayer
+	var road := get_node_or_null(road_tm_path) as TileMapLayer
+	var decor := get_node_or_null(decor_tm_path) as TileMapLayer
+	var path2d := get_node_or_null(path2d_path) as Path2D
+	var line := get_node_or_null(preview_line_path) as Line2D
+	var slots_root := get_node_or_null(slots_root_path)
+
+	var loop_cells := _rect_loop_cells()
+	if path2d:
+		var c := Curve2D.new()
+		for p in _points_from_cells(loop_cells): c.add_point(p)
+		if loop_cells.size() > 0: c.add_point(_points_from_cells([loop_cells[0]])[0])
+		path2d.curve = c
+	if line: line.points = _points_from_cells(loop_cells)
+
+	if paint_ground and ground and ground.tile_set:
+		ground.clear()
+		for y in range(rows):
+			for x in range(cols):
+				ground.set_cell(Vector2i(x,y), ground_source_id, ground_atlas)
+
+	if paint_road and road and road.tile_set:
+		road.clear()
+		for v in loop_cells: road.set_cell(v, road_source_id, road_atlas)
+
+	if create_slots and slots_root:
+		for child in slots_root.get_children(): child.queue_free()
+		var interior_cells = _interior_cells(loop_cells)
+		for v in interior_cells:
+			var a := Area2D.new()
+			a.name = \"Slot_%d_%d\" % [v.x, v.y]
+			a.position = Vector2((v.x+0.5)*tile, (v.y+0.5)*tile)
+			var cs := CollisionShape2D.new()
+			var shp := RectangleShape2D.new()
+			shp.size = Vector2(tile*0.8, tile*0.8)
+			cs.shape = shp
+			a.add_child(cs)
+			slots_root.add_child(a)
+"
+
+[node name="DiceRectMap" type="Node2D"]
+
+[node name="Ground" type="TileMapLayer" parent="."]
+
+[node name="Road" type="TileMapLayer" parent="."]
+
+[node name="Decor" type="TileMapLayer" parent="."]
+
+[node name="Path2D" type="Path2D" parent="."]
+
+[node name="Follow" type="PathFollow2D" parent="Path2D"]
+
+[node name="PathPreview" type="Line2D" parent="."]
+visible = false
+width = 8.0
+
+[node name="Slots" type="Node2D" parent="."]
+
+[node name="SlotOverlay" type="Node2D" parent="."]
+script = ExtResource("1")
+
+[node name="CharacterLayer" type="Node2D" parent="."]
+
+[node name="EnemyLayer" type="Node2D" parent="."]
+
+[node name="Builder" type="Node" parent="."]
+script = SubResource("1")

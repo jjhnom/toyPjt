@@ -1,0 +1,51 @@
+{
+  "archer": {
+    "role": "dps",
+    "atk": 12,
+    "range": 140,
+    "rate": 0.9,
+    "skill": "pierce",
+    "cost": 50,
+    "rarity": "common",
+    "spawn_weight": 40,
+    "sprite_path": "res://assets/characters/archer.png",
+    "scale": 1.5
+  },
+  "knight": {
+    "role": "tank",
+    "atk": 6,
+    "range": 60,
+    "rate": 1.4,
+    "hp": 150,
+    "skill": "block",
+    "cost": 60,
+    "rarity": "common",
+    "spawn_weight": 35,
+    "sprite_path": "res://assets/enemies/dino1.png",
+    "scale": 1.5
+  },
+  "mage": {
+    "role": "aoe",
+    "atk": 20,
+    "range": 120,
+    "rate": 1.2,
+    "skill": "slow",
+    "cost": 80,
+    "rarity": "rare",
+    "spawn_weight": 15,
+    "sprite_path": "res://assets/enemies/dino2.png",
+    "scale": 1.5
+  },
+  "cleric": {
+    "role": "support",
+    "atk": 0,
+    "range": 120,
+    "rate": 2.0,
+    "skill": "heal",
+    "cost": 70,
+    "rarity": "rare",
+    "spawn_weight": 10,
+    "sprite_path": "res://assets/enemies/dino3.png",
+    "scale": 1.5
+  }
+}

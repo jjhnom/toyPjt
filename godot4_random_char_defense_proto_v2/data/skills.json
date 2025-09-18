@@ -1,0 +1,19 @@
+{
+  "arrow_rain": {
+    "cost": 40,
+    "cooldown": 20,
+    "aoe": 160,
+    "damage": 120
+  },
+  "global_slow": {
+    "cost": 35,
+    "cooldown": 25,
+    "duration": 5,
+    "factor": 0.6
+  },
+  "heal_gate": {
+    "cost": 30,
+    "cooldown": 30,
+    "heal": 20
+  }
+}

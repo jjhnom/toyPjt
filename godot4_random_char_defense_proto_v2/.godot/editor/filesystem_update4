@@ -1,0 +1,17 @@
+res://scenes/dice_map_decor.tscn
+res://scripts/units/Projectile.gd
+res://scenes/Main.tscn
+res://scenes/Enemy.tscn
+res://scenes/Map.tscn
+res://scenes/Projectile.tscn
+res://scripts/ui/UIManager.gd
+res://scenes/dice_rect_map.tscn
+res://scripts/core/CharacterManager.gd
+res://scripts/core/WaveManager.gd
+res://scripts/units/Character.gd
+res://scripts/units/Enemy.gd
+res://scenes/Character.tscn
+res://scripts/units/Runner.gd
+res://scripts/core/GameManager.gd
+res://scripts/core/SlotOverlay.gd
+res://scripts/core/ObjectPool.gd

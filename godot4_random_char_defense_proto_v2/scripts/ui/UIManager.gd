@@ -36,7 +36,7 @@ func bind(gm:Node) -> void:
 	
 	# 버튼들이 초기화되었는지 확인 후 연결
 	if btn_summon: 
-		btn_summon.pressed.connect(func(): $"/root/Main/GameManager/CharacterManager".summon(50))
+		btn_summon.pressed.connect(_on_summon_pressed)
 		
 	if btn_merge: 
 		btn_merge.pressed.connect(func(): pass) # tap two slots on playfield
@@ -49,6 +49,33 @@ func bind(gm:Node) -> void:
 		
 	if btn_s3: 
 		btn_s3.pressed.connect(func(): $"/root/Main/GameManager/SkillManager".use_heal_gate())
+func _on_summon_pressed() -> void:
+	var character_manager = $"/root/Main/GameManager/CharacterManager"
+	if character_manager:
+		# 빈 슬롯이 있는지 먼저 확인
+		if not character_manager.has_empty_slot():
+			# 빈 슬롯이 없으면 시각적 피드백 제공
+			_show_no_slots_feedback()
+			return
+		
+		# 빈 슬롯이 있으면 소환 실행
+		character_manager.summon(50)
+
+func _show_no_slots_feedback() -> void:
+	# 소환 버튼에 시각적 피드백 (빨간색 깜빡임)
+	if btn_summon:
+		var original_color = btn_summon.modulate
+		var tween = create_tween()
+		tween.set_loops(2)
+		tween.tween_property(btn_summon, "modulate", Color.RED, 0.1)
+		tween.tween_property(btn_summon, "modulate", original_color, 0.1)
+		
+		# 텍스트도 잠시 변경
+		var original_text = btn_summon.text
+		btn_summon.text = "슬롯 없음!"
+		await get_tree().create_timer(1.0).timeout
+		btn_summon.text = original_text
+
 func _unhandled_input(event:InputEvent) -> void:
 	# 마우스 버튼이나 터치 이벤트만 처리
 	if event is InputEventMouseButton or event is InputEventScreenTouch or event is InputEventMouseMotion or event is InputEventScreenDrag:

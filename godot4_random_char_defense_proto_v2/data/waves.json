@@ -5,9 +5,14 @@
       "timer": 30,
       "groups": [
         {
-          "enemy": "goblin",
-          "count": 10,
+          "enemy": "goblin_basic",
+          "count": 8,
           "interval": 0.6
+        },
+        {
+          "enemy": "goblin_male",
+          "count": 3,
+          "interval": 0.8
         }
       ]
     },
@@ -16,14 +21,19 @@
       "timer": 40,
       "groups": [
         {
-          "enemy": "goblin",
-          "count": 8,
-          "interval": 0.6
+          "enemy": "goblin_female",
+          "count": 6,
+          "interval": 0.5
+        },
+        {
+          "enemy": "zombie_villager_1",
+          "count": 4,
+          "interval": 1.0
         },
         {
           "enemy": "orc",
-          "count": 5,
-          "interval": 0.9
+          "count": 3,
+          "interval": 1.2
         }
       ]
     },
@@ -32,44 +42,224 @@
       "timer": 45,
       "groups": [
         {
-          "enemy": "orc",
-          "count": 12,
+          "enemy": "skeleton_warrior_1",
+          "count": 8,
           "interval": 0.8
+        },
+        {
+          "enemy": "wraith_1",
+          "count": 5,
+          "interval": 0.6
         }
       ]
     },
     {
       "id": 4,
-      "timer": 35,
+      "timer": 50,
       "groups": [
         {
-          "enemy": "troll",
-          "count": 3,
-          "interval": 1.1
+          "enemy": "skeleton_crusader_1",
+          "count": 6,
+          "interval": 1.0
+        },
+        {
+          "enemy": "satyr_1",
+          "count": 4,
+          "interval": 0.7
         }
       ]
     },
     {
       "id": 5,
-      "timer": 50,
+      "timer": 55,
       "groups": [
         {
-          "enemy": "goblin",
-          "count": 10,
-          "interval": 0.5
+          "enemy": "minotaur_1",
+          "count": 4,
+          "interval": 1.5
         },
         {
-          "enemy": "orc",
-          "count": 10,
-          "interval": 0.8
+          "enemy": "necromancer_1",
+          "count": 3,
+          "interval": 1.8
+        },
+        {
+          "enemy": "wraith_2",
+          "count": 6,
+          "interval": 0.5
         }
       ]
     },
     {
       "id": 6,
       "timer": 60,
+      "groups": [
+        {
+          "enemy": "fallen_angel_1",
+          "count": 5,
+          "interval": 1.2
+        },
+        {
+          "enemy": "valkyrie_1",
+          "count": 3,
+          "interval": 1.8
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "timer": 65,
+      "groups": [
+        {
+          "enemy": "golem_1",
+          "count": 3,
+          "interval": 2.0
+        },
+        {
+          "enemy": "dark_oracle_1",
+          "count": 4,
+          "interval": 1.5
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "timer": 70,
+      "groups": [
+        {
+          "enemy": "minotaur_2",
+          "count": 5,
+          "interval": 1.3
+        },
+        {
+          "enemy": "skeleton_warrior_2",
+          "count": 8,
+          "interval": 0.6
+        },
+        {
+          "enemy": "ogre",
+          "count": 2,
+          "interval": 2.5
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "timer": 75,
+      "groups": [
+        {
+          "enemy": "fallen_angel_2",
+          "count": 6,
+          "interval": 1.0
+        },
+        {
+          "enemy": "golem_2",
+          "count": 3,
+          "interval": 2.2
+        },
+        {
+          "enemy": "wraith_3",
+          "count": 10,
+          "interval": 0.4
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "timer": 80,
       "boss": {
-        "enemy": "dragon"
+        "enemy": "reaper_1"
+      }
+    },
+    {
+      "id": 11,
+      "timer": 85,
+      "groups": [
+        {
+          "enemy": "valkyrie_2",
+          "count": 5,
+          "interval": 1.2
+        },
+        {
+          "enemy": "minotaur_3",
+          "count": 4,
+          "interval": 1.5
+        },
+        {
+          "enemy": "necromancer_2",
+          "count": 3,
+          "interval": 2.0
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "timer": 90,
+      "groups": [
+        {
+          "enemy": "golem_3",
+          "count": 4,
+          "interval": 2.0
+        },
+        {
+          "enemy": "fallen_angel_3",
+          "count": 6,
+          "interval": 1.0
+        },
+        {
+          "enemy": "dark_oracle_2",
+          "count": 5,
+          "interval": 1.3
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "timer": 95,
+      "groups": [
+        {
+          "enemy": "valkyrie_3",
+          "count": 6,
+          "interval": 1.0
+        },
+        {
+          "enemy": "skeleton_crusader_3",
+          "count": 8,
+          "interval": 0.8
+        },
+        {
+          "enemy": "reaper_2",
+          "count": 2,
+          "interval": 3.0
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "timer": 100,
+      "groups": [
+        {
+          "enemy": "necromancer_3",
+          "count": 5,
+          "interval": 1.5
+        },
+        {
+          "enemy": "dark_oracle_3",
+          "count": 4,
+          "interval": 1.8
+        },
+        {
+          "enemy": "satyr_3",
+          "count": 10,
+          "interval": 0.5
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "timer": 120,
+      "boss": {
+        "enemy": "reaper_3"
       }
     }
   ]

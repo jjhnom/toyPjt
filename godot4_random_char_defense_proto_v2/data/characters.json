@@ -1,51 +1,96 @@
 {
   "archer": {
     "role": "dps",
-    "atk": 12,
-    "range": 140,
-    "rate": 0.9,
+    "atk": 15,
+    "range": 150,
+    "rate": 0.8,
     "skill": "pierce",
     "cost": 50,
     "rarity": "common",
-    "spawn_weight": 40,
-    "sprite_path": "res://assets/characters/archer.png",
-    "scale": 1.5
-  },
-  "knight": {
-    "role": "tank",
-    "atk": 6,
-    "range": 60,
-    "rate": 1.4,
-    "hp": 150,
-    "skill": "block",
-    "cost": 60,
-    "rarity": "common",
     "spawn_weight": 35,
-    "sprite_path": "res://assets/enemies/dino1.png",
-    "scale": 1.5
+    "sprite_path": "res://assets/characters/Archer/Archer_Idle.png",
+    "attack_sprite": "res://assets/characters/Archer/Archer_Shoot.png",
+    "run_sprite": "res://assets/characters/Archer/Archer_Run.png",
+    "projectile_sprite": "res://assets/characters/Archer/Arrow.png",
+    "scale": 0.5,
+    "animations": {
+      "idle": {"frames": 6, "fps": 6.0},
+      "attack": {"frames": 8, "fps": 12.0},
+      "run": {"frames": 4, "fps": 10.0}
+    }
   },
-  "mage": {
-    "role": "aoe",
-    "atk": 20,
+  "warrior": {
+    "role": "tank",
+    "atk": 18,
     "range": 120,
     "rate": 1.2,
-    "skill": "slow",
+    "hp": 200,
+    "skill": "guard",
+    "cost": 70,
+    "rarity": "common",
+    "spawn_weight": 30,
+    "sprite_path": "res://assets/characters/Warrior/Warrior_Idle.png",
+    "attack_sprite": "res://assets/characters/Warrior/Warrior_Attack1.png",
+    "attack2_sprite": "res://assets/characters/Warrior/Warrior_Attack2.png",
+    "guard_sprite": "res://assets/characters/Warrior/Warrior_Guard.png",
+    "run_sprite": "res://assets/characters/Warrior/Warrior_Run.png",
+    "scale": 0.5,
+    "animations": {
+      "idle": {"frames": 6, "fps": 6.0},
+      "attack": {"frames": 6, "fps": 14.0},
+      "attack2": {"frames": 6, "fps": 16.0},
+      "guard": {"frames": 4, "fps": 8.0},
+      "run": {"frames": 8, "fps": 12.0}
+    }
+  },
+  "monk": {
+    "role": "support",
+    "atk": 15,
+    "range": 120,
+    "rate": 2.5,
+    "skill": "heal",
     "cost": 80,
     "rarity": "rare",
     "spawn_weight": 15,
-    "sprite_path": "res://assets/enemies/dino2.png",
-    "scale": 1.5
+    "sprite_path": "res://assets/characters/Monk/Idle.png",
+    "heal_sprite": "res://assets/characters/Monk/Heal.png",
+    "heal_effect_sprite": "res://assets/characters/Monk/Heal_Effect.png",
+    "run_sprite": "res://assets/characters/Monk/Run.png",
+    "scale": 0.5,
+    "animations": {
+      "idle": {"frames": 6, "fps": 6.0},
+      "heal": {"frames": 8, "fps": 10.0},
+      "run": {"frames": 6, "fps": 10.0}
+    }
   },
-  "cleric": {
-    "role": "support",
-    "atk": 0,
+  "lancer": {
+    "role": "dps",
+    "atk": 22,
     "range": 120,
-    "rate": 2.0,
-    "skill": "heal",
-    "cost": 70,
+    "rate": 1.0,
+    "skill": "directional_attack",
+    "cost": 90,
     "rarity": "rare",
-    "spawn_weight": 10,
-    "sprite_path": "res://assets/enemies/dino3.png",
-    "scale": 1.5
+    "spawn_weight": 20,
+    "sprite_path": "res://assets/characters/Lancer/Lancer_Idle.png",
+    "attack_sprite": "res://assets/characters/Lancer/Lancer_Right_Attack.png",
+    "run_sprite": "res://assets/characters/Lancer/Lancer_Run.png",
+    "attack_down": "res://assets/characters/Lancer/Lancer_Down_Attack.png",
+    "attack_right": "res://assets/characters/Lancer/Lancer_Right_Attack.png",
+    "attack_up": "res://assets/characters/Lancer/Lancer_Up_Attack.png",
+    "attack_downright": "res://assets/characters/Lancer/Lancer_DownRight_Attack.png",
+    "attack_upright": "res://assets/characters/Lancer/Lancer_UpRight_Attack.png",
+    "defence_down": "res://assets/characters/Lancer/Lancer_Down_Defence.png",
+    "defence_right": "res://assets/characters/Lancer/Lancer_Right_Defence.png",
+    "defence_up": "res://assets/characters/Lancer/Lancer_Up_Defence.png",
+    "defence_downright": "res://assets/characters/Lancer/Lancer_DownRight_Defence.png",
+    "defence_upright": "res://assets/characters/Lancer/Lancer_UpRight_Defence.png",
+    "scale": 0.5,
+    "animations": {
+      "idle": {"frames": 12, "fps": 8.0},
+      "run": {"frames": 6, "fps": 12.0},
+      "attack": {"frames": 3, "fps": 16.0},
+      "defence": {"frames": 4, "fps": 8.0}
+    }
   }
 }

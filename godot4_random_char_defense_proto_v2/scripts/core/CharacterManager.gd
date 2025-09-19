@@ -11,6 +11,10 @@ var dragging_from_slot: int = -1
 var drag_offset: Vector2 = Vector2.ZERO
 var original_position: Vector2 = Vector2.ZERO
 
+# 사거리 표시 관련 변수들
+var range_indicator: Node2D = null
+var selected_character: Node2D = null
+
 func _ready() -> void:
 	# 새로운 맵의 슬롯들을 찾아서 등록
 	# Builder가 슬롯을 생성할 시간을 충분히 주기 위해 더 늦게 호출
@@ -27,6 +31,7 @@ func _setup_layer_and_slots() -> void:
 			return
 	
 	_setup_slots()
+	_create_range_indicator()
 
 func _setup_slots() -> void:
 	
@@ -55,13 +60,20 @@ func _setup_slots() -> void:
 		if child is Area2D:
 			slots.append({"pos": child.global_position, "node": null, "area": child})
 	
+# 빈 슬롯이 있는지 확인하는 공개 함수
+func has_empty_slot() -> bool:
+	return _find_empty_slot() >= 0
+
 func summon(cost:int=50) -> void:
-	
-	if not gm.spend_gold(cost): 
-		return
-	
+	# 먼저 빈 슬롯이 있는지 확인
 	var idx = _find_empty_slot()
 	if idx < 0: 
+		print("소환 실패: 빈 슬롯이 없습니다!")
+		return
+	
+	# 빈 슬롯이 있으면 골드 차감
+	if not gm.spend_gold(cost): 
+		print("소환 실패: 골드가 부족합니다!")
 		return
 	
 	var keys = data.characters.keys()
@@ -145,6 +157,9 @@ func _start_drag(pos: Vector2) -> void:
 	if idx >= 0 and slots[idx]["node"] != null:
 		var character = slots[idx]["node"] as Node2D
 		if character:
+			# 캐릭터 선택 (사거리 표시)
+			select_character(character)
+			
 			dragging_character = character
 			dragging_from_slot = idx
 			original_position = character.global_position
@@ -155,6 +170,9 @@ func _start_drag(pos: Vector2) -> void:
 			
 			# 원래 슬롯에서 제거 (임시)
 			slots[idx]["node"] = null
+	else:
+		# 빈 공간 클릭 시 선택 해제
+		deselect_character()
 
 func _update_drag(pos: Vector2) -> void:
 	if dragging_character:
@@ -173,6 +191,10 @@ func _end_drag(pos: Vector2) -> void:
 		dragging_character.global_position = slots[target_idx]["pos"]
 		dragging_character.z_index = 0  # z_index 원복
 		
+		# 사거리 표시기 위치 업데이트
+		if selected_character == dragging_character:
+			_update_range_indicator_position()
+		
 		# 성공적으로 이동했으므로 원래 슬롯은 비워둠
 		
 	elif target_idx >= 0 and slots[target_idx]["node"] != null:
@@ -182,8 +204,8 @@ func _end_drag(pos: Vector2) -> void:
 			# 합성 가능
 			_perform_merge(dragging_from_slot, target_idx, dragging_character, target_character)
 		else:
-			# 합성 불가능 - 원래 위치로 복귀
-			_return_to_original_position()
+			# 합성 불가능 - 위치 교체
+			_perform_swap(dragging_from_slot, target_idx, dragging_character, target_character)
 	else:
 		# 유효하지 않은 위치 - 원래 위치로 복귀
 		_return_to_original_position()
@@ -199,6 +221,33 @@ func _return_to_original_position() -> void:
 		slots[dragging_from_slot]["node"] = dragging_character
 		dragging_character.global_position = slots[dragging_from_slot]["pos"]
 		dragging_character.z_index = 0
+
+# 두 캐릭터의 위치를 교체하는 함수
+func _perform_swap(from_slot: int, to_slot: int, dragging_char: Node2D, target_char: Node2D) -> void:
+	if from_slot < 0 or to_slot < 0 or from_slot >= slots.size() or to_slot >= slots.size():
+		return
+	
+	# 슬롯 정보 교체
+	slots[from_slot]["node"] = target_char
+	slots[to_slot]["node"] = dragging_char
+	
+	# 위치 이동
+	target_char.global_position = slots[from_slot]["pos"]
+	dragging_char.global_position = slots[to_slot]["pos"]
+	
+	# z_index 원복
+	target_char.z_index = 0
+	dragging_char.z_index = 0
+	
+	# 사거리 표시기 위치 업데이트
+	if selected_character == dragging_char:
+		_update_range_indicator_position()
+	elif selected_character == target_char:
+		_update_range_indicator_position()
+	
+	print("캐릭터 위치 교체: %s (%d슬롯) ↔ %s (%d슬롯)" % [
+		dragging_char.id, to_slot, target_char.id, from_slot
+	])
 func _try_merge(a:int, b:int) -> void:
 	if slots[a]["node"] == null or slots[b]["node"] == null: return
 	var A = slots[a]["node"]; var B = slots[b]["node"]
@@ -206,7 +255,7 @@ func _try_merge(a:int, b:int) -> void:
 		_perform_merge(a, b, A, B)
 func _slot_at(p:Vector2) -> int:
 	for i in slots.size():
-		if slots[i]["pos"].distance_to(p) < 32.0: return i  # 타일 크기 32px 기준
+		if slots[i]["pos"].distance_to(p) < 60.0: return i  # 더 큰 슬롯 크기에 맞춤 (120px 타일 기준)
 	return -1
 func _find_empty_slot() -> int:
 	for i in slots.size():
@@ -268,6 +317,62 @@ func _perform_merge(from_slot: int, to_slot: int, char_a: Node2D, char_b: Node2D
 	
 	# 합성 이펙트
 	_play_merge_effect(c)
+
+# 사거리 표시기 생성
+func _create_range_indicator() -> void:
+	if not layer:
+		return
+	
+	range_indicator = RangeIndicator.new()
+	range_indicator.name = "RangeIndicator"
+	range_indicator.visible = false
+	layer.add_child(range_indicator)
+
+# 사거리 원 그리기
+func _draw_range_circle(character: Node2D) -> void:
+	if not range_indicator or not character:
+		return
+	
+	# 사거리 정보 전달
+	range_indicator.set_character_range(character.range)
+	range_indicator.global_position = character.global_position
+
+# 캐릭터 선택
+func select_character(character: Node2D) -> void:
+	# 이전 선택 해제
+	deselect_character()
+	
+	if character:
+		selected_character = character
+		_show_range_indicator(character)
+		print("캐릭터 선택됨: %s (사거리: %.1f)" % [character.id, character.range])
+
+# 캐릭터 선택 해제
+func deselect_character() -> void:
+	if selected_character:
+		print("캐릭터 선택 해제됨: %s" % selected_character.id)
+	
+	selected_character = null
+	_hide_range_indicator()
+
+# 사거리 표시기 보이기
+func _show_range_indicator(character: Node2D) -> void:
+	if not range_indicator or not character:
+		return
+	
+	range_indicator.global_position = character.global_position
+	range_indicator.visible = true
+	_draw_range_circle(character)
+
+# 사거리 표시기 숨기기
+func _hide_range_indicator() -> void:
+	if range_indicator:
+		range_indicator.visible = false
+
+# 사거리 표시기 위치 업데이트
+func _update_range_indicator_position() -> void:
+	if range_indicator and selected_character:
+		range_indicator.global_position = selected_character.global_position
 
 func _play_merge_effect(character: Node2D) -> void:
 	if not character:

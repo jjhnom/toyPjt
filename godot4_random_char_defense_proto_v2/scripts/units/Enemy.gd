@@ -109,6 +109,94 @@ func _setup_animation(sprite_strip_path: String) -> void:
 	sprite.animation = anim_name
 	sprite.play()
 
+# 개별 이미지 파일들로 walking 애니메이션 구성
+func _setup_walking_animation(walking_folder: String, conf: Dictionary) -> void:
+	if not sprite:
+		return
+	
+	# 캐시 키 생성
+	var cache_key = walking_folder
+	if _frames_cache.has(cache_key):
+		sprite.sprite_frames = _frames_cache[cache_key]
+		sprite.animation = anim_name
+		sprite.play()
+		return
+	
+	# 애니메이션 정보 가져오기
+	var animations = conf.get("animations", {})
+	var walking_info = animations.get("walking", {"frames": 24, "fps": 12.0})
+	var frame_count = walking_info.get("frames", 24)
+	var fps_value = walking_info.get("fps", 12.0)
+	
+	var frames := SpriteFrames.new()
+	frames.add_animation(anim_name)
+	frames.set_animation_speed(anim_name, fps_value)
+	
+	# 각 프레임 이미지 로드
+	var loaded_count = 0
+	for i in range(frame_count):
+		var frame_path = ""
+		
+		# 파일명 패턴 확인 (여러 형태 지원)
+		if walking_folder.contains("Male Goblin") or walking_folder.contains("Female Goblin"):
+			# "Right - Walking_000.png" 형태
+			frame_path = walking_folder + ("Right - Walking_%03d.png" % i)
+		else:
+			# "0_Enemy_Walking_000.png" 형태
+			var enemy_name = ""
+			if walking_folder.contains("Goblin"):
+				enemy_name = "Goblin"
+			elif walking_folder.contains("Orc"):
+				enemy_name = "Orc"
+			elif walking_folder.contains("Skeleton_Warrior"):
+				enemy_name = "Skeleton_Warrior"
+			elif walking_folder.contains("Skeleton_Crusader"):
+				enemy_name = "Skeleton_Crusader"
+			elif walking_folder.contains("Minotaur"):
+				enemy_name = "Minotaur"
+			elif walking_folder.contains("Golem"):
+				enemy_name = "Golem"
+			elif walking_folder.contains("Ogre"):
+				enemy_name = "Ogre"
+			elif walking_folder.contains("Wraith"):
+				enemy_name = "Wraith"
+			elif walking_folder.contains("Necromancer"):
+				enemy_name = "Necromancer"
+			elif walking_folder.contains("Fallen_Angels"):
+				enemy_name = "Fallen_Angels"
+			elif walking_folder.contains("Valkyrie"):
+				enemy_name = "Valkyrie"
+			elif walking_folder.contains("Reaper"):
+				enemy_name = "Reaper_Man"
+			elif walking_folder.contains("Zombie_Villager"):
+				enemy_name = "Zombie_Villager"
+			elif walking_folder.contains("Dark_Oracle"):
+				enemy_name = "Dark_Oracle"
+			elif walking_folder.contains("Satyr"):
+				enemy_name = "Satyr"
+			
+			frame_path = walking_folder + ("0_%s_Walking_%03d.png" % [enemy_name, i])
+		
+		var tex = load(frame_path) as Texture2D
+		if tex:
+			frames.add_frame(anim_name, tex)
+			loaded_count += 1
+		else:
+			print("프레임 로드 실패: %s" % frame_path)
+	
+	if loaded_count > 0:
+		_frames_cache[cache_key] = frames
+		sprite.sprite_frames = frames
+		sprite.animation = anim_name
+		sprite.play()
+		print("%s: %d개 프레임 로드 완료" % [walking_folder, loaded_count])
+	else:
+		print("애니메이션 로드 실패: %s" % walking_folder)
+		# 백업으로 기존 방식 사용
+		var sprite_path = conf.get("sprite_path", "")
+		if sprite_path != "":
+			_setup_animation(sprite_path)
+
 func _process(delta: float) -> void:
 	if state != State.walking or is_destroyed:
 		return
@@ -170,14 +258,24 @@ func init_from_config(conf: Dictionary) -> void:
 	reward = conf.get("reward", reward)
 	base_damage = conf.get("base_damage", base_damage)
 
-	# 스프라이트 경로를 직접 읽어오기
-	var sprite_path = conf.get("sprite_path", "")
-	if sprite_path != "":
-		_setup_animation(sprite_path)
+	# walking_folder가 있으면 개별 이미지 파일들로 애니메이션 구성
+	var walking_folder = conf.get("walking_folder", "")
+	if walking_folder != "":
+		_setup_walking_animation(walking_folder, conf)
 	else:
-		# 백업으로 type 사용
-		var t = conf.get("type", "dino1")
-		_set_enemy_sprite(t)
+		# 스프라이트 경로를 직접 읽어오기 (기존 방식)
+		var sprite_path = conf.get("sprite_path", "")
+		if sprite_path != "":
+			_setup_animation(sprite_path)
+		else:
+			# 백업으로 type 사용
+			var t = conf.get("type", "dino1")
+			_set_enemy_sprite(t)
+
+	# 스케일 적용
+	var scale_value = conf.get("scale", 1.0)
+	if sprite:
+		sprite.scale = Vector2(scale_value, scale_value)
 
 	# 특정 프레임 시작(옵션)
 	var frame_index = conf.get("frame", null)

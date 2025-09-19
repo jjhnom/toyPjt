@@ -6,9 +6,9 @@
 script/source = "extends Node
 
 # ===== Board Config =====
-@export var cols := 10
-@export var rows := 16
-@export var tile := 32
+@export var cols := 8
+@export var rows := 8
+@export var tile := 90
 @export var margin := 1
 @export var random_seed := 1
 
@@ -104,7 +104,7 @@ func _ready():
 			a.position = Vector2((v.x+0.5)*tile, (v.y+0.5)*tile)
 			var cs := CollisionShape2D.new()
 			var shp := RectangleShape2D.new()
-			shp.size = Vector2(tile*0.8, tile*0.8)
+			shp.size = Vector2(tile*0.9, tile*0.9)
 			cs.shape = shp
 			a.add_child(cs)
 			slots_root.add_child(a)

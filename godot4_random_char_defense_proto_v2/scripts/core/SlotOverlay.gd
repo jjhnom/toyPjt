@@ -6,7 +6,7 @@ extends Node2D
 @export var outline_color : Color = Color(0.2, 0.8, 1.0, 0.9)
 @export var outline_px : float = 1.0
 @export var use_collision_shapes := true
-@export var default_size := Vector2(32 * 0.8, 32 * 0.8)
+@export var default_size := Vector2(90 * 0.8, 90 * 0.8)
 @export var only_in_editor := false
 @export var target_slots_path: NodePath = NodePath("Slots")
 

@@ -59,10 +59,14 @@ func _setup_animation(sprite_strip_path: String) -> void:
 	if not sprite:
 		return
 	
+	# 스프라이트 경로에 따라 애니메이션 이름 결정
+	var animation_name = _get_animation_name_from_path(sprite_strip_path)
+	
 	# 캐시 먼저 확인
-	if _frames_cache.has(sprite_strip_path):
-		sprite.sprite_frames = _frames_cache[sprite_strip_path]
-		sprite.animation = anim_name
+	var cache_key = sprite_strip_path + "_" + animation_name
+	if _frames_cache.has(cache_key):
+		sprite.sprite_frames = _frames_cache[cache_key]
+		sprite.animation = animation_name
 		sprite.play()
 		return
 
@@ -71,8 +75,11 @@ func _setup_animation(sprite_strip_path: String) -> void:
 		return
 
 	var frames := SpriteFrames.new()
-	frames.add_animation(anim_name)
-	frames.set_animation_speed(anim_name, fps)
+	frames.add_animation(animation_name)
+	
+	# 애니메이션별 FPS 설정
+	var animation_fps = _get_animation_fps(animation_name)
+	frames.set_animation_speed(animation_name, animation_fps)
 
 	# 새로운 캐릭터들의 프레임 정보
 	var frame_width: int
@@ -144,12 +151,12 @@ func _setup_animation(sprite_strip_path: String) -> void:
 			  [character_name, tex.get_width(), tex.get_height(), estimated_cols, cols, frame_width, frame_height])
 			  
 	elif sprite_strip_path.contains("Monk"):
-		# Monk 애니메이션들 - 현재 잘 작동하므로 유지
+		# Monk 애니메이션들
 		frame_height = tex.get_height()
 		if sprite_strip_path.contains("Heal") and not sprite_strip_path.contains("Effect"):
-			# Heal: 8프레임
-			frame_width = tex.get_width() / 8
-			cols = 8
+			# Heal: 11프레임
+			frame_width = tex.get_width() / 11
+			cols = 11
 		else:
 			# Idle, Run: 6프레임
 			frame_width = tex.get_width() / 6
@@ -177,13 +184,36 @@ func _setup_animation(sprite_strip_path: String) -> void:
 			var atlas := AtlasTexture.new()
 			atlas.atlas = tex
 			atlas.region = Rect2(col * frame_width, row * frame_height, frame_width, frame_height)
-			frames.add_frame(anim_name, atlas)
+			frames.add_frame(animation_name, atlas)
 
-	_frames_cache[sprite_strip_path] = frames
+	_frames_cache[cache_key] = frames
 
 	sprite.sprite_frames = frames
-	sprite.animation = anim_name
+	sprite.animation = animation_name
 	sprite.play()
+
+# 스프라이트 경로에서 애니메이션 이름을 추출하는 함수
+func _get_animation_name_from_path(sprite_path: String) -> String:
+	var filename = sprite_path.get_file().get_basename().to_lower()
+	
+	if "attack" in filename:
+		return "attack"
+	elif "heal" in filename:
+		return "heal"
+	elif "run" in filename:
+		return "run"
+	elif "guard" in filename or "defence" in filename:
+		return "guard"
+	else:
+		return "idle"
+
+# 애니메이션별 FPS를 가져오는 함수
+func _get_animation_fps(animation_name: String) -> float:
+	var config = _get_character_config()
+	var animations = config.get("animations", {})
+	var anim_data = animations.get(animation_name, {"fps": 8.0})
+	return anim_data.get("fps", 8.0)
+
 
 func _set_character_sprite_backup(character_id: String) -> void:
 	# 백업용 기본 애니메이션 스프라이트 경로들

@@ -8,7 +8,7 @@
     "base_damage": 5,
     "sprite_path": "res://assets/enemies/Goblin/Walking/0_Goblin_Walking_000.png",
     "walking_folder": "res://assets/enemies/Goblin/Walking/",
-    "scale": 0.4,
+    "scale": 0.08,
     "animations": {
       "walking": {"frames": 24, "fps": 12.0}
     }
@@ -22,7 +22,7 @@
     "base_damage": 6,
     "sprite_path": "res://assets/enemies/Male Goblin/Walking/Right - Walking_000.png",
     "walking_folder": "res://assets/enemies/Male Goblin/Walking/",
-    "scale": 0.42,
+    "scale": 0.148,
     "animations": {
       "walking": {"frames": 20, "fps": 12.0}
     }
@@ -36,7 +36,7 @@
     "base_damage": 5,
     "sprite_path": "res://assets/enemies/Female Goblin/Walking/Right - Walking_000.png",
     "walking_folder": "res://assets/enemies/Female Goblin/Walking/",
-    "scale": 0.37,
+    "scale": 0.148,
     "animations": {
       "walking": {"frames": 20, "fps": 13.0}
     }
@@ -50,7 +50,7 @@
     "base_damage": 8,
     "sprite_path": "res://assets/enemies/Orc/Walking/0_Orc_Walking_000.png",
     "walking_folder": "res://assets/enemies/Orc/Walking/",
-    "scale": 0.5,
+    "scale": 0.1,
     "animations": {
       "walking": {"frames": 24, "fps": 10.0}
     }
@@ -64,7 +64,7 @@
     "base_damage": 10,
     "sprite_path": "res://assets/enemies/Skeleton_Warrior_1/Walking/0_Skeleton_Warrior_Walking_000.png",
     "walking_folder": "res://assets/enemies/Skeleton_Warrior_1/Walking/",
-    "scale": 0.45,
+    "scale": 0.09,
     "animations": {
       "walking": {"frames": 24, "fps": 11.0}
     }
@@ -78,7 +78,7 @@
     "base_damage": 11,
     "sprite_path": "res://assets/enemies/Skeleton_Warrior_2/Walking/0_Skeleton_Warrior_Walking_000.png",
     "walking_folder": "res://assets/enemies/Skeleton_Warrior_2/Walking/",
-    "scale": 0.47,
+    "scale": 0.094,
     "animations": {
       "walking": {"frames": 24, "fps": 11.0}
     }
@@ -92,7 +92,7 @@
     "base_damage": 12,
     "sprite_path": "res://assets/enemies/Skeleton_Warrior_3/Walking/0_Skeleton_Warrior_Walking_000.png",
     "walking_folder": "res://assets/enemies/Skeleton_Warrior_3/Walking/",
-    "scale": 0.5,
+    "scale": 0.1,
     "animations": {
       "walking": {"frames": 24, "fps": 11.0}
     }
@@ -106,7 +106,7 @@
     "base_damage": 15,
     "sprite_path": "res://assets/enemies/Skeleton_Crusader_1/Walking/0_Skeleton_Crusader_Walking_000.png",
     "walking_folder": "res://assets/enemies/Skeleton_Crusader_1/Walking/",
-    "scale": 0.55,
+    "scale": 0.11,
     "animations": {
       "walking": {"frames": 24, "fps": 9.0}
     }
@@ -120,7 +120,7 @@
     "base_damage": 16,
     "sprite_path": "res://assets/enemies/Skeleton_Crusader_2/Walking/0_Skeleton_Crusader_Walking_000.png",
     "walking_folder": "res://assets/enemies/Skeleton_Crusader_2/Walking/",
-    "scale": 0.57,
+    "scale": 0.114,
     "animations": {
       "walking": {"frames": 24, "fps": 9.0}
     }
@@ -134,7 +134,7 @@
     "base_damage": 17,
     "sprite_path": "res://assets/enemies/Skeleton_Crusader_3/Walking/0_Skeleton_Crusader_Walking_000.png",
     "walking_folder": "res://assets/enemies/Skeleton_Crusader_3/Walking/",
-    "scale": 0.6,
+    "scale": 0.12,
     "animations": {
       "walking": {"frames": 24, "fps": 9.0}
     }
@@ -148,7 +148,7 @@
     "base_damage": 20,
     "sprite_path": "res://assets/enemies/Minotaur_1/Walking/0_Minotaur_Walking_000.png",
     "walking_folder": "res://assets/enemies/Minotaur_1/Walking/",
-    "scale": 0.65,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -162,7 +162,7 @@
     "base_damage": 22,
     "sprite_path": "res://assets/enemies/Minotaur_2/Walking/0_Minotaur_Walking_000.png",
     "walking_folder": "res://assets/enemies/Minotaur_2/Walking/",
-    "scale": 0.67,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -176,7 +176,7 @@
     "base_damage": 24,
     "sprite_path": "res://assets/enemies/Minotaur_3/Walking/0_Minotaur_Walking_000.png",
     "walking_folder": "res://assets/enemies/Minotaur_3/Walking/",
-    "scale": 0.7,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -190,7 +190,7 @@
     "base_damage": 30,
     "sprite_path": "res://assets/enemies/Golem_1/Walking/0_Golem_Walking_000.png",
     "walking_folder": "res://assets/enemies/Golem_1/Walking/",
-    "scale": 0.75,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 6.0}
     }
@@ -204,7 +204,7 @@
     "base_damage": 32,
     "sprite_path": "res://assets/enemies/Golem_2/Walking/0_Golem_Walking_000.png",
     "walking_folder": "res://assets/enemies/Golem_2/Walking/",
-    "scale": 0.8,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 6.0}
     }
@@ -218,7 +218,7 @@
     "base_damage": 34,
     "sprite_path": "res://assets/enemies/Golem_3/Walking/0_Golem_Walking_000.png",
     "walking_folder": "res://assets/enemies/Golem_3/Walking/",
-    "scale": 0.85,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 6.0}
     }
@@ -232,7 +232,7 @@
     "base_damage": 25,
     "sprite_path": "res://assets/enemies/Ogre/Walking/0_Ogre_Walking_000.png",
     "walking_folder": "res://assets/enemies/Ogre/Walking/",
-    "scale": 0.7,
+    "scale": 0.14,
     "animations": {
       "walking": {"frames": 24, "fps": 7.0}
     }
@@ -246,7 +246,7 @@
     "base_damage": 12,
     "sprite_path": "res://assets/enemies/Wraith_01/Walking/0_Wraith_Walking_000.png",
     "walking_folder": "res://assets/enemies/Wraith_01/Walking/",
-    "scale": 0.45,
+    "scale": 0.09,
     "animations": {
       "walking": {"frames": 24, "fps": 14.0}
     }
@@ -260,7 +260,7 @@
     "base_damage": 13,
     "sprite_path": "res://assets/enemies/Wraith_02/Walking/0_Wraith_Walking_000.png",
     "walking_folder": "res://assets/enemies/Wraith_02/Walking/",
-    "scale": 0.47,
+    "scale": 0.094,
     "animations": {
       "walking": {"frames": 24, "fps": 15.0}
     }
@@ -274,7 +274,7 @@
     "base_damage": 14,
     "sprite_path": "res://assets/enemies/Wraith_03/Walking/0_Wraith_Walking_000.png",
     "walking_folder": "res://assets/enemies/Wraith_03/Walking/",
-    "scale": 0.5,
+    "scale": 0.1,
     "animations": {
       "walking": {"frames": 24, "fps": 16.0}
     }
@@ -288,7 +288,7 @@
     "base_damage": 18,
     "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_1/Walking/0_Necromancer_Walking_000.png",
     "walking_folder": "res://assets/enemies/Necromancer_of_the_Shadow_1/Walking/",
-    "scale": 0.55,
+    "scale": 0.11,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -302,7 +302,7 @@
     "base_damage": 20,
     "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_2/Walking/0_Necromancer_Walking_000.png",
     "walking_folder": "res://assets/enemies/Necromancer_of_the_Shadow_2/Walking/",
-    "scale": 0.57,
+    "scale": 0.114,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -316,7 +316,7 @@
     "base_damage": 22,
     "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_3/Walking/0_Necromancer_Walking_000.png",
     "walking_folder": "res://assets/enemies/Necromancer_of_the_Shadow_3/Walking/",
-    "scale": 0.6,
+    "scale": 0.12,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -330,7 +330,7 @@
     "base_damage": 22,
     "sprite_path": "res://assets/enemies/Fallen_Angels_1/Walking/0_Fallen_Angels_Walking_000.png",
     "walking_folder": "res://assets/enemies/Fallen_Angels_1/Walking/",
-    "scale": 0.6,
+    "scale": 0.12,
     "animations": {
       "walking": {"frames": 24, "fps": 10.0}
     }
@@ -344,7 +344,7 @@
     "base_damage": 24,
     "sprite_path": "res://assets/enemies/Fallen_Angels_2/Walking/0_Fallen_Angels_Walking_000.png",
     "walking_folder": "res://assets/enemies/Fallen_Angels_2/Walking/",
-    "scale": 0.62,
+    "scale": 0.124,
     "animations": {
       "walking": {"frames": 24, "fps": 10.0}
     }
@@ -358,7 +358,7 @@
     "base_damage": 26,
     "sprite_path": "res://assets/enemies/Fallen_Angels_3/Walking/0_Fallen_Angels_Walking_000.png",
     "walking_folder": "res://assets/enemies/Fallen_Angels_3/Walking/",
-    "scale": 0.65,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 10.0}
     }
@@ -372,7 +372,7 @@
     "base_damage": 28,
     "sprite_path": "res://assets/enemies/Valkyrie_1/Walking/0_Valkyrie_Walking_000.png",
     "walking_folder": "res://assets/enemies/Valkyrie_1/Walking/",
-    "scale": 0.62,
+    "scale": 0.124,
     "animations": {
       "walking": {"frames": 24, "fps": 11.0}
     }
@@ -386,7 +386,7 @@
     "base_damage": 30,
     "sprite_path": "res://assets/enemies/Valkyrie_2/Walking/0_Valkyrie_Walking_000.png",
     "walking_folder": "res://assets/enemies/Valkyrie_2/Walking/",
-    "scale": 0.65,
+    "scale": 0.13,
     "animations": {
       "walking": {"frames": 24, "fps": 11.0}
     }
@@ -400,7 +400,7 @@
     "base_damage": 32,
     "sprite_path": "res://assets/enemies/Valkyrie_3/Walking/0_Valkyrie_Walking_000.png",
     "walking_folder": "res://assets/enemies/Valkyrie_3/Walking/",
-    "scale": 0.67,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 11.0}
     }
@@ -414,7 +414,7 @@
     "base_damage": 35,
     "sprite_path": "res://assets/enemies/Reaper_Man_1/Walking/0_Reaper_Man_Walking_000.png",
     "walking_folder": "res://assets/enemies/Reaper_Man_1/Walking/",
-    "scale": 0.8,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 9.0}
     }
@@ -428,7 +428,7 @@
     "base_damage": 37,
     "sprite_path": "res://assets/enemies/Reaper_Man_2/Walking/0_Reaper_Man_Walking_000.png",
     "walking_folder": "res://assets/enemies/Reaper_Man_2/Walking/",
-    "scale": 0.85,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 9.0}
     }
@@ -442,7 +442,7 @@
     "base_damage": 39,
     "sprite_path": "res://assets/enemies/Reaper_Man_3/Walking/0_Reaper_Man_Walking_000.png",
     "walking_folder": "res://assets/enemies/Reaper_Man_3/Walking/",
-    "scale": 0.9,
+    "scale": 0.125,
     "animations": {
       "walking": {"frames": 24, "fps": 9.0}
     }
@@ -456,7 +456,7 @@
     "base_damage": 6,
     "sprite_path": "res://assets/enemies/Zombie_Villager_1/Walking/0_Zombie_Villager_Walking_000.png",
     "walking_folder": "res://assets/enemies/Zombie_Villager_1/Walking/",
-    "scale": 0.42,
+    "scale": 0.084,
     "animations": {
       "walking": {"frames": 24, "fps": 6.0}
     }
@@ -470,7 +470,7 @@
     "base_damage": 7,
     "sprite_path": "res://assets/enemies/Zombie_Villager_2/Walking/0_Zombie_Villager_Walking_000.png",
     "walking_folder": "res://assets/enemies/Zombie_Villager_2/Walking/",
-    "scale": 0.45,
+    "scale": 0.09,
     "animations": {
       "walking": {"frames": 24, "fps": 6.0}
     }
@@ -484,7 +484,7 @@
     "base_damage": 8,
     "sprite_path": "res://assets/enemies/Zombie_Villager_3/Walking/0_Zombie_Villager_Walking_000.png",
     "walking_folder": "res://assets/enemies/Zombie_Villager_3/Walking/",
-    "scale": 0.47,
+    "scale": 0.094,
     "animations": {
       "walking": {"frames": 24, "fps": 6.0}
     }
@@ -498,7 +498,7 @@
     "base_damage": 24,
     "sprite_path": "res://assets/enemies/Dark_Oracle_1/Walking/0_Dark_Oracle_Walking_000.png",
     "walking_folder": "res://assets/enemies/Dark_Oracle_1/Walking/",
-    "scale": 0.57,
+    "scale": 0.114,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -512,7 +512,7 @@
     "base_damage": 26,
     "sprite_path": "res://assets/enemies/Dark_Oracle_2/Walking/0_Dark_Oracle_Walking_000.png",
     "walking_folder": "res://assets/enemies/Dark_Oracle_2/Walking/",
-    "scale": 0.6,
+    "scale": 0.12,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -526,7 +526,7 @@
     "base_damage": 28,
     "sprite_path": "res://assets/enemies/Dark_Oracle_3/Walking/0_Dark_Oracle_Walking_000.png",
     "walking_folder": "res://assets/enemies/Dark_Oracle_3/Walking/",
-    "scale": 0.62,
+    "scale": 0.124,
     "animations": {
       "walking": {"frames": 24, "fps": 8.0}
     }
@@ -540,7 +540,7 @@
     "base_damage": 14,
     "sprite_path": "res://assets/enemies/Satyr_01/Walking/0_Satyr_Walking_000.png",
     "walking_folder": "res://assets/enemies/Satyr_01/Walking/",
-    "scale": 0.5,
+    "scale": 0.1,
     "animations": {
       "walking": {"frames": 24, "fps": 12.0}
     }
@@ -554,7 +554,7 @@
     "base_damage": 15,
     "sprite_path": "res://assets/enemies/Satyr_02/Walking/0_Satyr_Walking_000.png",
     "walking_folder": "res://assets/enemies/Satyr_02/Walking/",
-    "scale": 0.52,
+    "scale": 0.104,
     "animations": {
       "walking": {"frames": 24, "fps": 12.0}
     }
@@ -568,7 +568,7 @@
     "base_damage": 16,
     "sprite_path": "res://assets/enemies/Satyr_03/Walking/0_Satyr_Walking_000.png",
     "walking_folder": "res://assets/enemies/Satyr_03/Walking/",
-    "scale": 0.55,
+    "scale": 0.11,
     "animations": {
       "walking": {"frames": 24, "fps": 12.0}
     }

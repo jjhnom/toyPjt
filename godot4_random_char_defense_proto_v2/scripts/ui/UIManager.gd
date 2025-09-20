@@ -4,10 +4,10 @@ extends Node
 @onready var wave_label:Label = $HUD/Wave
 @onready var timer_label:Label = $HUD/Timer
 @onready var btn_summon:Button = $HUD/Summon
-@onready var btn_merge:Button = $HUD/Merge
 @onready var btn_s1:Button = $HUD/Skill1
 @onready var btn_s2:Button = $HUD/Skill2
 @onready var btn_s3:Button = $HUD/Skill3
+@onready var btn_sell:Button = $HUD/Sell
 
 func _ready() -> void:
 	pass
@@ -38,9 +38,6 @@ func bind(gm:Node) -> void:
 	if btn_summon: 
 		btn_summon.pressed.connect(_on_summon_pressed)
 		
-	if btn_merge: 
-		btn_merge.pressed.connect(func(): pass) # tap two slots on playfield
-		
 	if btn_s1: 
 		btn_s1.pressed.connect(func(): $"/root/Main/GameManager/SkillManager".use_arrow_rain())
 		
@@ -49,6 +46,9 @@ func bind(gm:Node) -> void:
 		
 	if btn_s3: 
 		btn_s3.pressed.connect(func(): $"/root/Main/GameManager/SkillManager".use_heal_gate())
+		
+	if btn_sell:
+		btn_sell.pressed.connect(_on_sell_pressed)
 func _on_summon_pressed() -> void:
 	var character_manager = $"/root/Main/GameManager/CharacterManager"
 	if character_manager:
@@ -75,6 +75,46 @@ func _show_no_slots_feedback() -> void:
 		btn_summon.text = "슬롯 없음!"
 		await get_tree().create_timer(1.0).timeout
 		btn_summon.text = original_text
+
+func _on_sell_pressed() -> void:
+	var character_manager = $"/root/Main/GameManager/CharacterManager"
+	if character_manager:
+		# 선택된 캐릭터가 있는지 확인
+		var sell_price = character_manager.sell_selected_character()
+		if sell_price > 0:
+			_show_sell_feedback(sell_price)
+		else:
+			_show_no_selection_feedback()
+
+func _show_sell_feedback(price: int) -> void:
+	# 판매 성공 피드백 (초록색 깜빡임)
+	if btn_sell:
+		var original_color = btn_sell.modulate
+		var tween = create_tween()
+		tween.set_loops(2)
+		tween.tween_property(btn_sell, "modulate", Color.GREEN, 0.1)
+		tween.tween_property(btn_sell, "modulate", original_color, 0.1)
+		
+		# 텍스트도 잠시 변경
+		var original_text = btn_sell.text
+		btn_sell.text = "+%d골드!" % price
+		await get_tree().create_timer(1.0).timeout
+		btn_sell.text = original_text
+
+func _show_no_selection_feedback() -> void:
+	# 선택된 캐릭터가 없을 때 피드백 (빨간색 깜빡임)
+	if btn_sell:
+		var original_color = btn_sell.modulate
+		var tween = create_tween()
+		tween.set_loops(2)
+		tween.tween_property(btn_sell, "modulate", Color.RED, 0.1)
+		tween.tween_property(btn_sell, "modulate", original_color, 0.1)
+		
+		# 텍스트도 잠시 변경
+		var original_text = btn_sell.text
+		btn_sell.text = "선택 필요!"
+		await get_tree().create_timer(1.0).timeout
+		btn_sell.text = original_text
 
 func _unhandled_input(event:InputEvent) -> void:
 	# 마우스 버튼이나 터치 이벤트만 처리

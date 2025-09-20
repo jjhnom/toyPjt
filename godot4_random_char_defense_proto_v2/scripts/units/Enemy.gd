@@ -44,6 +44,10 @@ func _ready() -> void:
 	
 	# sprite 노드 찾기
 	sprite = get_node("AnimatedSprite2D")
+	
+	# 스프라이트가 타일 위에 보이도록 z_index 설정
+	if sprite:
+		sprite.z_index = 1
 
 	# Path2D 길이 캐싱
 	var p := get_parent()

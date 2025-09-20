@@ -23,11 +23,12 @@ func _ready() -> void:
 
 func _setup_layer_and_slots() -> void:
 	# CharacterLayer 찾기
-	layer = get_node_or_null("../Map/CharacterLayer")
+	layer = get_node_or_null("/root/Main/Map/CharacterLayer")
 	if not layer:
 		# 대안 경로 시도
 		layer = get_node_or_null("../../Map/CharacterLayer")
 		if not layer:
+			print("WARNING: CharacterLayer를 찾을 수 없습니다")
 			return
 	
 	_setup_slots()
@@ -36,12 +37,12 @@ func _setup_layer_and_slots() -> void:
 func _setup_slots() -> void:
 	
 	# 여러 경로 시도
-	var slots_root = get_node_or_null("../Map/Slots")
+	var slots_root = get_node_or_null("/root/Main/Map/Slots")
 	if not slots_root:
 		slots_root = get_node_or_null("../../Map/Slots")
 		if not slots_root:
 			# Map의 자식들을 확인
-			var map_node = get_node_or_null("../Map") or get_node_or_null("../../Map")
+			var map_node = get_node_or_null("/root/Main/Map")
 			if map_node:
 				# 직접 Slots 찾기
 				for child in map_node.get_children():
@@ -49,6 +50,7 @@ func _setup_slots() -> void:
 						slots_root = child
 						break
 			else:
+				print("WARNING: Map 노드를 찾을 수 없습니다")
 				return
 	
 	if not slots_root:
@@ -63,6 +65,66 @@ func _setup_slots() -> void:
 # 빈 슬롯이 있는지 확인하는 공개 함수
 func has_empty_slot() -> bool:
 	return _find_empty_slot() >= 0
+
+# 캐릭터 판매 기능
+func sell_character_at(slot_index: int) -> int:
+	if slot_index < 0 or slot_index >= slots.size():
+		return 0
+	
+	var character = slots[slot_index]["node"]
+	if not character:
+		return 0
+	
+	# 캐릭터의 판매 가격 계산 (구매가의 절반)
+	var sell_price = _calculate_sell_price(character)
+	
+	# 판매하는 캐릭터가 선택된 캐릭터인지 확인
+	if selected_character == character:
+		selected_character = null
+		if range_indicator:
+			range_indicator.visible = false
+	
+	# 선택된 슬롯 인덱스 업데이트
+	if selected == slot_index:
+		selected = -1
+	
+	# 캐릭터 제거
+	character.queue_free()
+	slots[slot_index]["node"] = null
+	
+	# 골드 지급
+	if gm:
+		gm.add_gold(sell_price)
+	
+	print("캐릭터 판매: %s (레벨 %d) - %d골드 획득" % [character.id, character.level, sell_price])
+	return sell_price
+
+# 캐릭터 판매 가격 계산
+func _calculate_sell_price(character: Node2D) -> int:
+	if not character:
+		return 0
+	
+	# 기본 캐릭터 비용
+	var base_cost = data.characters[character.id].get("cost", 50)
+	
+	# 레벨에 따른 추가 비용 (레벨업할 때마다 약 2배씩 증가하는 것으로 가정)
+	var level_multiplier = pow(2, character.level - 1)
+	var total_cost = base_cost * level_multiplier
+	
+	# 판매가는 총 비용의 절반
+	return int(total_cost * 0.5)
+
+# 선택된 캐릭터 판매
+func sell_selected_character() -> int:
+	if not selected_character:
+		return 0
+	
+	# selected_character가 어느 슬롯에 있는지 찾기
+	for i in slots.size():
+		if slots[i]["node"] == selected_character:
+			return sell_character_at(i)
+	
+	return 0
 
 func summon(cost:int=50) -> void:
 	# 먼저 빈 슬롯이 있는지 확인
@@ -299,6 +361,7 @@ func _perform_merge(from_slot: int, to_slot: int, char_a: Node2D, char_b: Node2D
 	# 기존 캐릭터들 제거
 	char_a.queue_free()
 	char_b.queue_free()
+	slots[from_slot]["node"] = null  # from_slot도 비우기
 	slots[to_slot]["node"] = null
 	
 	# 새로운 높은 레벨 캐릭터 생성
@@ -344,6 +407,13 @@ func select_character(character: Node2D) -> void:
 	
 	if character:
 		selected_character = character
+		
+		# selected 인덱스도 업데이트
+		for i in slots.size():
+			if slots[i]["node"] == character:
+				selected = i
+				break
+		
 		_show_range_indicator(character)
 		print("캐릭터 선택됨: %s (사거리: %.1f)" % [character.id, character.range])
 
@@ -353,6 +423,7 @@ func deselect_character() -> void:
 		print("캐릭터 선택 해제됨: %s" % selected_character.id)
 	
 	selected_character = null
+	selected = -1  # 인덱스도 리셋
 	_hide_range_indicator()
 
 # 사거리 표시기 보이기

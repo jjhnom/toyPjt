@@ -53,13 +53,15 @@
     "rarity": "rare",
     "spawn_weight": 15,
     "sprite_path": "res://assets/characters/Monk/Idle.png",
+    "attack_sprite": "res://assets/characters/Monk/Heal.png",
     "heal_sprite": "res://assets/characters/Monk/Heal.png",
     "heal_effect_sprite": "res://assets/characters/Monk/Heal_Effect.png",
     "run_sprite": "res://assets/characters/Monk/Run.png",
     "scale": 0.5,
     "animations": {
       "idle": {"frames": 6, "fps": 6.0},
-      "heal": {"frames": 8, "fps": 10.0},
+      "attack": {"frames": 11, "fps": 14.0},
+      "heal": {"frames": 11, "fps": 10.0},
       "run": {"frames": 6, "fps": 10.0}
     }
   },

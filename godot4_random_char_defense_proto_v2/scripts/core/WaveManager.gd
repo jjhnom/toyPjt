@@ -51,7 +51,7 @@ func start_next_wave() -> void:
 func _spawn_one(enemy_id:String) -> void:
 	var pool = $"../ObjectPool"
 	var enemy = pool.pop("Enemy", func(): return enemy_scene.instantiate())
-	var map = $"../../Map"
+	var map = $"/root/Main/Map"
 	
 	
 	# EnemyLayer 찾기 - 여러 방법 시도
@@ -88,7 +88,12 @@ func _spawn_one(enemy_id:String) -> void:
 	# PathFollow2D는 Path2D의 자식이어야 함
 	path.add_child(enemy)
 	
+	# 적이 타일 위에 보이도록 z_index 설정
+	enemy.z_index = 5
+	
 	enemy.init_from_config($"../DataHub".enemies.get(enemy_id, {}))
+	
+	print("적 생성됨: %s, z_index=%d, position=%s" % [enemy_id, enemy.z_index, enemy.global_position])
 	
 	enemy.connect("escaped", Callable(self, "_on_enemy_escaped"), CONNECT_ONE_SHOT)
 	enemy.connect("died", Callable(self, "_on_enemy_died"), CONNECT_ONE_SHOT)

@@ -32,7 +32,6 @@ script = ExtResource("10")
 script = ExtResource("9")
 
 [node name="Map" parent="." instance=ExtResource("5")]
-position = Vector2(-120, -80)
 
 [node name="UI" type="CanvasLayer" parent="."]
 script = ExtResource("3")
@@ -86,14 +85,6 @@ offset_right = 156.0
 offset_bottom = 696.0
 text = "Summon (50)"
 
-[node name="Merge" type="Button" parent="UI/HUD"]
-layout_mode = 0
-offset_left = 176.0
-offset_top = 640.0
-offset_right = 316.0
-offset_bottom = 696.0
-text = "Merge (tap 2 slots)"
-
 [node name="Skill1" type="Button" parent="UI/HUD"]
 layout_mode = 0
 offset_left = 336.0
@@ -117,3 +108,11 @@ offset_top = 640.0
 offset_right = 716.0
 offset_bottom = 696.0
 text = "HealGate"
+
+[node name="Sell" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 640.0
+offset_right = 316.0
+offset_bottom = 696.0
+text = "Sell (50%)"

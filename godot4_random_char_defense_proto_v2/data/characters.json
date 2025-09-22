@@ -91,7 +91,7 @@
     "animations": {
       "idle": {"frames": 12, "fps": 8.0},
       "run": {"frames": 6, "fps": 12.0},
-      "attack": {"frames": 3, "fps": 16.0},
+      "attack": {"frames": 3, "fps": 8.0},
       "defence": {"frames": 4, "fps": 8.0}
     }
   }

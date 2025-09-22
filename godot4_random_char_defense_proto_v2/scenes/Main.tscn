@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://diweat8nbkxde" path="res://scripts/core/ObjectPool.gd" id="8"]
 [ext_resource type="Script" uid="uid://bhctree1nwu3l" path="res://scripts/core/CharacterManager.gd" id="9"]
 [ext_resource type="Script" uid="uid://56q406grp8xa" path="res://scripts/core/SkillManager.gd" id="10"]
-[ext_resource type="Texture2D" uid="uid://d4fwe2p1cbwpc" path="res://assets/maps/background.png" id="10_lhr70"]
+[ext_resource type="Texture2D" uid="uid://snj28cqiabtr" path="res://assets/maps/background.png" id="10_lhr70"]
 
 [node name="Main" type="Node2D"]
 
@@ -113,6 +113,6 @@ offset_bottom = 701.0
 text = "Sell (50%)"
 
 [node name="Background" type="Sprite2D" parent="."]
-position = Vector2(362, 367.5)
-scale = Vector2(0.888889, 1.01806)
+position = Vector2(414.556, 541.517)
+scale = Vector2(0.786241, 0.767315)
 texture = ExtResource("10_lhr70")

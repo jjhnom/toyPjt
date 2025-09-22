@@ -1,7 +1,7 @@
 {
   "archer": {
     "role": "dps",
-    "atk": 5,
+    "atk": 7,
     "range": 150,
     "rate": 0.5,
     "skill": "pierce",
@@ -21,7 +21,7 @@
   },
   "warrior": {
     "role": "tank",
-    "atk": 20,
+    "atk": 10,
     "range": 120,
     "rate": 1.5,
     "hp": 200,
@@ -45,7 +45,7 @@
   },
   "monk": {
     "role": "support",
-    "atk": 15,
+    "atk": 10,
     "range": 120,
     "rate": 1.2,
     "skill": "heal",
@@ -67,7 +67,7 @@
   },
   "lancer": {
     "role": "dps",
-    "atk": 15,
+    "atk": 8,
     "range": 120,
     "rate": 1.0,
     "skill": "directional_attack",

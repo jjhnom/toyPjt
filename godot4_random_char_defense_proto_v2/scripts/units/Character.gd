@@ -232,6 +232,11 @@ func _fire(t: Node) -> void:
 	
 	var ps = projectile_scene if projectile_scene != null else preload("res://scenes/Projectile.tscn")
 	var bullet: Node = ps.instantiate()
+	
+	# 아처의 경우 Arrow.png 사용
+	if id == "archer":
+		_setup_archer_projectile(bullet)
+	
 	# Use the tower's parent (e.g. Towers layer) as the container for bullets
 	var parent: Node = get_parent()
 	parent.add_child(bullet)
@@ -548,3 +553,15 @@ func _get_character_config() -> Dictionary:
 	if data_hub and data_hub.has_method("get_character_data"):
 		return data_hub.get_character_data(id)
 	return {}
+
+
+##
+## Archer projectile setup
+##
+
+func _setup_archer_projectile(bullet: Node) -> void:
+	# 아처의 화살 이미지 설정
+	if bullet.has_method("set_sprite"):
+		var config = _get_character_config()
+		if config.has("projectile_sprite"):
+			bullet.set_sprite(config["projectile_sprite"])

@@ -35,8 +35,8 @@ func _points_from_cells(cells: Array[Vector2i]) -> PackedVector2Array:
 	return pts
 
 func _interior_cells(loop_cells: Array[Vector2i]) -> Array[Vector2i]:
-	var set := {}
-	for c in loop_cells: set[c] = true
+	var cell_set := {}
+	for c in loop_cells: cell_set[c] = true
 	var left := margin
 	var right := cols - 1 - margin
 	var top := margin
@@ -45,7 +45,7 @@ func _interior_cells(loop_cells: Array[Vector2i]) -> Array[Vector2i]:
 	for y in range(top+1, bottom):
 		for x in range(left+1, right):
 			var v := Vector2i(x,y)
-			if not set.has(v): result.append(v)
+			if not cell_set.has(v): result.append(v)
 	return result
 
 

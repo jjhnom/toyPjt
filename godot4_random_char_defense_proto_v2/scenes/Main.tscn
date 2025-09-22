@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://diweat8nbkxde" path="res://scripts/core/ObjectPool.gd" id="8"]
 [ext_resource type="Script" uid="uid://bhctree1nwu3l" path="res://scripts/core/CharacterManager.gd" id="9"]
 [ext_resource type="Script" uid="uid://56q406grp8xa" path="res://scripts/core/SkillManager.gd" id="10"]
-[ext_resource type="Texture2D" uid="uid://snj28cqiabtr" path="res://assets/maps/background.png" id="10_lhr70"]
+[ext_resource type="Texture2D" uid="uid://d4fwe2p1cbwpc" path="res://assets/maps/background.png" id="10_lhr70"]
 
 [node name="Main" type="Node2D"]
 
@@ -49,36 +49,45 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="Gold" type="Label" parent="UI/HUD"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
 offset_left = 126.0
 offset_top = 33.0
 offset_right = 230.0
 offset_bottom = 61.0
 text = "150"
+metadata/_edit_use_anchors_ = true
 
 [node name="Life" type="Label" parent="UI/HUD"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.00138889
 offset_left = 317.0
 offset_top = 33.0
 offset_right = 421.0
 offset_bottom = 55.0
 text = "Life: 20"
+metadata/_edit_use_anchors_ = true
 
 [node name="Wave" type="Label" parent="UI/HUD"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
 offset_left = 556.0
 offset_top = 33.0
 offset_right = 660.0
 offset_bottom = 56.0
 text = "Wave: 1"
+metadata/_edit_use_anchors_ = true
 
 [node name="Timer" type="Label" parent="UI/HUD"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
 offset_left = 454.0
 offset_top = 33.0
 offset_right = 534.0
 offset_bottom = 66.0
 text = "Time: 0"
+metadata/_edit_use_anchors_ = true
 
 [node name="Summon" type="Button" parent="UI/HUD"]
 layout_mode = 0
@@ -113,6 +122,6 @@ offset_bottom = 701.0
 text = "Sell (50%)"
 
 [node name="Background" type="Sprite2D" parent="."]
-position = Vector2(414.556, 541.517)
-scale = Vector2(0.786241, 0.767315)
+position = Vector2(360.5, 357.883)
+scale = Vector2(0.968056, 0.983658)
 texture = ExtResource("10_lhr70")

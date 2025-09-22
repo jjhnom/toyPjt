@@ -397,7 +397,7 @@ func _draw_range_circle(character: Node2D) -> void:
 		return
 	
 	# 사거리 정보 전달
-	range_indicator.set_character_range(character.range)
+	range_indicator.set_character_range(character.attack_range)
 	range_indicator.global_position = character.global_position
 
 # 캐릭터 선택
@@ -415,7 +415,7 @@ func select_character(character: Node2D) -> void:
 				break
 		
 		_show_range_indicator(character)
-		print("캐릭터 선택됨: %s (사거리: %.1f)" % [character.id, character.range])
+		print("캐릭터 선택됨: %s (사거리: %.1f)" % [character.id, character.attack_range])
 
 # 캐릭터 선택 해제
 func deselect_character() -> void:

@@ -11,9 +11,10 @@ var wave_time_limit:float = 0.0
 var is_wave_active:bool = false
 func start_next_wave() -> void:
 	var data = $"../DataHub".waves.get("list", [])
+	var gm = $".."  # GameManager 참조를 함수 시작에서 한 번만 선언
+	
 	if wave_idx >= data.size():
 		# 모든 웨이브 클리어 - 승리!
-		var gm = $".."
 		if gm and gm.has_signal("game_over"):
 			gm.emit_signal("game_over", true)
 		emit_signal("wave_cleared", wave_idx); return
@@ -27,7 +28,6 @@ func start_next_wave() -> void:
 	
 	
 	# GameManager에게 웨이브 시작 알림
-	var gm = $".."
 	if gm and gm.has_signal("wave_changed"):
 		gm.emit_signal("wave_changed", wave_idx + 1)
 	

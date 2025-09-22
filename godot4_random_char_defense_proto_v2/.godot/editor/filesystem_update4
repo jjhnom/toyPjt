@@ -4,5 +4,3 @@ res://scenes/Character.tscn
 res://scenes/Enemy.tscn
 res://scenes/Map.tscn
 res://scenes/Projectile.tscn
-res://scripts/units/Character.gd
-res://scripts/core/GameManager.gd

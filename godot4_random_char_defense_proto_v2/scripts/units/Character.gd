@@ -141,8 +141,8 @@ func _process(delta: float) -> void:
 			play_idle_animation()
 		return
 
-	# Respect attack cooldown and current attacking state
-	if is_attacking or cd > 0.0:
+	# Respect attack cooldown only (allow attacking during animation)
+	if cd > 0.0:
 		return
 
 	# Choose a target (closest by default) and fire
@@ -214,23 +214,18 @@ func _fire(t: Node) -> void:
 	else:
 		play_attack_animation()
 
-	print("%s: 공격 애니메이션 시작 - 현재 애니메이션: %s" % [id, sprite.animation if sprite else "none"])
-
 	# Wait one frame to ensure the animation is applied before checking
 	await get_tree().process_frame
-	print("%s: 프레임 후 - 현재 애니메이션: %s, attacking: %s" % [id, sprite.animation if sprite else "none", is_attacking])
 	
 	if is_attacking and sprite:
 		var anim_name = sprite.animation.to_lower()
 		if not ("attack" in anim_name or anim_name == "attack" or anim_name == "heal"):
 			# Fallback: ensure attacking state resets if animation wasn't set
-			print("%s: 공격 애니메이션 설정 실패 - 강제로 attacking 상태 해제 (애니메이션: %s)" % [id, anim_name])
 			is_attacking = false
 
 	# Spawn a projectile and direct it at the target
 	# Double-check target validity before creating projectile
 	if not is_instance_valid(t):
-		print("%s: 타겟이 해제됨 - 프로젝타일 생성 취소" % id)
 		is_attacking = false
 		last_target = null
 		return
@@ -244,7 +239,6 @@ func _fire(t: Node) -> void:
 	if bullet.has_method("shoot_at"):
 		# Pass target and damage to the projectile's shoot_at method
 		bullet.shoot_at(t, damage)
-		print("%s: %s를 공격 완료! 거리: %.1f" % [id, t.name if t.has_method("get") else "적", dist])
 
 	# The attack cooldown will be handled in _process by resetting cd
 
@@ -266,6 +260,8 @@ func _on_animation_finished() -> void:
 			play_idle_animation()
 		else:
 			print("%s: 공격 애니메이션이 아님 - 유지 (애니메이션: %s)" % [id, anim_name])
+			# 공격 애니메이션이 아닌 경우 유지
+			pass
 
 
 ##
@@ -410,19 +406,15 @@ func _set_character_sprite_backup(character_id: String) -> void:
 func play_attack_animation() -> void:
 	# Choose an appropriate attack animation based on the character configuration
 	var config = _get_character_config()
-	print("%s: play_attack_animation - config: %s" % [id, config])
 	
 	if id == "lancer":
 		_play_lancer_directional_attack(config)
 	elif config.has("attack_sprite"):
-		print("%s: attack_sprite 사용: %s" % [id, config.attack_sprite])
 		_set_character_sprite_from_path(config.attack_sprite)
 	elif config.has("attack2_sprite") and randf() > 0.5:
-		print("%s: attack2_sprite 사용: %s" % [id, config.attack2_sprite])
 		_set_character_sprite_from_path(config.attack2_sprite)
 	else:
 		# Fall back to idle when no attack sprite is specified
-		print("%s: 공격 스프라이트 없음 - idle 사용" % id)
 		play_idle_animation()
 
 func _play_lancer_directional_attack(config: Dictionary) -> void:

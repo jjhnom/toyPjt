@@ -28,6 +28,8 @@ var speed: float
 var is_destroyed := false
 
 var sprite: AnimatedSprite2D
+var health_bar: Control
+var health_bar_fill: ColorRect
 @onready var spawner = get_parent()
 
 # 적 이미지는 enemies.json에서 sprite_path로 설정됨
@@ -45,9 +47,20 @@ func _ready() -> void:
 	# sprite 노드 찾기
 	sprite = get_node("AnimatedSprite2D")
 	
+	# 체력바 노드들 찾기
+	health_bar = get_node("HealthBar")
+	health_bar_fill = get_node("HealthBar/HealthBarFill")
+	
 	# 스프라이트가 타일 위에 보이도록 z_index 설정
 	if sprite:
 		sprite.z_index = 1
+	
+	# 체력바가 몬스터 위에 보이도록 z_index 설정
+	if health_bar:
+		health_bar.z_index = 2
+	
+	# 체력바 초기화
+	update_health_bar()
 
 	# Path2D 길이 캐싱
 	var p := get_parent()
@@ -284,6 +297,8 @@ func take_damage(damage: float) -> void:
 	if is_destroyed:
 		return
 	hp -= damage
+	hp = max(0, hp)  # 체력이 0 아래로 내려가지 않도록
+	update_health_bar()
 	damage_animation()
 	if hp <= 0:
 		is_destroyed = true
@@ -291,6 +306,29 @@ func take_damage(damage: float) -> void:
 			spawner.enemy_destroyed()
 		emit_signal("died", reward)
 		queue_free()
+
+func update_health_bar() -> void:
+	if not health_bar_fill:
+		return
+	
+	if not health_bar:
+		return
+	
+	# 체력 비율 계산 (0.0 ~ 1.0)
+	var health_ratio = hp / max_hp if max_hp > 0 else 0.0
+	health_ratio = clamp(health_ratio, 0.0, 1.0)
+	
+	# 체력바 너비 업데이트
+	var bar_width = health_bar.size.x
+	health_bar_fill.size.x = bar_width * health_ratio
+	
+	# 체력에 따라 색상 변경 (더 밝고 눈에 띄게)
+	if health_ratio > 0.6:
+		health_bar_fill.color = Color(0.0, 1.0, 0.0, 1.0)  # 밝은 초록색
+	elif health_ratio > 0.3:
+		health_bar_fill.color = Color(1.0, 1.0, 0.0, 1.0)  # 밝은 노란색
+	else:
+		health_bar_fill.color = Color(1.0, 0.0, 0.0, 1.0)  # 밝은 빨간색
 
 func damage_animation():
 	var tween := create_tween()
@@ -309,6 +347,9 @@ func init_from_config(conf: Dictionary) -> void:
 	base_speed = speed
 	reward = conf.get("reward", reward)
 	base_damage = conf.get("base_damage", base_damage)
+	
+	# 체력바 업데이트
+	update_health_bar()
 
 	# walking_folder가 있으면 개별 이미지 파일들로 애니메이션 구성
 	var walking_folder = conf.get("walking_folder", "")
@@ -328,6 +369,25 @@ func init_from_config(conf: Dictionary) -> void:
 	var scale_value = conf.get("scale", 1.0)
 	if sprite:
 		sprite.scale = Vector2(scale_value, scale_value)
+	
+	# 체력바 크기와 위치 조정 (몬스터 하단에 명확히 표시)
+	if health_bar and sprite:
+		# 체력바는 몬스터보다 크게 표시 (스케일의 2배)
+		health_bar.scale = Vector2(scale_value * 2.0, scale_value * 2.0)
+		
+		# 몬스터 스프라이트 크기를 고려한 체력바 위치 계산
+		var sprite_height = 0.0
+		if sprite.sprite_frames and sprite.sprite_frames.has_animation(sprite.animation):
+			var frame_texture = sprite.sprite_frames.get_frame_texture(sprite.animation, 0)
+			if frame_texture:
+				sprite_height = frame_texture.get_height() * scale_value
+		
+		# 스프라이트 하단에서 약간 떨어진 위치에 체력바 배치
+		health_bar.position.y = (sprite_height / 2.0) + 10.0 * scale_value
+		health_bar.position.x = -5
+
+		# 체력바가 항상 보이도록 z_index를 더 높게 설정
+		health_bar.z_index = 10
 
 	# 특정 프레임 시작(옵션)
 	var frame_index = conf.get("frame", null)

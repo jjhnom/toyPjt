@@ -29,7 +29,7 @@
   },
   "goblin_female": {
     "hp": 42,
-    "speed": 12,
+    "speed": 11,
     "reward": 6,
     "type": "goblin_female",
     "frame": 2,
@@ -58,7 +58,7 @@
   "skeleton_warrior_1": {
     "hp": 120,
     "speed": 9,
-    "reward": 12,
+    "reward": 11,
     "type": "skeleton_warrior_1",
     "frame": 4,
     "base_damage": 10,
@@ -239,7 +239,7 @@
   },
   "wraith_1": {
     "hp": 80,
-    "speed": 12,
+    "speed": 11,
     "reward": 15,
     "type": "wraith_1",
     "frame": 17,

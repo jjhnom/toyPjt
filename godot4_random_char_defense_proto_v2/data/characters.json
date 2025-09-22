@@ -1,9 +1,9 @@
 {
   "archer": {
     "role": "dps",
-    "atk": 15,
+    "atk": 5,
     "range": 150,
-    "rate": 1.5,
+    "rate": 0.5,
     "skill": "pierce",
     "cost": 50,
     "rarity": "common",
@@ -15,7 +15,7 @@
     "scale": 0.5,
     "animations": {
       "idle": {"frames": 6, "fps": 6.0},
-      "attack": {"frames": 8, "fps": 12.0},
+      "attack": {"frames": 8, "fps": 8.0},
       "run": {"frames": 4, "fps": 10.0}
     }
   },
@@ -23,7 +23,7 @@
     "role": "tank",
     "atk": 20,
     "range": 120,
-    "rate": 2.5,
+    "rate": 1.5,
     "hp": 200,
     "skill": "guard",
     "cost": 70,
@@ -37,8 +37,8 @@
     "scale": 0.5,
     "animations": {
       "idle": {"frames": 6, "fps": 6.0},
-      "attack": {"frames": 6, "fps": 14.0},
-      "attack2": {"frames": 6, "fps": 16.0},
+      "attack": {"frames": 6, "fps": 6.0},
+      "attack2": {"frames": 6, "fps": 6.0},
       "guard": {"frames": 4, "fps": 8.0},
       "run": {"frames": 8, "fps": 12.0}
     }
@@ -47,7 +47,7 @@
     "role": "support",
     "atk": 15,
     "range": 120,
-    "rate": 2.5,
+    "rate": 1.2,
     "skill": "heal",
     "cost": 80,
     "rarity": "rare",
@@ -60,8 +60,8 @@
     "scale": 0.5,
     "animations": {
       "idle": {"frames": 6, "fps": 6.0},
-      "attack": {"frames": 11, "fps": 14.0},
-      "heal": {"frames": 11, "fps": 10.0},
+      "attack": {"frames": 11, "fps": 11.0},
+      "heal": {"frames": 11, "fps": 11.0},
       "run": {"frames": 6, "fps": 10.0}
     }
   },
@@ -69,7 +69,7 @@
     "role": "dps",
     "atk": 15,
     "range": 120,
-    "rate": 2.0,
+    "rate": 1.0,
     "skill": "directional_attack",
     "cost": 90,
     "rarity": "rare",
@@ -91,7 +91,7 @@
     "animations": {
       "idle": {"frames": 12, "fps": 8.0},
       "run": {"frames": 6, "fps": 12.0},
-      "attack": {"frames": 3, "fps": 8.0},
+      "attack": {"frames": 3, "fps": 6.0},
       "defence": {"frames": 4, "fps": 8.0}
     }
   }

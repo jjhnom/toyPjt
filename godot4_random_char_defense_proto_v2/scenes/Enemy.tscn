@@ -14,3 +14,23 @@ script = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea"]
 shape = SubResource("1")
+
+[node name="HealthBar" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -30.0
+offset_top = 40.0
+offset_right = 30.0
+offset_bottom = 55.0
+
+[node name="HealthBarBackground" type="ColorRect" parent="HealthBar"]
+layout_mode = 0
+offset_right = 60.0
+offset_bottom = 15.0
+color = Color(0.1, 0.1, 0.1, 1)
+
+[node name="HealthBarFill" type="ColorRect" parent="HealthBar"]
+layout_mode = 0
+offset_right = 60.0
+offset_bottom = 15.0
+color = Color(1, 0, 0, 1)

@@ -185,10 +185,16 @@ func _on_game_over(win: bool) -> void:
 	_show_game_over_screen(win)
 
 func _show_game_over_screen(win: bool) -> void:
+	# 기존 게임오버 패널이 있다면 제거
+	var existing_panel = get_node_or_null("GameOverPanel")
+	if existing_panel:
+		existing_panel.queue_free()
+	
 	# 게임오버 화면 생성
 	var game_over_panel = Panel.new()
 	game_over_panel.name = "GameOverPanel"
 	game_over_panel.z_index = 100  # 최상위 표시
+	game_over_panel.process_mode = Node.PROCESS_MODE_ALWAYS  # 일시정지 상태에서도 처리
 	
 	# 패널 크기 및 위치 설정
 	var viewport_size = get_viewport().size
@@ -210,10 +216,11 @@ func _show_game_over_screen(win: bool) -> void:
 	vbox.anchor_right = 0.5
 	vbox.anchor_top = 0.5
 	vbox.anchor_bottom = 0.5
-	vbox.offset_left = -200
-	vbox.offset_right = 200
-	vbox.offset_top = -150
-	vbox.offset_bottom = 150
+	vbox.offset_left = -250
+	vbox.offset_right = 250
+	vbox.offset_top = -200
+	vbox.offset_bottom = 200
+	vbox.add_theme_constant_override("separation", 20)  # 요소 간 간격
 	
 	# 게임오버 텍스트
 	var title_label = Label.new()
@@ -252,13 +259,49 @@ func _show_game_over_screen(win: bool) -> void:
 	var restart_button = Button.new()
 	restart_button.text = "다시 시작"
 	restart_button.custom_minimum_size = Vector2(200, 50)
-	restart_button.pressed.connect(_restart_game)
+	restart_button.process_mode = Node.PROCESS_MODE_ALWAYS  # 일시정지 상태에서도 처리
+	restart_button.pressed.connect(func(): 
+		print("다시 시작 버튼 클릭됨!")
+		_restart_game()
+	)
+	
+	# 다시 시작 버튼 스타일
+	var restart_style = StyleBoxFlat.new()
+	restart_style.bg_color = Color(0.2, 0.7, 0.2, 0.9)  # 초록색 배경
+	restart_style.border_width_left = 2
+	restart_style.border_width_right = 2
+	restart_style.border_width_top = 2
+	restart_style.border_width_bottom = 2
+	restart_style.border_color = Color.WHITE
+	restart_style.corner_radius_top_left = 10
+	restart_style.corner_radius_top_right = 10
+	restart_style.corner_radius_bottom_left = 10
+	restart_style.corner_radius_bottom_right = 10
+	restart_button.add_theme_stylebox_override("normal", restart_style)
 	
 	# 종료 버튼
 	var quit_button = Button.new()
 	quit_button.text = "게임 종료"
 	quit_button.custom_minimum_size = Vector2(200, 50)
-	quit_button.pressed.connect(_quit_game)
+	quit_button.process_mode = Node.PROCESS_MODE_ALWAYS  # 일시정지 상태에서도 처리
+	quit_button.pressed.connect(func(): 
+		print("게임 종료 버튼 클릭됨!")
+		_quit_game()
+	)
+	
+	# 종료 버튼 스타일
+	var quit_style = StyleBoxFlat.new()
+	quit_style.bg_color = Color(0.7, 0.2, 0.2, 0.9)  # 빨간색 배경
+	quit_style.border_width_left = 2
+	quit_style.border_width_right = 2
+	quit_style.border_width_top = 2
+	quit_style.border_width_bottom = 2
+	quit_style.border_color = Color.WHITE
+	quit_style.corner_radius_top_left = 10
+	quit_style.corner_radius_top_right = 10
+	quit_style.corner_radius_bottom_left = 10
+	quit_style.corner_radius_bottom_right = 10
+	quit_button.add_theme_stylebox_override("normal", quit_style)
 	
 	# 컨테이너에 요소들 추가
 	vbox.add_child(title_label)
@@ -267,22 +310,53 @@ func _show_game_over_screen(win: bool) -> void:
 	vbox.add_child(quit_button)
 	
 	game_over_panel.add_child(vbox)
-	add_child(game_over_panel)
+	get_parent().add_child(game_over_panel)  # CanvasLayer에 직접 추가
 
 func _restart_game() -> void:
+	print("게임 재시작 요청됨")
+	
+	# 기존 게임오버 패널 제거
+	var existing_panel = get_parent().get_node_or_null("GameOverPanel")
+	if existing_panel:
+		existing_panel.queue_free()
+		print("게임오버 패널 제거됨")
+	
 	# 게임 일시정지 해제
 	get_tree().paused = false
+	print("게임 일시정지 해제됨")
 	
 	# 속도를 기본값으로 리셋
 	_current_speed = 1.0
 	Engine.time_scale = 1.0
+	print("게임 속도 1x로 리셋됨")
 	
-	# 씬 다시 로드
+	# 잠시 대기 후 씬 다시 로드 (UI 정리를 위해)
+	await get_tree().process_frame
 	get_tree().reload_current_scene()
+	print("씬 재로드 완료")
 
 func _quit_game() -> void:
-	# 게임 종료
+	print("게임 종료 요청됨")
+	
+	# 기존 게임오버 패널 제거
+	var existing_panel = get_parent().get_node_or_null("GameOverPanel")
+	if existing_panel:
+		existing_panel.queue_free()
+		print("게임오버 패널 제거됨")
+	
+	# 게임 일시정지 해제
+	get_tree().paused = false
+	print("게임 일시정지 해제됨")
+	
+	# 속도를 기본값으로 리셋
+	_current_speed = 1.0
+	Engine.time_scale = 1.0
+	print("게임 속도 1x로 리셋됨")
+	
+	# 잠시 대기 후 게임 종료
+	await get_tree().process_frame
 	get_tree().quit()
+	print("게임 종료됨")
 
 # 속도 조절 함수들
 func _on_speed_pressed() -> void:

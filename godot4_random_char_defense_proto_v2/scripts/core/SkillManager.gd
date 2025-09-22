@@ -1,19 +1,63 @@
 extends Node
 @onready var data = $"../DataHub"
-func use_arrow_rain() -> void:
-    var conf = data.skills.get("arrow_rain", {})
-    var dmg:int = conf.get("damage", 120)
-    var map = $"../../Map"
-    for e in map.get_node("EnemyLayer").get_children():
-        if e.has_method("take_damage"): e.take_damage(int(dmg/3.0))
+
+var last_skill_time: float = 0.0
+
 func use_global_slow() -> void:
     var conf = data.skills.get("global_slow", {})
-    var dur:float = conf.get("duration", 5.0)
-    var fac:float = conf.get("factor", 0.6)
+    var cost: int = conf.get("cost", 35)
+    var cooldown: float = conf.get("cooldown", 25.0)
+    var dur: float = conf.get("duration", 5.0)
+    var fac: float = conf.get("factor", 0.6)
+    
+    # 쿨다운 체크
+    var current_time = Time.get_ticks_msec() / 1000.0
+    if current_time - last_skill_time < cooldown:
+        print("슬로우 스킬 쿨다운 중: %.1f초 남음" % (cooldown - (current_time - last_skill_time)))
+        return
+    
+    # 골드 체크
+    var gm = $".."
+    if not gm.spend_gold(cost):
+        print("슬로우 스킬 사용 실패: 골드 부족 (필요: %d)" % cost)
+        return
+    
+    # 스킬 사용
+    last_skill_time = current_time
+    
+    # 방법 1: EnemyLayer에서 적들 찾기
     var map = $"../../Map"
-    for e in map.get_node("EnemyLayer").get_children():
-        if e.has_method("apply_slow"): e.apply_slow(fac, dur)
-func use_heal_gate() -> void:
-    var conf = data.skills.get("heal_gate", {})
-    var amt:int = conf.get("heal", 20)
-    $"..".damage_life(-amt)
+    var enemies = []
+    
+    var enemy_layer = map.get_node("EnemyLayer")
+    if enemy_layer:
+        enemies = enemy_layer.get_children()
+        print("EnemyLayer에서 발견된 적 수: %d마리" % enemies.size())
+    
+    # 방법 2: enemy 그룹에서 적들 찾기 (백업)
+    var enemy_group = get_tree().get_nodes_in_group("enemy")
+    print("enemy 그룹에서 발견된 적 수: %d마리" % enemy_group.size())
+    
+    # 두 방법 모두 사용하여 중복 제거
+    var all_enemies = []
+    for enemy in enemies:
+        if enemy and is_instance_valid(enemy) and enemy not in all_enemies:
+            all_enemies.append(enemy)
+    
+    for enemy in enemy_group:
+        if enemy and is_instance_valid(enemy) and enemy not in all_enemies:
+            all_enemies.append(enemy)
+    
+    print("총 발견된 유효한 적 수: %d마리" % all_enemies.size())
+    
+    var affected_count = 0
+    
+    for e in all_enemies:
+        if e.has_method("apply_slow"):
+            e.apply_slow(fac, dur)
+            affected_count += 1
+            print("적에게 슬로우 적용: %s (타입: %s)" % [e.name, e.get("enemy_type")])
+        else:
+            print("적이 apply_slow 메서드를 가지고 있지 않음: %s" % e.name)
+    
+    print("슬로우 스킬 사용! %d마리 적에게 적용 (속도: %.1fx, 지속시간: %.1f초)" % [affected_count, fac, dur])

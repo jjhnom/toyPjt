@@ -4,10 +4,11 @@ extends Node
 @onready var wave_label:Label = $HUD/Wave
 @onready var timer_label:Label = $HUD/Timer
 @onready var btn_summon:Button = $HUD/Summon
-@onready var btn_s1:Button = $HUD/Skill1
 @onready var btn_s2:Button = $HUD/Skill2
-@onready var btn_s3:Button = $HUD/Skill3
 @onready var btn_sell:Button = $HUD/Sell
+@onready var btn_speed:Button = $HUD/Speed
+
+var _current_speed: float = 1.0
 
 func _ready() -> void:
 	pass
@@ -19,6 +20,7 @@ func bind(gm:Node) -> void:
 	gm.connect("gold_changed", Callable(self, "_on_gold"))
 	gm.connect("life_changed", Callable(self, "_on_life"))
 	gm.connect("wave_changed", Callable(self, "_on_wave"))
+	gm.connect("game_over", Callable(self, "_on_game_over"))
 	
 	# WaveManager 타이머 신호 연결
 	var wave_manager = $"/root/Main/GameManager/WaveManager"
@@ -38,17 +40,22 @@ func bind(gm:Node) -> void:
 	if btn_summon: 
 		btn_summon.pressed.connect(_on_summon_pressed)
 		
-	if btn_s1: 
-		btn_s1.pressed.connect(func(): $"/root/Main/GameManager/SkillManager".use_arrow_rain())
 		
 	if btn_s2: 
-		btn_s2.pressed.connect(func(): $"/root/Main/GameManager/SkillManager".use_global_slow())
+		btn_s2.pressed.connect(_on_skill2_pressed)
 		
-	if btn_s3: 
-		btn_s3.pressed.connect(func(): $"/root/Main/GameManager/SkillManager".use_heal_gate())
 		
 	if btn_sell:
 		btn_sell.pressed.connect(_on_sell_pressed)
+	
+	# 속도 조절 버튼 연결
+	if btn_speed:
+		btn_speed.pressed.connect(_on_speed_pressed)
+	
+	# 초기 속도 버튼 상태 설정
+	_current_speed = 1.0
+	_update_speed_button()
+
 func _on_summon_pressed() -> void:
 	var character_manager = $"/root/Main/GameManager/CharacterManager"
 	if character_manager:
@@ -60,6 +67,10 @@ func _on_summon_pressed() -> void:
 		
 		# 빈 슬롯이 있으면 소환 실행
 		character_manager.summon(50)
+
+func _on_skill2_pressed() -> void:
+	print("GlobalSlow 스킬 버튼 클릭됨")
+	$"/root/Main/GameManager/SkillManager".use_global_slow()
 
 func _show_no_slots_feedback() -> void:
 	# 소환 버튼에 시각적 피드백 (빨간색 깜빡임)
@@ -158,3 +169,146 @@ func _on_timer_expired() -> void:
 				timer_label.text = "Time: 0"
 				timer_label.modulate = Color.WHITE
 		)
+
+func _on_game_over(win: bool) -> void:
+	print("게임 오버! 승리: %s" % win)
+	
+	# 게임 정지
+	get_tree().paused = true
+	
+	# 속도를 기본값으로 리셋
+	_current_speed = 1.0
+	Engine.time_scale = 1.0
+	_update_speed_button()
+	
+	# 게임오버 UI 표시
+	_show_game_over_screen(win)
+
+func _show_game_over_screen(win: bool) -> void:
+	# 게임오버 화면 생성
+	var game_over_panel = Panel.new()
+	game_over_panel.name = "GameOverPanel"
+	game_over_panel.z_index = 100  # 최상위 표시
+	
+	# 패널 크기 및 위치 설정
+	var viewport_size = get_viewport().size
+	game_over_panel.size = viewport_size
+	game_over_panel.position = Vector2.ZERO
+	
+	# 배경색 설정
+	var style = StyleBoxFlat.new()
+	if win:
+		style.bg_color = Color(0.2, 0.6, 0.2, 0.9)  # 승리 - 초록색
+	else:
+		style.bg_color = Color(0.6, 0.2, 0.2, 0.9)  # 패배 - 빨간색
+	game_over_panel.add_theme_stylebox_override("panel", style)
+	
+	# 메인 컨테이너 추가
+	var vbox = VBoxContainer.new()
+	vbox.anchors_preset = Control.PRESET_CENTER
+	vbox.anchor_left = 0.5
+	vbox.anchor_right = 0.5
+	vbox.anchor_top = 0.5
+	vbox.anchor_bottom = 0.5
+	vbox.offset_left = -200
+	vbox.offset_right = 200
+	vbox.offset_top = -150
+	vbox.offset_bottom = 150
+	
+	# 게임오버 텍스트
+	var title_label = Label.new()
+	if win:
+		title_label.text = "게임 승리!"
+		title_label.modulate = Color.GOLD
+	else:
+		title_label.text = "게임 오버!"
+		title_label.modulate = Color.RED
+	
+	var title_settings = LabelSettings.new()
+	title_settings.font_size = 48
+	title_settings.font_color = Color.WHITE
+	title_settings.outline_size = 4
+	title_settings.outline_color = Color.BLACK
+	title_label.label_settings = title_settings
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	
+	# 현재 웨이브 정보
+	var wave_info = Label.new()
+	var wave_manager = $"/root/Main/GameManager/WaveManager"
+	var current_wave = 1
+	if wave_manager:
+		current_wave = wave_manager.wave_idx
+	
+	wave_info.text = "클리어한 웨이브: %d" % current_wave
+	var info_settings = LabelSettings.new()
+	info_settings.font_size = 24
+	info_settings.font_color = Color.WHITE
+	info_settings.outline_size = 2
+	info_settings.outline_color = Color.BLACK
+	wave_info.label_settings = info_settings
+	wave_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	
+	# 다시 시작 버튼
+	var restart_button = Button.new()
+	restart_button.text = "다시 시작"
+	restart_button.custom_minimum_size = Vector2(200, 50)
+	restart_button.pressed.connect(_restart_game)
+	
+	# 종료 버튼
+	var quit_button = Button.new()
+	quit_button.text = "게임 종료"
+	quit_button.custom_minimum_size = Vector2(200, 50)
+	quit_button.pressed.connect(_quit_game)
+	
+	# 컨테이너에 요소들 추가
+	vbox.add_child(title_label)
+	vbox.add_child(wave_info)
+	vbox.add_child(restart_button)
+	vbox.add_child(quit_button)
+	
+	game_over_panel.add_child(vbox)
+	add_child(game_over_panel)
+
+func _restart_game() -> void:
+	# 게임 일시정지 해제
+	get_tree().paused = false
+	
+	# 속도를 기본값으로 리셋
+	_current_speed = 1.0
+	Engine.time_scale = 1.0
+	
+	# 씬 다시 로드
+	get_tree().reload_current_scene()
+
+func _quit_game() -> void:
+	# 게임 종료
+	get_tree().quit()
+
+# 속도 조절 함수들
+func _on_speed_pressed() -> void:
+	# 1x → 2x → 3x → 1x 순서로 변경
+	if _current_speed == 1.0:
+		_current_speed = 2.0
+	elif _current_speed == 2.0:
+		_current_speed = 3.0
+	else:
+		_current_speed = 1.0
+	
+	# 게임 속도 적용
+	Engine.time_scale = _current_speed
+	print("게임 속도 변경: %.1fx" % _current_speed)
+	
+	# 버튼 텍스트 업데이트
+	_update_speed_button()
+
+func _update_speed_button() -> void:
+	if btn_speed:
+		btn_speed.text = "%.0fx" % _current_speed
+		
+		# 속도에 따른 버튼 색상 변경
+		if _current_speed == 1.0:
+			btn_speed.modulate = Color.WHITE
+		elif _current_speed == 2.0:
+			btn_speed.modulate = Color.YELLOW
+		else:  # 3.0
+			btn_speed.modulate = Color.ORANGE_RED

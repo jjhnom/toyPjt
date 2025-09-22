@@ -244,11 +244,11 @@
     "type": "wraith_1",
     "frame": 17,
     "base_damage": 12,
-    "sprite_path": "res://assets/enemies/Wraith_01/Walking/0_Wraith_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Wraith_01/Walking/Wraith_01_Moving Forward_000.png",
     "walking_folder": "res://assets/enemies/Wraith_01/Walking/",
     "scale": 0.09,
     "animations": {
-      "walking": {"frames": 24, "fps": 14.0}
+      "walking": {"frames": 12, "fps": 14.0}
     }
   },
   "wraith_2": {
@@ -258,11 +258,11 @@
     "type": "wraith_2",
     "frame": 18,
     "base_damage": 13,
-    "sprite_path": "res://assets/enemies/Wraith_02/Walking/0_Wraith_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Wraith_02/Walking/Wraith_02_Moving Forward_000.png",
     "walking_folder": "res://assets/enemies/Wraith_02/Walking/",
     "scale": 0.094,
     "animations": {
-      "walking": {"frames": 24, "fps": 15.0}
+      "walking": {"frames": 12, "fps": 15.0}
     }
   },
   "wraith_3": {
@@ -272,11 +272,11 @@
     "type": "wraith_3",
     "frame": 19,
     "base_damage": 14,
-    "sprite_path": "res://assets/enemies/Wraith_03/Walking/0_Wraith_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Wraith_03/Walking/Wraith_03_Moving Forward_000.png",
     "walking_folder": "res://assets/enemies/Wraith_03/Walking/",
     "scale": 0.1,
     "animations": {
-      "walking": {"frames": 24, "fps": 16.0}
+      "walking": {"frames": 12, "fps": 16.0}
     }
   },
   "necromancer_1": {
@@ -286,7 +286,7 @@
     "type": "necromancer_1",
     "frame": 20,
     "base_damage": 18,
-    "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_1/Walking/0_Necromancer_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_1/Walking/0_Necromancer_of_the_Shadow_Walking_000.png",
     "walking_folder": "res://assets/enemies/Necromancer_of_the_Shadow_1/Walking/",
     "scale": 0.11,
     "animations": {
@@ -300,7 +300,7 @@
     "type": "necromancer_2",
     "frame": 21,
     "base_damage": 20,
-    "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_2/Walking/0_Necromancer_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_2/Walking/0_Necromancer_of_the_Shadow_Walking_000.png",
     "walking_folder": "res://assets/enemies/Necromancer_of_the_Shadow_2/Walking/",
     "scale": 0.114,
     "animations": {
@@ -314,7 +314,7 @@
     "type": "necromancer_3",
     "frame": 22,
     "base_damage": 22,
-    "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_3/Walking/0_Necromancer_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Necromancer_of_the_Shadow_3/Walking/0_Necromancer_of_the_Shadow_Walking_000.png",
     "walking_folder": "res://assets/enemies/Necromancer_of_the_Shadow_3/Walking/",
     "scale": 0.12,
     "animations": {
@@ -538,11 +538,11 @@
     "type": "satyr_1",
     "frame": 38,
     "base_damage": 14,
-    "sprite_path": "res://assets/enemies/Satyr_01/Walking/0_Satyr_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Satyr_01/Walking/Satyr_01_Walking_000.png",
     "walking_folder": "res://assets/enemies/Satyr_01/Walking/",
     "scale": 0.1,
     "animations": {
-      "walking": {"frames": 24, "fps": 12.0}
+      "walking": {"frames": 18, "fps": 12.0}
     }
   },
   "satyr_2": {
@@ -552,11 +552,11 @@
     "type": "satyr_2",
     "frame": 39,
     "base_damage": 15,
-    "sprite_path": "res://assets/enemies/Satyr_02/Walking/0_Satyr_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Satyr_02/Walking/Satyr_02_Walking_000.png",
     "walking_folder": "res://assets/enemies/Satyr_02/Walking/",
     "scale": 0.104,
     "animations": {
-      "walking": {"frames": 24, "fps": 12.0}
+      "walking": {"frames": 18, "fps": 12.0}
     }
   },
   "satyr_3": {
@@ -566,11 +566,11 @@
     "type": "satyr_3",
     "frame": 40,
     "base_damage": 16,
-    "sprite_path": "res://assets/enemies/Satyr_03/Walking/0_Satyr_Walking_000.png",
+    "sprite_path": "res://assets/enemies/Satyr_03/Walking/Satyr_03_Walking_000.png",
     "walking_folder": "res://assets/enemies/Satyr_03/Walking/",
     "scale": 0.11,
     "animations": {
-      "walking": {"frames": 24, "fps": 12.0}
+      "walking": {"frames": 18, "fps": 12.0}
     }
   }
 }

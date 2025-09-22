@@ -13,9 +13,7 @@ extends Node
 @export var slots_root_path: NodePath = ^"../Slots"
 
 # ===== Map Options =====
-@export var show_background := true
 @export var create_slots := true
-@export_range(0, 4, 1) var background_theme := 0  # 0=Spring, 1=Summer, 2=Fall, 3=Winter, 4=Ice
 
 func _rect_loop_cells() -> Array[Vector2i]:
 	var left := margin
@@ -51,52 +49,7 @@ func _interior_cells(loop_cells: Array[Vector2i]) -> Array[Vector2i]:
 	return result
 
 
-func _setup_background_sprite() -> void:
-	# 백그라운드 스프라이트 생성 및 설정
-	var background_sprite = Sprite2D.new()
-	background_sprite.name = "BackgroundSprite"
-	background_sprite.z_index = -10  # 가장 뒤에 표시
-	
-	# 백그라운드 이미지 로드
-	var background_images = [
-		"res://assets/maps/background.png"
-	]
-	
-	# 테마에 따른 이미지 선택
-	if background_theme < 0 or background_theme >= background_images.size():
-		background_theme = 0
-	
-	var selected_image = background_images[background_theme]
-	var texture: Texture2D = null
-	
-	if ResourceLoader.exists(selected_image):
-		texture = ResourceLoader.load(selected_image, "Texture2D")
-	
-	if texture:
-		background_sprite.texture = texture
-		# 맵 크기에 맞게 스케일 조정
-		var map_size = Vector2(cols * tile, rows * tile)
-		var texture_size = texture.get_size()
-		var scale_factor = Vector2(
-			map_size.x / texture_size.x,
-			map_size.y / texture_size.y
-		)
-		background_sprite.scale = scale_factor
-		# 맵 중앙에 위치
-		background_sprite.position = map_size * 0.5
-		print("백그라운드 설정 완료: %s (스케일: %s)" % [selected_image, scale_factor])
-	else:
-		# 기본 색상 배경 생성
-		var default_texture = ImageTexture.new()
-		var img = Image.create(cols * tile, rows * tile, false, Image.FORMAT_RGB8)
-		img.fill(Color.FOREST_GREEN)
-		default_texture.set_image(img)
-		background_sprite.texture = default_texture
-		background_sprite.position = Vector2(cols * tile * 0.5, rows * tile * 0.5)
-		print("기본 백그라운드 생성 완료")
-	
-	# 씬에 추가
-	add_child(background_sprite)
+
 
 func _ready():
 	print("Builder _ready() 호출됨")
@@ -110,9 +63,6 @@ func _build_map():
 	var line := get_node_or_null(preview_line_path) as Line2D
 	var slots_root := get_node_or_null(slots_root_path)
 	
-	# 백그라운드 이미지 설정
-	if show_background:
-		_setup_background_sprite()
 
 	# 경로 계산
 	var loop_cells := _rect_loop_cells()
@@ -125,10 +75,15 @@ func _build_map():
 		path2d.curve = c
 		print("Path2D 설정 완료 (%d개 포인트)" % c.get_point_count())
 	
-	# 미리보기 라인 설정
+	# 미리보기 라인 설정 (적 이동 경로 표시)
 	if line: 
 		line.points = _points_from_cells(loop_cells)
-		print("미리보기 라인 설정 완료")
+		# 라인 시각적 속성 설정
+		line.default_color = Color.RED
+		line.width = 8.0
+		line.z_index = 5  # 다른 요소들 위에 표시
+		line.visible = false  # 강제로 보이게 설정
+		print("미리보기 라인 설정 완료 (빨간색, 두께: %f, visible: %s)" % [line.width, line.visible])
 
 	# 슬롯 생성 (캐릭터 배치 영역)
 	if create_slots and slots_root:

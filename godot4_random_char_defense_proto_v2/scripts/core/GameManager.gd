@@ -3,7 +3,7 @@ signal gold_changed(v:int)
 signal life_changed(v:int)
 signal wave_changed(i:int)
 signal game_over(win:bool)
-@export var initial_gold:int = 1500
+@export var initial_gold:int = 200
 @export var initial_life:int = 20
 var gold:int
 var life:int

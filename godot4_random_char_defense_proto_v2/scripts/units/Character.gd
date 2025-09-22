@@ -23,8 +23,8 @@ var _frames_cache: Dictionary = {}
 func init_from_config(conf:Dictionary, _level:int, _id:String) -> void:
 	id = _id; level = _level
 	damage = conf.get("atk", damage) + (level-1)*4
-	range = conf.get("range", range) + (level-1)*8
-	rate = conf.get("rate", rate) * max(0.7, 1.0 - (level-1)*0.05)
+	range = conf.get("range", range) + (level-1)*12  # 사거리 증가량 증가 (8→12)
+	rate = conf.get("rate", rate) * max(0.5, 1.0 - (level-1)*0.08)  # 공격속도 증가량 증가 (0.05→0.08)
 	var shape:CollisionShape2D = area.get_node("CollisionShape2D")
 	if shape and shape.shape is CircleShape2D: shape.shape.radius = range
 	
@@ -49,6 +49,10 @@ func init_from_config(conf:Dictionary, _level:int, _id:String) -> void:
 	
 	# 레벨 라벨 업데이트
 	_update_level_label()
+	
+	# 레벨업 효과 표시
+	if level > 1:
+		_show_levelup_effect()
 	
 
 func _set_character_sprite_from_path(sprite_path: String) -> void:
@@ -558,6 +562,18 @@ func play_special_animation(anim_type: String) -> void:
 		"guard":
 			if config.has("guard_sprite"):
 				_set_character_sprite_from_path(config.guard_sprite)
+
+# 레벨업 효과 표시 함수
+func _show_levelup_effect() -> void:
+	print("%s: 레벨업! Lv.%d - 공격력: %d, 사거리: %.1f, 공속: %.2f초" % [id, level, damage, range, rate])
+	
+	# 시각적 효과 (선택사항)
+	if sprite:
+		var original_modulate = sprite.modulate
+		var tween = create_tween()
+		tween.set_loops(3)
+		tween.tween_property(sprite, "modulate", Color.GOLD, 0.2)
+		tween.tween_property(sprite, "modulate", original_modulate, 0.2)
 
 func _get_character_config() -> Dictionary:
 	# 여러 경로를 시도해서 DataHub 찾기

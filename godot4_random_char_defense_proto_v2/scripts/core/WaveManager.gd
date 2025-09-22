@@ -12,6 +12,10 @@ var is_wave_active:bool = false
 func start_next_wave() -> void:
 	var data = $"../DataHub".waves.get("list", [])
 	if wave_idx >= data.size():
+		# 모든 웨이브 클리어 - 승리!
+		var gm = $".."
+		if gm and gm.has_signal("game_over"):
+			gm.emit_signal("game_over", true)
 		emit_signal("wave_cleared", wave_idx); return
 	
 	var w = data[wave_idx]

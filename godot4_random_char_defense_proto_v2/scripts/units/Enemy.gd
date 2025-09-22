@@ -91,8 +91,26 @@ func _setup_animation(sprite_strip_path: String) -> void:
 
 	var tex := load(sprite_strip_path) as Texture2D
 	if not tex:
-		push_warning("스프라이트 이미지 로드 실패: %s" % sprite_strip_path)
-		return
+		# 파일명 형식 문제일 수 있으므로 대체 경로 시도
+		var alt_path = sprite_strip_path
+		if sprite_strip_path.contains("0_Satyr_Walking"):
+			alt_path = sprite_strip_path.replace("0_Satyr_Walking", "Satyr_01_Walking")
+			tex = load(alt_path) as Texture2D
+		elif sprite_strip_path.contains("0_Wraith_Walking"):
+			# Wraith 폴더에 따라 적절한 파일명으로 변환
+			if sprite_strip_path.contains("Wraith_01"):
+				alt_path = sprite_strip_path.replace("0_Wraith_Walking", "Wraith_01_Moving Forward")
+			elif sprite_strip_path.contains("Wraith_02"):
+				alt_path = sprite_strip_path.replace("0_Wraith_Walking", "Wraith_02_Moving Forward")
+			elif sprite_strip_path.contains("Wraith_03"):
+				alt_path = sprite_strip_path.replace("0_Wraith_Walking", "Wraith_03_Moving Forward")
+			else:
+				alt_path = sprite_strip_path.replace("0_Wraith_Walking", "Wraith_01_Moving Forward")
+			tex = load(alt_path) as Texture2D
+		
+		if not tex:
+			push_warning("스프라이트 이미지 로드 실패: %s (대체 경로도 실패: %s)" % [sprite_strip_path, alt_path])
+			return
 
 	var frame_size := tex.get_height()                 # 한 프레임 높이(정사각 가정)
 	var frame_count := int(tex.get_width() / float(frame_size))
@@ -163,9 +181,29 @@ func _setup_walking_animation(walking_folder: String, conf: Dictionary) -> void:
 			elif walking_folder.contains("Ogre"):
 				enemy_name = "Ogre"
 			elif walking_folder.contains("Wraith"):
-				enemy_name = "Wraith"
+				# Wraith는 특별한 파일명 형식 사용
+				if walking_folder.contains("Wraith_01"):
+					frame_path = walking_folder + ("Wraith_01_Moving Forward_%03d.png" % i)
+				elif walking_folder.contains("Wraith_02"):
+					frame_path = walking_folder + ("Wraith_02_Moving Forward_%03d.png" % i)
+				elif walking_folder.contains("Wraith_03"):
+					frame_path = walking_folder + ("Wraith_03_Moving Forward_%03d.png" % i)
+				else:
+					enemy_name = "Wraith"
+					frame_path = walking_folder + ("0_%s_Walking_%03d.png" % [enemy_name, i])
+				continue  # 다음 반복으로 넘어감
 			elif walking_folder.contains("Necromancer"):
-				enemy_name = "Necromancer"
+				# Necromancer는 특별한 파일명 형식 사용
+				if walking_folder.contains("Necromancer_of_the_Shadow_1"):
+					frame_path = walking_folder + ("0_Necromancer_of_the_Shadow_Walking_%03d.png" % i)
+				elif walking_folder.contains("Necromancer_of_the_Shadow_2"):
+					frame_path = walking_folder + ("0_Necromancer_of_the_Shadow_Walking_%03d.png" % i)
+				elif walking_folder.contains("Necromancer_of_the_Shadow_3"):
+					frame_path = walking_folder + ("0_Necromancer_of_the_Shadow_Walking_%03d.png" % i)
+				else:
+					enemy_name = "Necromancer"
+					frame_path = walking_folder + ("0_%s_Walking_%03d.png" % [enemy_name, i])
+				continue  # 다음 반복으로 넘어감
 			elif walking_folder.contains("Fallen_Angels"):
 				enemy_name = "Fallen_Angels"
 			elif walking_folder.contains("Valkyrie"):
@@ -177,7 +215,17 @@ func _setup_walking_animation(walking_folder: String, conf: Dictionary) -> void:
 			elif walking_folder.contains("Dark_Oracle"):
 				enemy_name = "Dark_Oracle"
 			elif walking_folder.contains("Satyr"):
-				enemy_name = "Satyr"
+				# Satyr는 특별한 파일명 형식 사용
+				if walking_folder.contains("Satyr_01"):
+					frame_path = walking_folder + ("Satyr_01_Walking_%03d.png" % i)
+				elif walking_folder.contains("Satyr_02"):
+					frame_path = walking_folder + ("Satyr_02_Walking_%03d.png" % i)
+				elif walking_folder.contains("Satyr_03"):
+					frame_path = walking_folder + ("Satyr_03_Walking_%03d.png" % i)
+				else:
+					enemy_name = "Satyr"
+					frame_path = walking_folder + ("0_%s_Walking_%03d.png" % [enemy_name, i])
+				continue  # 다음 반복으로 넘어감
 			
 			frame_path = walking_folder + ("0_%s_Walking_%03d.png" % [enemy_name, i])
 		
@@ -288,6 +336,10 @@ func init_from_config(conf: Dictionary) -> void:
 	
 
 func apply_slow(factor: float, duration: float) -> void:
+	print("%s: 슬로우 적용! 속도 %.2f -> %.2f (%.1f초)" % [enemy_type, speed, base_speed * factor, duration])
 	speed = base_speed * factor
 	var timer = get_tree().create_timer(duration)
-	timer.timeout.connect(func(): speed = base_speed)
+	timer.timeout.connect(func(): 
+		speed = base_speed
+		print("%s: 슬로우 해제! 속도 %.2f -> %.2f" % [enemy_type, speed, base_speed])
+	)

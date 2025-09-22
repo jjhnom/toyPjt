@@ -1,7 +1,6 @@
-res://scripts/core/MapBuilder.gd
+res://scenes/dice_rect_map.tscn
+res://scenes/Main.tscn
+res://scenes/Character.tscn
 res://scenes/Enemy.tscn
 res://scenes/Map.tscn
 res://scenes/Projectile.tscn
-res://scenes/dice_rect_map.tscn
-res://scripts/core/ObjectPool.gd
-res://scenes/Main.tscn

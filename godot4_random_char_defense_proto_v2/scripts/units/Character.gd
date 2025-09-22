@@ -245,8 +245,26 @@ func _ready() -> void:
 	
 func _on_area_enter(area:Area2D) -> void:
 	var enemy = area.get_parent()  # HitboxArea의 부모는 Enemy
-	if enemy.has_method("take_damage"): 
-		in_range.append(enemy)
+	if enemy.has_method("take_damage"):
+		# Enemy의 히트박스 크기 확인
+		var enemy_hitbox_radius = 16.0  # 기본값 (Enemy.tscn에서 확인된 값)
+		var enemy_area = enemy.get_node_or_null("HitboxArea")
+		if enemy_area:
+			var enemy_collision = enemy_area.get_node_or_null("CollisionShape2D")
+			if enemy_collision and enemy_collision.shape is CircleShape2D:
+				enemy_hitbox_radius = enemy_collision.shape.radius
+		
+		# 실제 공격 가능 거리 = 캐릭터 사거리 + 적 히트박스 반지름 + 여유
+		var distance = global_position.distance_to(enemy.global_position)
+		var effective_range = range + enemy_hitbox_radius + 5.0  # 5픽셀 추가 여유
+		
+		if distance <= effective_range:
+			in_range.append(enemy)
+			print("%s: Area2D 감지 - 적: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, enemy.name, distance, range, enemy_hitbox_radius, effective_range])
+			print("%s: → 사거리 내 적으로 등록됨" % id)
+		else:
+			print("%s: Area2D 감지 - 적: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, enemy.name, distance, range, enemy_hitbox_radius, effective_range])
+			print("%s: → 사거리 밖이므로 등록하지 않음" % id)
 
 func _on_area_exit(area:Area2D) -> void:
 	var enemy = area.get_parent()  # HitboxArea의 부모는 Enemy
@@ -260,7 +278,17 @@ func _on_animation_finished() -> void:
 		for enemy in in_range:
 			if is_instance_valid(enemy):
 				var distance = global_position.distance_to(enemy.global_position)
-				if distance <= range:
+				
+				# Enemy 히트박스 크기 고려
+				var enemy_hitbox_radius = 16.0  # 기본값
+				var enemy_area = enemy.get_node_or_null("HitboxArea")
+				if enemy_area:
+					var enemy_collision = enemy_area.get_node_or_null("CollisionShape2D")
+					if enemy_collision and enemy_collision.shape is CircleShape2D:
+						enemy_hitbox_radius = enemy_collision.shape.radius
+				
+				var effective_range = range + enemy_hitbox_radius
+				if distance <= effective_range:
 					valid_targets.append(enemy)
 		
 		if valid_targets.is_empty():
@@ -275,12 +303,31 @@ func _process(delta:float) -> void:
 	# 유효한 적들만 필터링
 	in_range = in_range.filter(is_instance_valid)
 	
-	# 사거리 내에 정확히 있는 적들만 다시 필터링
+	# 사거리 내에 정확히 있는 적들만 다시 필터링 (Enemy 히트박스 크기 고려)
 	var valid_targets = []
 	for enemy in in_range:
 		var distance = global_position.distance_to(enemy.global_position)
-		if distance <= range:
+		
+		# Enemy의 히트박스 크기 확인
+		var enemy_hitbox_radius = 16.0  # 기본값 (Enemy.tscn에서 확인된 값)
+		var enemy_area = enemy.get_node_or_null("HitboxArea")
+		if enemy_area:
+			var enemy_collision = enemy_area.get_node_or_null("CollisionShape2D")
+			if enemy_collision and enemy_collision.shape is CircleShape2D:
+				enemy_hitbox_radius = enemy_collision.shape.radius
+		
+		# 실제 공격 가능 거리 = 캐릭터 사거리 + 적 히트박스 반지름
+		var effective_range = range + enemy_hitbox_radius
+		
+		if distance <= effective_range:
 			valid_targets.append(enemy)
+		else:
+			print("%s: 적이 사거리를 벗어남 - 거리:%.1f, 기본사거리:%.1f, 적히트박스:%.1f, 유효사거리:%.1f" % [id, distance, range, enemy_hitbox_radius, effective_range])
+	
+	# 디버그: 주기적으로 상태 로그 출력 (1초마다)
+	if Time.get_ticks_msec() % 1000 < 50:  # 대략 1초마다
+		if not in_range.is_empty() or not valid_targets.is_empty():
+			print("%s: in_range:%d, valid_targets:%d, cd:%.1f, attacking:%s" % [id, in_range.size(), valid_targets.size(), cd, is_attacking])
 	
 	# 사거리 내에 적이 없으면 idle 상태로 전환
 	if valid_targets.is_empty():
@@ -319,6 +366,29 @@ func _get_closest_target(targets: Array) -> Node:
 	return closest
 
 func _fire(t:Node) -> void:
+	# 기본적인 유효성 검사만 수행
+	if not is_instance_valid(t):
+		print("%s: 타겟이 유효하지 않음 - 공격 취소" % id)
+		return
+	
+	var distance_to_target = global_position.distance_to(t.global_position)
+	
+	# Enemy의 히트박스 크기 확인
+	var enemy_hitbox_radius = 16.0  # 기본값
+	var enemy_area = t.get_node_or_null("HitboxArea")
+	if enemy_area:
+		var enemy_collision = enemy_area.get_node_or_null("CollisionShape2D")
+		if enemy_collision and enemy_collision.shape is CircleShape2D:
+			enemy_hitbox_radius = enemy_collision.shape.radius
+	
+	# 최종 사거리 검증 (적 히트박스 고려)
+	var effective_range = range + enemy_hitbox_radius
+	if distance_to_target > effective_range:
+		print("%s: 공격 거리 초과 - 거리: %.1f, 유효사거리: %.1f" % [id, distance_to_target, effective_range])
+		return
+	
+	print("%s: 공격 시도 - 타겟: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, t.name if t.has_method("get") else "적", distance_to_target, range, enemy_hitbox_radius, effective_range])
+	
 	# 공격 상태 업데이트
 	is_attacking = true
 	last_target = t
@@ -339,7 +409,7 @@ func _fire(t:Node) -> void:
 	p.global_position = global_position
 	p.shoot_at(t, damage)
 	
-	print("%s: %s를 공격! 거리: %.1f" % [id, t.name if t.has_method("get") else "적", global_position.distance_to(t.global_position)])
+	print("%s: %s를 공격 완료! 거리: %.1f" % [id, t.name if t.has_method("get") else "적", distance_to_target])
 
 # 캐릭터별 애니메이션 재생 함수들
 func play_attack_animation() -> void:

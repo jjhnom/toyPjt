@@ -151,8 +151,6 @@ func _setup_animation(sprite_strip_path: String) -> void:
 		elif sprite_strip_path.contains("Lancer"):
 			character_name = "Lancer"
 			
-		print("%s 프레임 분석: 이미지크기 %dx%d -> 가로세로비율 %.1f -> 실제사용 %d프레임 (크기: %dx%d)" % 
-			  [character_name, tex.get_width(), tex.get_height(), estimated_cols, cols, frame_width, frame_height])
 			  
 	elif sprite_strip_path.contains("Monk"):
 		# Monk 애니메이션들
@@ -166,21 +164,18 @@ func _setup_animation(sprite_strip_path: String) -> void:
 			frame_width = tex.get_width() / 6
 			cols = 6
 		rows = 1
-		print("Monk 프레임 크기: %d x %d, 열: %d" % [frame_width, frame_height, cols])
 	elif sprite_strip_path.ends_with("archer.png"):
 		# 기존 archer.png (8x2 그리드)
 		frame_width = 192
 		frame_height = 512
 		cols = 8
 		rows = 2
-		print("Legacy Archer 프레임 크기: %d x %d" % [frame_width, frame_height])
 	else:
 		# 기본: 가로로 나열된 정사각형 프레임들
 		frame_height = tex.get_height()
 		frame_width = frame_height  # 정사각형 가정
 		cols = int(tex.get_width() / float(frame_width))
 		rows = 1
-		print("기본 프레임 크기: %d x %d" % [frame_width, frame_height])
 	
 	# 그리드에서 프레임들 추출
 	for row in range(rows):
@@ -264,11 +259,6 @@ func _on_area_enter(area:Area2D) -> void:
 		
 		if distance <= effective_range:
 			in_range.append(enemy)
-			print("%s: Area2D 감지 - 적: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, enemy.name, distance, attack_range, enemy_hitbox_radius, effective_range])
-			print("%s: → 사거리 내 적으로 등록됨" % id)
-		else:
-			print("%s: Area2D 감지 - 적: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, enemy.name, distance, attack_range, enemy_hitbox_radius, effective_range])
-			print("%s: → 사거리 밖이므로 등록하지 않음" % id)
 
 func _on_area_exit(area:Area2D) -> void:
 	var enemy = area.get_parent()  # HitboxArea의 부모는 Enemy
@@ -299,9 +289,6 @@ func _on_animation_finished() -> void:
 			is_attacking = false
 			last_target = null
 			play_idle_animation()
-			print("%s: 공격 애니메이션 완료 - idle 전환" % id)
-		else:
-			print("%s: 공격 애니메이션 완료 - 대기 상태" % id)
 
 func _process(delta:float) -> void:
 	# 유효한 적들만 필터링
@@ -325,13 +312,6 @@ func _process(delta:float) -> void:
 		
 		if distance <= effective_range:
 			valid_targets.append(enemy)
-		else:
-			print("%s: 적이 사거리를 벗어남 - 거리:%.1f, 기본사거리:%.1f, 적히트박스:%.1f, 유효사거리:%.1f" % [id, distance, attack_range, enemy_hitbox_radius, effective_range])
-	
-	# 디버그: 주기적으로 상태 로그 출력 (1초마다)
-	if Time.get_ticks_msec() % 1000 < 50:  # 대략 1초마다
-		if not in_range.is_empty() or not valid_targets.is_empty():
-			print("%s: in_range:%d, valid_targets:%d, cd:%.1f, attacking:%s" % [id, in_range.size(), valid_targets.size(), cd, is_attacking])
 	
 	# 사거리 내에 적이 없으면 idle 상태로 전환
 	if valid_targets.is_empty():
@@ -339,7 +319,6 @@ func _process(delta:float) -> void:
 			is_attacking = false
 			last_target = null
 			play_idle_animation()
-			print("%s: 사거리 내 적 없음 - idle 전환" % id)
 		return
 	
 	# 쿨다운 체크 (적이 있을 때만)
@@ -372,7 +351,6 @@ func _get_closest_target(targets: Array) -> Node:
 func _fire(t:Node) -> void:
 	# 기본적인 유효성 검사만 수행
 	if not is_instance_valid(t):
-		print("%s: 타겟이 유효하지 않음 - 공격 취소" % id)
 		return
 	
 	var distance_to_target = global_position.distance_to(t.global_position)
@@ -388,14 +366,7 @@ func _fire(t:Node) -> void:
 	# 최종 사거리 검증 (적 히트박스 고려)
 	var effective_range = attack_range + enemy_hitbox_radius
 	if distance_to_target > effective_range:
-		print("%s: 공격 거리 초과 - 거리: %.1f, 유효사거리: %.1f" % [id, distance_to_target, effective_range])
 		return
-	
-	# 슬롯 번호 확인
-	var slot_number = _get_slot_number()
-	var slot_info = "슬롯%d" % slot_number if slot_number >= 0 else "슬롯?"
-	
-	print("%s(%s): 공격 시도 - 타겟: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, slot_info, t.name if t.has_method("get") else "적", distance_to_target, attack_range, enemy_hitbox_radius, effective_range])
 	
 	# 공격 상태 업데이트
 	is_attacking = true
@@ -417,8 +388,6 @@ func _fire(t:Node) -> void:
 	p.global_position = global_position
 	p.shoot_at(t, damage)
 	
-	# 슬롯 정보 재사용 (이미 위에서 선언됨)
-	print("%s(%s): %s를 공격 완료! 거리: %.1f" % [id, slot_info, t.name if t.has_method("get") else "적", distance_to_target])
 
 # 캐릭터별 애니메이션 재생 함수들
 func play_attack_animation() -> void:
@@ -441,7 +410,6 @@ func _play_lancer_directional_attack(config: Dictionary) -> void:
 	var attack_key = "attack_" + selected_direction
 	if config.has(attack_key):
 		_set_character_sprite_from_path(config[attack_key])
-		print("Lancer %s 방향 공격!" % selected_direction)
 	else:
 		# 백업으로 기본 공격 스프라이트 사용
 		if config.has("attack_sprite"):
@@ -473,7 +441,6 @@ func play_lancer_attack_towards_target(target: Node) -> void:
 	
 	if config.has(attack_key):
 		_set_character_sprite_from_path(config[attack_key])
-		print("Lancer %s 방향으로 적 공격! (적 위치: %s)" % [selected_direction, target.global_position])
 	else:
 		# 백업으로 기본 공격 스프라이트 사용
 		if config.has("attack_sprite"):
@@ -537,7 +504,6 @@ func _create_level_label() -> void:
 	# 캐릭터에 추가
 	add_child(level_label)
 	
-	print("%s: 레벨 라벨 생성 완료 (Lv.%d)" % [id, level])
 
 # 레벨 라벨 업데이트 함수  
 func _update_level_label() -> void:
@@ -546,7 +512,6 @@ func _update_level_label() -> void:
 		return
 	
 	level_label.text = "Lv.%d" % level
-	print("%s: 레벨 라벨 업데이트 (Lv.%d)" % [id, level])
 
 func play_idle_animation() -> void:
 	var config = _get_character_config()
@@ -570,7 +535,6 @@ func play_special_animation(anim_type: String) -> void:
 
 # 레벨업 효과 표시 함수
 func _show_levelup_effect() -> void:
-	print("%s: 레벨업! Lv.%d - 공격력: %d, 사거리: %.1f, 공속: %.2f초" % [id, level, damage, attack_range, rate])
 	
 	# 시각적 효과 (선택사항)
 	if sprite:
@@ -594,11 +558,6 @@ func _get_character_config() -> Dictionary:
 	
 	if data_hub and data_hub.has_method("get_character_data"):
 		return data_hub.get_character_data(id)
-	else:
-		if not data_hub:
-			print("경고: DataHub를 찾을 수 없습니다. 캐릭터 ID: %s" % id)
-		else:
-			print("경고: DataHub에서 get_character_data 메서드를 찾을 수 없습니다.")
 	
 	return {}
 
@@ -613,3 +572,14 @@ func _get_slot_number() -> int:
 		return character_manager._slot_at(global_position)
 	
 	return -1
+
+func _is_selected_character() -> bool:
+	# CharacterManager에서 선택된 캐릭터 확인
+	var character_manager = get_node_or_null("/root/Main/GameManager/CharacterManager")
+	if not character_manager:
+		character_manager = get_node_or_null("../../../GameManager/CharacterManager")
+	
+	if character_manager and character_manager.has_method("get") and "selected_character" in character_manager:
+		return character_manager.selected_character == self
+	
+	return false

@@ -1,6 +1,6 @@
 {
   "goblin_basic": {
-    "hp": 40,
+    "hp": 80,
     "speed": 10,
     "reward": 5,
     "type": "goblin",
@@ -14,7 +14,7 @@
     }
   },
   "goblin_male": {
-    "hp": 45,
+    "hp": 90,
     "speed": 11,
     "reward": 6,
     "type": "goblin_male",
@@ -28,7 +28,7 @@
     }
   },
   "goblin_female": {
-    "hp": 42,
+    "hp": 84,
     "speed": 11,
     "reward": 6,
     "type": "goblin_female",
@@ -42,7 +42,7 @@
     }
   },
   "orc": {
-    "hp": 90,
+    "hp": 180,
     "speed": 8,
     "reward": 8,
     "type": "orc",
@@ -56,7 +56,7 @@
     }
   },
   "skeleton_warrior_1": {
-    "hp": 120,
+    "hp": 240,
     "speed": 9,
     "reward": 11,
     "type": "skeleton_warrior_1",
@@ -70,7 +70,7 @@
     }
   },
   "skeleton_warrior_2": {
-    "hp": 125,
+    "hp": 250,
     "speed": 9,
     "reward": 13,
     "type": "skeleton_warrior_2",
@@ -84,7 +84,7 @@
     }
   },
   "skeleton_warrior_3": {
-    "hp": 130,
+    "hp": 260,
     "speed": 9,
     "reward": 14,
     "type": "skeleton_warrior_3",
@@ -98,7 +98,7 @@
     }
   },
   "skeleton_crusader_1": {
-    "hp": 180,
+    "hp": 360,
     "speed": 7,
     "reward": 18,
     "type": "skeleton_crusader_1",
@@ -112,7 +112,7 @@
     }
   },
   "skeleton_crusader_2": {
-    "hp": 190,
+    "hp": 380,
     "speed": 7,
     "reward": 19,
     "type": "skeleton_crusader_2",
@@ -126,7 +126,7 @@
     }
   },
   "skeleton_crusader_3": {
-    "hp": 200,
+    "hp": 400,
     "speed": 7,
     "reward": 20,
     "type": "skeleton_crusader_3",
@@ -140,7 +140,7 @@
     }
   },
   "minotaur_1": {
-    "hp": 300,
+    "hp": 600,
     "speed": 6,
     "reward": 25,
     "type": "minotaur_1",
@@ -154,7 +154,7 @@
     }
   },
   "minotaur_2": {
-    "hp": 320,
+    "hp": 640,
     "speed": 6,
     "reward": 27,
     "type": "minotaur_2",
@@ -168,7 +168,7 @@
     }
   },
   "minotaur_3": {
-    "hp": 340,
+    "hp": 680,
     "speed": 6,
     "reward": 29,
     "type": "minotaur_3",
@@ -182,7 +182,7 @@
     }
   },
   "golem_1": {
-    "hp": 450,
+    "hp": 900,
     "speed": 4,
     "reward": 35,
     "type": "golem_1",
@@ -196,7 +196,7 @@
     }
   },
   "golem_2": {
-    "hp": 480,
+    "hp": 960,
     "speed": 4,
     "reward": 38,
     "type": "golem_2",
@@ -210,7 +210,7 @@
     }
   },
   "golem_3": {
-    "hp": 510,
+    "hp": 1020,
     "speed": 4,
     "reward": 40,
     "type": "golem_3",
@@ -224,7 +224,7 @@
     }
   },
   "ogre": {
-    "hp": 350,
+    "hp": 700,
     "speed": 5,
     "reward": 30,
     "type": "ogre",
@@ -238,7 +238,7 @@
     }
   },
   "wraith_1": {
-    "hp": 80,
+    "hp": 160,
     "speed": 11,
     "reward": 15,
     "type": "wraith_1",
@@ -252,7 +252,7 @@
     }
   },
   "wraith_2": {
-    "hp": 85,
+    "hp": 170,
     "speed": 13,
     "reward": 16,
     "type": "wraith_2",
@@ -266,7 +266,7 @@
     }
   },
   "wraith_3": {
-    "hp": 90,
+    "hp": 180,
     "speed": 14,
     "reward": 17,
     "type": "wraith_3",
@@ -280,7 +280,7 @@
     }
   },
   "necromancer_1": {
-    "hp": 200,
+    "hp": 400,
     "speed": 6,
     "reward": 40,
     "type": "necromancer_1",
@@ -294,7 +294,7 @@
     }
   },
   "necromancer_2": {
-    "hp": 220,
+    "hp": 440,
     "speed": 6,
     "reward": 42,
     "type": "necromancer_2",
@@ -308,7 +308,7 @@
     }
   },
   "necromancer_3": {
-    "hp": 240,
+    "hp": 480,
     "speed": 6,
     "reward": 44,
     "type": "necromancer_3",
@@ -322,7 +322,7 @@
     }
   },
   "fallen_angel_1": {
-    "hp": 250,
+    "hp": 500,
     "speed": 8,
     "reward": 45,
     "type": "fallen_angel_1",
@@ -336,7 +336,7 @@
     }
   },
   "fallen_angel_2": {
-    "hp": 270,
+    "hp": 540,
     "speed": 8,
     "reward": 47,
     "type": "fallen_angel_2",
@@ -350,7 +350,7 @@
     }
   },
   "fallen_angel_3": {
-    "hp": 290,
+    "hp": 580,
     "speed": 8,
     "reward": 49,
     "type": "fallen_angel_3",
@@ -364,7 +364,7 @@
     }
   },
   "valkyrie_1": {
-    "hp": 320,
+    "hp": 640,
     "speed": 9,
     "reward": 50,
     "type": "valkyrie_1",
@@ -378,7 +378,7 @@
     }
   },
   "valkyrie_2": {
-    "hp": 340,
+    "hp": 680,
     "speed": 9,
     "reward": 52,
     "type": "valkyrie_2",
@@ -392,7 +392,7 @@
     }
   },
   "valkyrie_3": {
-    "hp": 360,
+    "hp": 720,
     "speed": 9,
     "reward": 54,
     "type": "valkyrie_3",
@@ -406,7 +406,7 @@
     }
   },
   "reaper_1": {
-    "hp": 500,
+    "hp": 1000,
     "speed": 7,
     "reward": 60,
     "type": "reaper_1",
@@ -420,7 +420,7 @@
     }
   },
   "reaper_2": {
-    "hp": 530,
+    "hp": 1060,
     "speed": 7,
     "reward": 62,
     "type": "reaper_2",
@@ -434,7 +434,7 @@
     }
   },
   "reaper_3": {
-    "hp": 560,
+    "hp": 1120,
     "speed": 7,
     "reward": 64,
     "type": "reaper_3",
@@ -448,7 +448,7 @@
     }
   },
   "zombie_villager_1": {
-    "hp": 60,
+    "hp": 120,
     "speed": 5,
     "reward": 8,
     "type": "zombie_villager_1",
@@ -462,7 +462,7 @@
     }
   },
   "zombie_villager_2": {
-    "hp": 65,
+    "hp": 130,
     "speed": 5,
     "reward": 9,
     "type": "zombie_villager_2",
@@ -476,7 +476,7 @@
     }
   },
   "zombie_villager_3": {
-    "hp": 70,
+    "hp": 140,
     "speed": 5,
     "reward": 10,
     "type": "zombie_villager_3",
@@ -490,7 +490,7 @@
     }
   },
   "dark_oracle_1": {
-    "hp": 280,
+    "hp": 560,
     "speed": 6,
     "reward": 42,
     "type": "dark_oracle_1",
@@ -504,7 +504,7 @@
     }
   },
   "dark_oracle_2": {
-    "hp": 300,
+    "hp": 600,
     "speed": 6,
     "reward": 44,
     "type": "dark_oracle_2",
@@ -518,7 +518,7 @@
     }
   },
   "dark_oracle_3": {
-    "hp": 320,
+    "hp": 640,
     "speed": 6,
     "reward": 46,
     "type": "dark_oracle_3",
@@ -532,7 +532,7 @@
     }
   },
   "satyr_1": {
-    "hp": 150,
+    "hp": 300,
     "speed": 10,
     "reward": 20,
     "type": "satyr_1",
@@ -546,7 +546,7 @@
     }
   },
   "satyr_2": {
-    "hp": 160,
+    "hp": 320,
     "speed": 10,
     "reward": 21,
     "type": "satyr_2",
@@ -560,7 +560,7 @@
     }
   },
   "satyr_3": {
-    "hp": 170,
+    "hp": 340,
     "speed": 10,
     "reward": 22,
     "type": "satyr_3",

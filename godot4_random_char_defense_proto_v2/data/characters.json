@@ -22,7 +22,7 @@
   "warrior": {
     "role": "tank",
     "atk": 10,
-    "range": 120,
+    "range": 150,
     "rate": 1.5,
     "hp": 200,
     "skill": "guard",
@@ -46,7 +46,7 @@
   "monk": {
     "role": "support",
     "atk": 10,
-    "range": 120,
+    "range": 150,
     "rate": 1.2,
     "skill": "heal",
     "cost": 80,
@@ -68,7 +68,7 @@
   "lancer": {
     "role": "dps",
     "atk": 8,
-    "range": 120,
+    "range": 150,
     "rate": 1.0,
     "skill": "directional_attack",
     "cost": 90,

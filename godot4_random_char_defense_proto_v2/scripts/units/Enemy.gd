@@ -246,17 +246,13 @@ func _setup_walking_animation(walking_folder: String, conf: Dictionary) -> void:
 		if tex:
 			frames.add_frame(anim_name, tex)
 			loaded_count += 1
-		else:
-			print("프레임 로드 실패: %s" % frame_path)
 	
 	if loaded_count > 0:
 		_frames_cache[cache_key] = frames
 		sprite.sprite_frames = frames
 		sprite.animation = anim_name
 		sprite.play()
-		print("%s: %d개 프레임 로드 완료" % [walking_folder, loaded_count])
 	else:
-		print("애니메이션 로드 실패: %s" % walking_folder)
 		# 백업으로 기존 방식 사용
 		var sprite_path = conf.get("sprite_path", "")
 		if sprite_path != "":
@@ -396,10 +392,8 @@ func init_from_config(conf: Dictionary) -> void:
 	
 
 func apply_slow(factor: float, duration: float) -> void:
-	print("%s: 슬로우 적용! 속도 %.2f -> %.2f (%.1f초)" % [enemy_type, speed, base_speed * factor, duration])
 	speed = base_speed * factor
 	var timer = get_tree().create_timer(duration)
 	timer.timeout.connect(func(): 
 		speed = base_speed
-		print("%s: 슬로우 해제! 속도 %.2f -> %.2f" % [enemy_type, speed, base_speed])
 	)

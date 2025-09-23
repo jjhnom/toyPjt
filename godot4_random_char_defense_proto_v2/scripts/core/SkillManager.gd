@@ -32,11 +32,9 @@ func use_global_slow() -> void:
     var enemy_layer = map.get_node("EnemyLayer")
     if enemy_layer:
         enemies = enemy_layer.get_children()
-        print("EnemyLayer에서 발견된 적 수: %d마리" % enemies.size())
     
     # 방법 2: enemy 그룹에서 적들 찾기 (백업)
     var enemy_group = get_tree().get_nodes_in_group("enemy")
-    print("enemy 그룹에서 발견된 적 수: %d마리" % enemy_group.size())
     
     # 두 방법 모두 사용하여 중복 제거
     var all_enemies = []
@@ -48,7 +46,6 @@ func use_global_slow() -> void:
         if enemy and is_instance_valid(enemy) and enemy not in all_enemies:
             all_enemies.append(enemy)
     
-    print("총 발견된 유효한 적 수: %d마리" % all_enemies.size())
     
     var affected_count = 0
     
@@ -56,8 +53,4 @@ func use_global_slow() -> void:
         if e.has_method("apply_slow"):
             e.apply_slow(fac, dur)
             affected_count += 1
-            print("적에게 슬로우 적용: %s (타입: %s)" % [e.name, e.get("enemy_type")])
-        else:
-            print("적이 apply_slow 메서드를 가지고 있지 않음: %s" % e.name)
     
-    print("슬로우 스킬 사용! %d마리 적에게 적용 (속도: %.1fx, 지속시간: %.1f초)" % [affected_count, fac, dur])

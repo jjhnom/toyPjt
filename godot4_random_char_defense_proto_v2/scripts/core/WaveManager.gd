@@ -97,7 +97,6 @@ func _spawn_one(enemy_id:String) -> void:
 	
 	enemy.init_from_config($"../DataHub".enemies.get(enemy_id, {}))
 	
-	print("적 생성됨: %s, z_index=%d, position=%s" % [enemy_id, enemy.z_index, enemy.global_position])
 	
 	enemy.connect("escaped", Callable(self, "_on_enemy_escaped"), CONNECT_ONE_SHOT)
 	enemy.connect("died", Callable(self, "_on_enemy_died"), CONNECT_ONE_SHOT)

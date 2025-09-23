@@ -641,12 +641,29 @@ func _apply_knockback(target: Node) -> void:
 				var original_speed = target.speed
 				target.speed = original_speed * 0.3  # 30% 속도로 감소
 				
-				# 0.5초 후 원래 속도로 복원
-				var timer = get_tree().create_timer(0.5)
-				timer.timeout.connect(func():
-					if is_instance_valid(target):
-						target.speed = original_speed
-				)
+				# 0.5초 후 원래 속도로 복원 - 안전한 방법
+				_restore_enemy_speed_after_delay(target, original_speed, 0.5)
+
+# 적 속도 복원 (지연 후)
+func _restore_enemy_speed_after_delay(enemy: Node, original_speed: float, delay: float) -> void:
+	# 별도의 타이머 노드를 생성하여 안전하게 처리
+	var timer = Timer.new()
+	add_child(timer)
+	timer.wait_time = delay
+	timer.one_shot = true
+	timer.start()
+	
+	# 타이머 완료 시 속도 복원 및 타이머 정리
+	timer.timeout.connect(_on_speed_restore_timer_timeout.bind(enemy, original_speed, timer), CONNECT_ONE_SHOT)
+
+# 타이머 완료 시 속도 복원 콜백
+func _on_speed_restore_timer_timeout(enemy: Node, original_speed: float, timer: Timer) -> void:
+	if is_instance_valid(enemy) and enemy.has_method("set") and "speed" in enemy:
+		enemy.speed = original_speed
+	
+	# 타이머 노드 정리
+	if is_instance_valid(timer):
+		timer.queue_free()
 
 # 넉백 시각적 효과
 func _show_knockback_effect(target: Node) -> void:

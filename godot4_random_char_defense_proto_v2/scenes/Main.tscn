@@ -73,6 +73,8 @@ metadata/_edit_use_anchors_ = true
 [node name="Wave" type="Label" parent="UI/HUD"]
 layout_mode = 1
 anchors_preset = -1
+anchor_left = -0.125
+anchor_right = -0.125
 offset_left = 556.0
 offset_top = 33.0
 offset_right = 660.0

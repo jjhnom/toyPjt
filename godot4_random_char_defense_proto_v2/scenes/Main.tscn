@@ -123,8 +123,8 @@ offset_bottom = 701.0
 text = "Sell (50%)"
 
 [node name="Background" type="Sprite2D" parent="."]
-position = Vector2(360.5, 357.883)
-scale = Vector2(0.968056, 0.983658)
+position = Vector2(364, 357.883)
+scale = Vector2(0.883333, 0.983658)
 texture = ExtResource("10_lhr70")
 
 [node name="BGM" type="AudioStreamPlayer" parent="."]

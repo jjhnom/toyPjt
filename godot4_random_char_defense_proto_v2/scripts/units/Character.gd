@@ -253,9 +253,9 @@ func _on_area_enter(area:Area2D) -> void:
 			if enemy_collision and enemy_collision.shape is CircleShape2D:
 				enemy_hitbox_radius = enemy_collision.shape.radius
 		
-		# 실제 공격 가능 거리 = 캐릭터 사거리 + 적 히트박스 반지름 + 여유
+		# 실제 공격 가능 거리 = 캐릭터 사거리 + 적 히트박스 반지름 + 여유 (모바일 최적화)
 		var distance = global_position.distance_to(enemy.global_position)
-		var effective_range = attack_range + enemy_hitbox_radius + 5.0  # 5픽셀 추가 여유
+		var effective_range = attack_range + enemy_hitbox_radius + 15.0  # 모바일 터치 정확도 고려하여 15픽셀 추가
 		
 		if distance <= effective_range:
 			in_range.append(enemy)
@@ -307,8 +307,8 @@ func _process(delta:float) -> void:
 			if enemy_collision and enemy_collision.shape is CircleShape2D:
 				enemy_hitbox_radius = enemy_collision.shape.radius
 		
-		# 실제 공격 가능 거리 = 캐릭터 사거리 + 적 히트박스 반지름
-		var effective_range = attack_range + enemy_hitbox_radius
+		# 실제 공격 가능 거리 = 캐릭터 사거리 + 적 히트박스 반지름 (모바일 최적화)
+		var effective_range = attack_range + enemy_hitbox_radius + 10.0  # 모바일 터치 정확도 고려
 		
 		if distance <= effective_range:
 			valid_targets.append(enemy)
@@ -321,9 +321,9 @@ func _process(delta:float) -> void:
 			play_idle_animation()
 		return
 	
-	# 쿨다운 체크 (적이 있을 때만)
+	# 쿨다운 체크 (적이 있을 때만, 모바일 최적화)
 	cd -= delta
-	if cd > 0: 
+	if cd > 0.05:  # 모바일 터치 지연 보정을 위해 50ms 버퍼 추가
 		return
 	
 	# 가장 가까운 적을 우선 타겟으로 선택
@@ -332,15 +332,22 @@ func _process(delta:float) -> void:
 		_fire(closest_target)
 		cd = rate
 
-# 가장 가까운 적을 찾는 함수
+# 가장 가까운 적을 찾는 함수 (모바일 최적화)
 func _get_closest_target(targets: Array) -> Node:
 	if targets.is_empty():
 		return null
 	
+	# 모바일에서는 첫 번째 유효한 적을 우선 선택 (반응성 향상)
+	if targets.size() == 1:
+		return targets[0]
+	
 	var closest = targets[0]
 	var closest_distance = global_position.distance_to(closest.global_position)
 	
-	for target in targets:
+	# 가장 가까운 적 찾기 (최대 3마리까지만 검사하여 성능 최적화)
+	var max_checks = min(3, targets.size())
+	for i in range(max_checks):
+		var target = targets[i]
 		var distance = global_position.distance_to(target.global_position)
 		if distance < closest_distance:
 			closest = target
@@ -363,8 +370,8 @@ func _fire(t:Node) -> void:
 		if enemy_collision and enemy_collision.shape is CircleShape2D:
 			enemy_hitbox_radius = enemy_collision.shape.radius
 	
-	# 최종 사거리 검증 (적 히트박스 고려)
-	var effective_range = attack_range + enemy_hitbox_radius
+	# 최종 사거리 검증 (적 히트박스 고려, 모바일 최적화)
+	var effective_range = attack_range + enemy_hitbox_radius + 5.0  # 모바일 터치 정확도 고려
 	if distance_to_target > effective_range:
 		return
 	

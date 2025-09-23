@@ -56,6 +56,13 @@ func start_next_wave() -> void:
 		await get_tree().process_frame
 	
 	is_wave_active = false
+	
+	# 웨이브 클리어 골드 지급
+	var clear_gold = w.get("clear_gold", 0)
+	if clear_gold > 0 and gm:
+		gm.add_gold(clear_gold)
+		print("웨이브 %d 클리어! +%d 골드" % [wave_idx + 1, clear_gold])
+	
 	wave_idx += 1
 	emit_signal("wave_cleared", wave_idx)
 func _spawn_one(enemy_id:String) -> void:
@@ -148,11 +155,16 @@ func _on_enemy_died(reward:int) -> void:
 	alive -= 1
 	$"..".add_gold(reward)
 	
-	# 무한 웨이브에서 모든 적이 처치되면 타이머 초기화
+	# 무한 웨이브에서 모든 적이 처치되면 타이머 초기화 및 클리어 골드 지급
 	if is_infinite_mode and alive <= 0:
 		wave_timer = 0.0
 		wave_time_limit = 0.0
 		emit_signal("wave_timer_updated", 0)
+		
+		# 무한 웨이브 클리어 골드 지급 (레벨에 따라 증가)
+		var infinite_clear_gold = 100 + infinite_level * 50
+		$"..".add_gold(infinite_clear_gold)
+		print("무한 웨이브 레벨 %d 클리어! +%d 골드" % [infinite_level, infinite_clear_gold])
 
 # 무한 웨이브 생성 함수
 func _generate_infinite_wave() -> void:

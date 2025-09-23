@@ -3,6 +3,7 @@
     {
       "id": 1,
       "timer": 30,
+      "clear_gold": 50,
       "groups": [
         {
           "enemy": "goblin_basic",
@@ -20,7 +21,8 @@
           "count": 8,
           "interval": 0.6
         }
-      ]
+      ],
+      "clear_gold": 75
     },
     {
       "id": 3,
@@ -31,7 +33,8 @@
           "count": 8,
           "interval": 0.6
         }
-      ]
+      ],
+      "clear_gold": 100
     },
     {
       "id": 4,
@@ -42,7 +45,8 @@
           "count": 6,
           "interval": 0.8
         }
-      ]
+      ],
+      "clear_gold": 125
     },
     {
       "id": 5,
@@ -53,7 +57,8 @@
           "count": 5,
           "interval": 1.0
         }
-      ]
+      ],
+      "clear_gold": 150
     },
     {
       "id": 6,
@@ -64,7 +69,8 @@
           "count": 8,
           "interval": 0.8
         }
-      ]
+      ],
+      "clear_gold": 175
     },
     {
       "id": 7,
@@ -75,7 +81,8 @@
           "count": 6,
           "interval": 1.0
         }
-      ]
+      ],
+      "clear_gold": 200
     },
     {
       "id": 8,
@@ -86,7 +93,8 @@
           "count": 5,
           "interval": 1.2
         }
-      ]
+      ],
+      "clear_gold": 225
     },
     {
       "id": 9,
@@ -97,7 +105,8 @@
           "count": 4,
           "interval": 1.5
         }
-      ]
+      ],
+      "clear_gold": 250
     },
     {
       "id": 10,
@@ -108,7 +117,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 275
     },
     {
       "id": 11,
@@ -119,7 +129,8 @@
           "count": 4,
           "interval": 1.5
         }
-      ]
+      ],
+      "clear_gold": 300
     },
     {
       "id": 12,
@@ -130,7 +141,8 @@
           "count": 5,
           "interval": 1.2
         }
-      ]
+      ],
+      "clear_gold": 325
     },
     {
       "id": 13,
@@ -141,7 +153,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 350
     },
     {
       "id": 14,
@@ -152,7 +165,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 375
     },
     {
       "id": 15,
@@ -163,7 +177,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 400
     },
     {
       "id": 16,
@@ -174,7 +189,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 425
     },
     {
       "id": 17,
@@ -185,7 +201,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 450
     },
     {
       "id": 18,
@@ -196,7 +213,8 @@
           "count": 6,
           "interval": 1.0
         }
-      ]
+      ],
+      "clear_gold": 475
     },
     {
       "id": 19,
@@ -207,7 +225,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 500
     },
     {
       "id": 20,
@@ -218,7 +237,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 525
     },
     {
       "id": 21,
@@ -229,7 +249,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 550
     },
     {
       "id": 22,
@@ -240,7 +261,8 @@
           "count": 4,
           "interval": 1.5
         }
-      ]
+      ],
+      "clear_gold": 575
     },
     {
       "id": 23,
@@ -251,7 +273,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 600
     },
     {
       "id": 24,
@@ -262,7 +285,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 625
     },
     {
       "id": 25,
@@ -273,7 +297,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 650
     },
     {
       "id": 26,
@@ -284,7 +309,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 675
     },
     {
       "id": 27,
@@ -295,7 +321,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 700
     },
     {
       "id": 28,
@@ -306,7 +333,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 725
     },
     {
       "id": 29,
@@ -317,7 +345,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 750
     },
     {
       "id": 30,
@@ -328,7 +357,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 775
     },
     {
       "id": 31,
@@ -339,7 +369,8 @@
           "count": 3,
           "interval": 2.0
         }
-      ]
+      ],
+      "clear_gold": 800
     },
     {
       "id": 32,
@@ -350,7 +381,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 825
     },
     {
       "id": 33,
@@ -361,7 +393,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 850
     },
     {
       "id": 34,
@@ -372,7 +405,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 875
     },
     {
       "id": 35,
@@ -383,7 +417,8 @@
           "count": 2,
           "interval": 3.0
         }
-      ]
+      ],
+      "clear_gold": 900
     },
     {
       "id": 36,
@@ -394,7 +429,8 @@
           "count": 1,
           "interval": 5.0
         }
-      ]
+      ],
+      "clear_gold": 925
     }
   ]
 }

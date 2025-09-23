@@ -395,6 +395,10 @@ func _fire(t:Node) -> void:
 	p.global_position = global_position
 	p.shoot_at(t, damage)
 	
+	# 창병 넉백 스킬 처리
+	if id == "lancer":
+		_handle_lancer_knockback(t)
+	
 
 # 캐릭터별 애니메이션 재생 함수들
 func play_attack_animation() -> void:
@@ -590,3 +594,81 @@ func _is_selected_character() -> bool:
 		return character_manager.selected_character == self
 	
 	return false
+
+# 창병 넉백 스킬 처리
+func _handle_lancer_knockback(target: Node) -> void:
+	if not is_instance_valid(target) or not target.has_method("take_damage"):
+		return
+	
+	# 넉백 확률: 레벨에 따라 증가 (기본 25%, 레벨당 5% 증가)
+	var knockback_chance = 0.25 + (level - 1) * 0.05
+	var roll = randf()
+	
+	if roll <= knockback_chance:
+		# 넉백 적용
+		_apply_knockback(target)
+
+# 넉백 효과 적용
+func _apply_knockback(target: Node) -> void:
+	if not target or not is_instance_valid(target):
+		return
+	
+	# 넉백 거리: 레벨에 따라 증가 (기본 300픽셀, 레벨당 100픽셀 증가)
+	var knockback_distance = 300.0 + (level - 1) * 100.0
+	
+	# 적이 이동 경로를 벗어나지 않도록 제한
+	var path = target.get_parent()
+	if path and path is Path2D:
+		var curve = path.curve
+		if curve:
+			# 경로 길이와 현재 진행도 확인
+			var path_length = curve.get_baked_length()
+			var target_progress = target.progress if "progress" in target else 0.0
+			
+			# 현재 위치에서 뒤로 넉백하는 것이므로 경로 진행도를 감소
+			var knockback_progress = target_progress - (knockback_distance / path_length)
+			knockback_progress = max(0.0, knockback_progress)  # 0 이하로 가지 않도록 제한
+			
+			# 넉백 적용 - 더 강력한 효과
+			print("넉백 적용: %.2f → %.2f (%.1f픽셀 뒤로)" % [target_progress, knockback_progress, knockback_distance])
+			target.progress = knockback_progress
+			
+			# 넉백 시각적 효과
+			_show_knockback_effect(target)
+			
+			# 넉백 후 잠시 이동 속도 감소 (0.5초간)
+			if target.has_method("set") and "speed" in target:
+				var original_speed = target.speed
+				target.speed = original_speed * 0.3  # 30% 속도로 감소
+				
+				# 0.5초 후 원래 속도로 복원
+				var timer = get_tree().create_timer(0.5)
+				timer.timeout.connect(func():
+					if is_instance_valid(target):
+						target.speed = original_speed
+				)
+
+# 넉백 시각적 효과
+func _show_knockback_effect(target: Node) -> void:
+	if not target:
+		return
+	
+	# 적을 잠깐 밝은 노란색으로 변경하고 크기도 약간 키워서 넉백 효과 표시
+	if target.has_method("set_modulate"):
+		var original_modulate = target.modulate
+		var original_scale = target.scale if "scale" in target else Vector2.ONE
+		
+		# 노란색으로 변경하고 크기 증가
+		target.modulate = Color.YELLOW
+		if "scale" in target:
+			target.scale = original_scale * 1.2
+		
+		# 0.3초 후 원래 색상과 크기로 복원
+		var tween = create_tween()
+		tween.tween_interval(0.3)
+		tween.tween_callback(func(): 
+			if is_instance_valid(target):
+				target.modulate = original_modulate
+				if "scale" in target:
+					target.scale = original_scale
+		)

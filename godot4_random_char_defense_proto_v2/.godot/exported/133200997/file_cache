@@ -1,8 +1,8 @@
 res://assets/bullets/bullet1.tres::8c54666ce147b697e0a33380ee9d20f1::1758602964::res://.godot/exported/133200997/export-1ec2362118d1eb1670152cf760aba7bd-bullet1.res
 res://assets/bullets/bullet2.tres::73019387731be352917046fc538cdcb4::1758602964::res://.godot/exported/133200997/export-b6eee783495ec36b220d5731033b379c-bullet2.res
-res://scenes/Character.tscn::0f8d1a6580e72b779bde2c15ee60157d::1758609121::res://.godot/exported/133200997/export-93f18c909dc2d6f15b41da300e4d1e0b-Character.scn
-res://scenes/dice_rect_map.tscn::0a80baf576ee679ba0ff033f601171bc::1758609121::res://.godot/exported/133200997/export-e86e42591770efd71690dfc74af909d8-dice_rect_map.scn
-res://scenes/Enemy.tscn::f8e875b60c120e34ca033f3e3ffa693c::1758609121::res://.godot/exported/133200997/export-e8b868f745946f74f22434b9ddd0af8d-Enemy.scn
-res://scenes/Main.tscn::f414c45c7cc847bcef4cee0ba313ca5a::1758609121::res://.godot/exported/133200997/export-4a24720ee5e787dbe30abc634fa3679d-Main.scn
-res://scenes/Map.tscn::ef8525645ed8c0a617efce0cf059b8b8::1758609121::res://.godot/exported/133200997/export-0eae408d73bd72b5f9fda5a893b5871f-Map.scn
-res://scenes/Projectile.tscn::e2841a76974b9c915d43d356d939247e::1758609121::res://.godot/exported/133200997/export-a7aac28efb4a523f73f1a023aa5edacd-Projectile.scn
+res://scenes/Character.tscn::0f8d1a6580e72b779bde2c15ee60157d::1758611394::res://.godot/exported/133200997/export-93f18c909dc2d6f15b41da300e4d1e0b-Character.scn
+res://scenes/dice_rect_map.tscn::0a80baf576ee679ba0ff033f601171bc::1758611394::res://.godot/exported/133200997/export-e86e42591770efd71690dfc74af909d8-dice_rect_map.scn
+res://scenes/Enemy.tscn::f8e875b60c120e34ca033f3e3ffa693c::1758611394::res://.godot/exported/133200997/export-e8b868f745946f74f22434b9ddd0af8d-Enemy.scn
+res://scenes/Main.tscn::f414c45c7cc847bcef4cee0ba313ca5a::1758611394::res://.godot/exported/133200997/export-4a24720ee5e787dbe30abc634fa3679d-Main.scn
+res://scenes/Map.tscn::ef8525645ed8c0a617efce0cf059b8b8::1758611394::res://.godot/exported/133200997/export-0eae408d73bd72b5f9fda5a893b5871f-Map.scn
+res://scenes/Projectile.tscn::e2841a76974b9c915d43d356d939247e::1758611394::res://.godot/exported/133200997/export-a7aac28efb4a523f73f1a023aa5edacd-Projectile.scn

@@ -9,15 +9,21 @@ var wave_idx:int = 0
 var wave_timer:float = 0.0
 var wave_time_limit:float = 0.0
 var is_wave_active:bool = false
+var is_infinite_mode:bool = false
+var infinite_level:int = 1
 func start_next_wave() -> void:
 	var data = $"../DataHub".waves.get("list", [])
 	var gm = $".."  # GameManager 참조를 함수 시작에서 한 번만 선언
 	
 	if wave_idx >= data.size():
-		# 모든 웨이브 클리어 - 승리!
-		if gm and gm.has_signal("game_over"):
-			gm.emit_signal("game_over", true)
-		emit_signal("wave_cleared", wave_idx); return
+		# 모든 정의된 웨이브 클리어 - 무한 웨이브 모드 시작!
+		if not is_infinite_mode:
+			is_infinite_mode = true
+			print("무한 웨이브 모드 시작! 레벨: %d" % infinite_level)
+		
+		# 무한 웨이브 생성
+		_generate_infinite_wave()
+		return
 	
 	var w = data[wave_idx]
 	
@@ -141,3 +147,114 @@ func _on_enemy_escaped() -> void:
 func _on_enemy_died(reward:int) -> void:
 	alive -= 1
 	$"..".add_gold(reward)
+	
+	# 무한 웨이브에서 모든 적이 처치되면 타이머 초기화
+	if is_infinite_mode and alive <= 0:
+		wave_timer = 0.0
+		wave_time_limit = 0.0
+		emit_signal("wave_timer_updated", 0)
+
+# 무한 웨이브 생성 함수
+func _generate_infinite_wave() -> void:
+	var gm = $".."
+	
+	# 무한 웨이브 타이머 설정 (30초)
+	wave_time_limit = 30.0
+	wave_timer = wave_time_limit
+	is_wave_active = true
+	
+	# GameManager에게 웨이브 시작 알림
+	if gm and gm.has_signal("wave_changed"):
+		gm.emit_signal("wave_changed", wave_idx + 1)
+	
+	# 사용 가능한 적 타입들 가져오기
+	var enemies_data = $"../DataHub".enemies
+	var enemy_types = enemies_data.keys()
+	
+	# 무한 레벨에 따른 적 수 증가
+	var enemy_count = 3 + (infinite_level * 2)  # 레벨당 2마리씩 증가
+	var spawn_interval = max(0.3, 0.8 - (infinite_level * 0.02))  # 레벨이 올라갈수록 빠른 스폰
+	
+	# 적 스폰
+	for i in range(enemy_count):
+		if not is_wave_active:
+			break
+		
+		await get_tree().create_timer(spawn_interval).timeout
+		
+		if is_wave_active:
+			# 랜덤하게 적 타입 선택
+			var random_enemy = enemy_types[randi() % enemy_types.size()]
+			_spawn_infinite_enemy(random_enemy)
+	
+	# 모든 적이 처치되거나 타이머가 만료될 때까지 대기
+	while alive > 0 and is_wave_active:
+		await get_tree().process_frame
+	
+	is_wave_active = false
+	wave_idx += 1
+	infinite_level += 1
+	emit_signal("wave_cleared", wave_idx)
+
+# 무한 웨이브용 적 스폰 (스케일링 적용)
+func _spawn_infinite_enemy(enemy_id: String) -> void:
+	var pool = $"../ObjectPool"
+	var enemy = pool.pop("Enemy", func(): return enemy_scene.instantiate())
+	var map = $"/root/Main/Map"
+	
+	# EnemyLayer 찾기
+	var enemy_layer = null
+	enemy_layer = map.get_node_or_null("EnemyLayer")
+	if not enemy_layer:
+		enemy_layer = map.find_child("EnemyLayer", true, false)
+	if not enemy_layer:
+		for child in map.get_children():
+			if child.name == "EnemyLayer":
+				enemy_layer = child
+				break
+	if not enemy_layer:
+		enemy_layer = Node2D.new()
+		enemy_layer.name = "EnemyLayer"
+		map.add_child(enemy_layer)
+	
+	# Path2D 찾기
+	var path: Path2D = map.get_node_or_null("Path2D_A")
+	if not path:
+		path = map.get_node_or_null("Path2D")
+		if not path:
+			return
+	
+	path.add_child(enemy)
+	enemy.z_index = 5
+	
+	# 기본 적 설정 가져오기
+	var base_config = $"../DataHub".enemies.get(enemy_id, {})
+	var scaled_config = _scale_enemy_for_infinite(base_config, infinite_level)
+	
+	enemy.init_from_config(scaled_config)
+	
+	enemy.connect("escaped", Callable(self, "_on_enemy_escaped"), CONNECT_ONE_SHOT)
+	enemy.connect("died", Callable(self, "_on_enemy_died"), CONNECT_ONE_SHOT)
+	alive += 1
+
+# 무한 웨이브용 적 스케일링
+func _scale_enemy_for_infinite(base_config: Dictionary, level: int) -> Dictionary:
+	var scaled_config = base_config.duplicate()
+	
+	# HP 스케일링 (레벨당 50% 증가)
+	var base_hp = base_config.get("hp", 100)
+	scaled_config["hp"] = int(base_hp * (1.0 + level * 0.5))
+	
+	# 공격력 스케일링 (레벨당 30% 증가)
+	var base_damage = base_config.get("base_damage", 10)
+	scaled_config["base_damage"] = int(base_damage * (1.0 + level * 0.3))
+	
+	# 속도 스케일링 (레벨당 5% 증가)
+	var base_speed = base_config.get("speed", 10)
+	scaled_config["speed"] = base_speed * (1.0 + level * 0.05)
+	
+	# 보상 스케일링 (레벨당 40% 증가)
+	var base_reward = base_config.get("reward", 5)
+	scaled_config["reward"] = int(base_reward * (1.0 + level * 0.4))
+	
+	return scaled_config

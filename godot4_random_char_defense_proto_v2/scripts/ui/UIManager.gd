@@ -151,7 +151,12 @@ func _on_life(v:int) -> void:
 
 func _on_wave(i:int) -> void: 
 	if wave_label: 
-		wave_label.text = "Wave: %d" % i
+		# WaveManager에서 무한 웨이브 모드 확인
+		var wave_manager = $"/root/Main/GameManager/WaveManager"
+		if wave_manager and wave_manager.is_infinite_mode:
+			wave_label.text = "∞ Level: %d" % wave_manager.infinite_level
+		else:
+			wave_label.text = "Wave: %d" % i
 func _on_timer_updated(remaining_time:int) -> void: 
 	if timer_label: 
 		timer_label.text = "Time: %d" % remaining_time

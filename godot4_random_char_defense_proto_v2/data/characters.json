@@ -25,7 +25,7 @@
     "range": 150,
     "rate": 1.2,
     "hp": 200,
-    "skill": "guard",
+    "skill": "bash",
     "cost": 70,
     "rarity": "common",
     "spawn_weight": 30,

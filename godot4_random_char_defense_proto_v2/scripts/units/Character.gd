@@ -399,6 +399,10 @@ func _fire(t:Node) -> void:
 	if id == "lancer":
 		_handle_lancer_knockback(t)
 	
+	# 전사 배쉬 스킬 처리
+	if id == "warrior":
+		_handle_warrior_bash(t)
+	
 
 # 캐릭터별 애니메이션 재생 함수들
 func play_attack_animation() -> void:
@@ -683,6 +687,61 @@ func _show_knockback_effect(target: Node) -> void:
 		# 0.3초 후 원래 색상과 크기로 복원
 		var tween = create_tween()
 		tween.tween_interval(0.3)
+		tween.tween_callback(func(): 
+			if is_instance_valid(target):
+				target.modulate = original_modulate
+				if "scale" in target:
+					target.scale = original_scale
+		)
+
+# 전사 배쉬 스킬 처리
+func _handle_warrior_bash(target: Node) -> void:
+	if not target or not is_instance_valid(target):
+		return
+	
+	# 배쉬 확률: 기본 25% + 레벨당 5%
+	var bash_chance = 0.25 + (level - 1) * 0.05
+	bash_chance = min(bash_chance, 0.6)  # 최대 60%로 제한
+	
+	var roll = randf()
+	if roll <= bash_chance:
+		# 배쉬 성공 - 추가 데미지 적용
+		_apply_bash_damage(target)
+
+# 배쉬 데미지 적용
+func _apply_bash_damage(target: Node) -> void:
+	if not target or not is_instance_valid(target):
+		return
+	
+	# 추가 데미지는 기본 공격력과 동일 (2배 데미지 효과)
+	var bash_damage = damage
+	print("전사 배쉬 발동! 추가 데미지: %d" % bash_damage)
+	
+	# 적에게 추가 데미지 적용
+	if target.has_method("take_damage"):
+		target.take_damage(bash_damage)
+	
+	# 배쉬 시각적 효과
+	_show_bash_effect(target)
+
+# 배쉬 시각적 효과
+func _show_bash_effect(target: Node) -> void:
+	if not target:
+		return
+	
+	# 적을 잠깐 빨간색으로 변경하고 크기도 약간 키워서 배쉬 효과 표시
+	if target.has_method("set_modulate"):
+		var original_modulate = target.modulate
+		var original_scale = target.scale if "scale" in target else Vector2.ONE
+		
+		# 빨간색으로 변경하고 크기 증가
+		target.modulate = Color.RED
+		if "scale" in target:
+			target.scale = original_scale * 1.3
+		
+		# 0.2초 후 원래 색상과 크기로 복원
+		var tween = create_tween()
+		tween.tween_interval(0.2)
 		tween.tween_callback(func(): 
 			if is_instance_valid(target):
 				target.modulate = original_modulate

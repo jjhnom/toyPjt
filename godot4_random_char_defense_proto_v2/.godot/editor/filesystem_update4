@@ -1,6 +1,12 @@
+res://scripts/units/Enemy.gd
 res://scenes/dice_rect_map.tscn
 res://scenes/Main.tscn
 res://scenes/Character.tscn
 res://scenes/Enemy.tscn
 res://scenes/Map.tscn
 res://scenes/Projectile.tscn
+res://scripts/core/CharacterManager.gd
+res://scripts/core/GameManager.gd
+res://scripts/core/WaveManager.gd
+res://scripts/ui/UIManager.gd
+res://scripts/units/Character.gd

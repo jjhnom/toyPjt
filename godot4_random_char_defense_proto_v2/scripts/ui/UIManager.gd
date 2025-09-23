@@ -7,11 +7,14 @@ extends Node
 @onready var btn_s2:Button = $HUD/Skill2
 @onready var btn_sell:Button = $HUD/Sell
 @onready var btn_speed:Button = $HUD/Speed
+@onready var bgm_player:AudioStreamPlayer = $"../BGM"
 
 var _current_speed: float = 1.0
 
 func _ready() -> void:
-	pass
+	# BGM 반복 재생 설정
+	if bgm_player:
+		bgm_player.finished.connect(_on_bgm_finished)
 
 func bind(gm:Node) -> void:
 	# 게임 속도를 기본값으로 리셋
@@ -386,3 +389,9 @@ func _update_speed_button() -> void:
 			btn_speed.modulate = Color.YELLOW
 		else:  # 3.0
 			btn_speed.modulate = Color.ORANGE_RED
+
+func _on_bgm_finished() -> void:
+	# BGM이 끝나면 다시 재생
+	if bgm_player:
+		print("BGM 재생 완료 - 다시 재생 시작")
+		bgm_player.play()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b3pxkytqg34p1"]
+[gd_scene load_steps=12 format=3 uid="uid://b3pxkytqg34p1"]
 
 [ext_resource type="Script" uid="uid://bkopah31btx15" path="res://scripts/core/GameManager.gd" id="1"]
 [ext_resource type="Script" uid="uid://epdnowp06wv6" path="res://scripts/core/WaveManager.gd" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://bhctree1nwu3l" path="res://scripts/core/CharacterManager.gd" id="9"]
 [ext_resource type="Script" uid="uid://56q406grp8xa" path="res://scripts/core/SkillManager.gd" id="10"]
 [ext_resource type="Texture2D" uid="uid://d4fwe2p1cbwpc" path="res://assets/maps/background.png" id="10_lhr70"]
+[ext_resource type="AudioStream" path="res://assets/bgm/defense_bgm_happy.wav" id="11"]
 
 [node name="Main" type="Node2D"]
 
@@ -125,3 +126,8 @@ text = "Sell (50%)"
 position = Vector2(360.5, 357.883)
 scale = Vector2(0.968056, 0.983658)
 texture = ExtResource("10_lhr70")
+
+[node name="BGM" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11")
+volume_db = -10.0
+autoplay = true

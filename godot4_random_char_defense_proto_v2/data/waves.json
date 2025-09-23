@@ -13,7 +13,7 @@
     },
     {
       "id": 2,
-      "timer": 35,
+      "timer": 30,
       "groups": [
         {
           "enemy": "goblin_male",
@@ -24,7 +24,7 @@
     },
     {
       "id": 3,
-      "timer": 40,
+      "timer": 30,
       "groups": [
         {
           "enemy": "goblin_female",
@@ -35,7 +35,7 @@
     },
     {
       "id": 4,
-      "timer": 45,
+      "timer": 30,
       "groups": [
         {
           "enemy": "zombie_villager_1",
@@ -46,7 +46,7 @@
     },
     {
       "id": 5,
-      "timer": 50,
+      "timer": 30,
       "groups": [
         {
           "enemy": "orc",
@@ -57,7 +57,7 @@
     },
     {
       "id": 6,
-      "timer": 55,
+      "timer": 30,
       "groups": [
         {
           "enemy": "skeleton_warrior_1",
@@ -68,7 +68,7 @@
     },
     {
       "id": 7,
-      "timer": 60,
+      "timer": 30,
       "groups": [
         {
           "enemy": "wraith_1",
@@ -79,7 +79,7 @@
     },
     {
       "id": 8,
-      "timer": 65,
+      "timer": 30,
       "groups": [
         {
           "enemy": "skeleton_crusader_1",
@@ -90,7 +90,7 @@
     },
     {
       "id": 9,
-      "timer": 70,
+      "timer": 30,
       "groups": [
         {
           "enemy": "satyr_1",
@@ -101,7 +101,7 @@
     },
     {
       "id": 10,
-      "timer": 75,
+      "timer": 30,
       "groups": [
         {
           "enemy": "minotaur_1",
@@ -112,7 +112,7 @@
     },
     {
       "id": 11,
-      "timer": 80,
+      "timer": 30,
       "groups": [
         {
           "enemy": "necromancer_1",
@@ -123,7 +123,7 @@
     },
     {
       "id": 12,
-      "timer": 85,
+      "timer": 30,
       "groups": [
         {
           "enemy": "wraith_2",
@@ -134,7 +134,7 @@
     },
     {
       "id": 13,
-      "timer": 90,
+      "timer": 30,
       "groups": [
         {
           "enemy": "fallen_angel_1",
@@ -145,7 +145,7 @@
     },
     {
       "id": 14,
-      "timer": 95,
+      "timer": 30,
       "groups": [
         {
           "enemy": "valkyrie_1",
@@ -156,7 +156,7 @@
     },
     {
       "id": 15,
-      "timer": 100,
+      "timer": 30,
       "groups": [
         {
           "enemy": "golem_1",
@@ -167,7 +167,7 @@
     },
     {
       "id": 16,
-      "timer": 105,
+      "timer": 30,
       "groups": [
         {
           "enemy": "dark_oracle_1",
@@ -178,7 +178,7 @@
     },
     {
       "id": 17,
-      "timer": 110,
+      "timer": 30,
       "groups": [
         {
           "enemy": "minotaur_2",
@@ -189,7 +189,7 @@
     },
     {
       "id": 18,
-      "timer": 115,
+      "timer": 30,
       "groups": [
         {
           "enemy": "skeleton_warrior_2",
@@ -200,7 +200,7 @@
     },
     {
       "id": 19,
-      "timer": 120,
+      "timer": 30,
       "groups": [
         {
           "enemy": "ogre",
@@ -211,7 +211,7 @@
     },
     {
       "id": 20,
-      "timer": 125,
+      "timer": 30,
       "groups": [
         {
           "enemy": "fallen_angel_2",
@@ -222,7 +222,7 @@
     },
     {
       "id": 21,
-      "timer": 130,
+      "timer": 30,
       "groups": [
         {
           "enemy": "golem_2",
@@ -233,7 +233,7 @@
     },
     {
       "id": 22,
-      "timer": 135,
+      "timer": 30,
       "groups": [
         {
           "enemy": "wraith_3",
@@ -244,7 +244,7 @@
     },
     {
       "id": 23,
-      "timer": 140,
+      "timer": 30,
       "groups": [
         {
           "enemy": "reaper_1",
@@ -255,7 +255,7 @@
     },
     {
       "id": 24,
-      "timer": 145,
+      "timer": 30,
       "groups": [
         {
           "enemy": "valkyrie_2",
@@ -266,7 +266,7 @@
     },
     {
       "id": 25,
-      "timer": 150,
+      "timer": 30,
       "groups": [
         {
           "enemy": "minotaur_3",
@@ -277,7 +277,7 @@
     },
     {
       "id": 26,
-      "timer": 155,
+      "timer": 30,
       "groups": [
         {
           "enemy": "necromancer_2",
@@ -288,7 +288,7 @@
     },
     {
       "id": 27,
-      "timer": 160,
+      "timer": 30,
       "groups": [
         {
           "enemy": "golem_3",
@@ -299,7 +299,7 @@
     },
     {
       "id": 28,
-      "timer": 165,
+      "timer": 30,
       "groups": [
         {
           "enemy": "fallen_angel_3",
@@ -310,7 +310,7 @@
     },
     {
       "id": 29,
-      "timer": 170,
+      "timer": 30,
       "groups": [
         {
           "enemy": "dark_oracle_2",
@@ -321,7 +321,7 @@
     },
     {
       "id": 30,
-      "timer": 175,
+      "timer": 30,
       "groups": [
         {
           "enemy": "valkyrie_3",
@@ -332,7 +332,7 @@
     },
     {
       "id": 31,
-      "timer": 180,
+      "timer": 30,
       "groups": [
         {
           "enemy": "skeleton_crusader_3",
@@ -343,7 +343,7 @@
     },
     {
       "id": 32,
-      "timer": 185,
+      "timer": 30,
       "groups": [
         {
           "enemy": "reaper_2",
@@ -354,7 +354,7 @@
     },
     {
       "id": 33,
-      "timer": 190,
+      "timer": 30,
       "groups": [
         {
           "enemy": "necromancer_3",
@@ -365,7 +365,7 @@
     },
     {
       "id": 34,
-      "timer": 195,
+      "timer": 30,
       "groups": [
         {
           "enemy": "dark_oracle_3",
@@ -376,7 +376,7 @@
     },
     {
       "id": 35,
-      "timer": 200,
+      "timer": 30,
       "groups": [
         {
           "enemy": "satyr_3",
@@ -387,7 +387,7 @@
     },
     {
       "id": 36,
-      "timer": 205,
+      "timer": 30,
       "groups": [
         {
           "enemy": "reaper_3",

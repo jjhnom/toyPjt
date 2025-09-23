@@ -92,41 +92,41 @@ metadata/_edit_use_anchors_ = true
 
 [node name="Summon" type="Button" parent="UI/HUD"]
 layout_mode = 0
-offset_left = 86.0
+offset_left = 81.0
 offset_top = 645.0
-offset_right = 226.0
+offset_right = 198.0
 offset_bottom = 701.0
 text = "Summon (50)"
 
 [node name="Skill2" type="Button" parent="UI/HUD"]
 layout_mode = 0
-offset_left = 406.0
+offset_left = 323.0
 offset_top = 645.0
-offset_right = 526.0
+offset_right = 433.0
 offset_bottom = 701.0
 text = "GlobalSlow"
 
 [node name="Speed" type="Button" parent="UI/HUD"]
 layout_mode = 0
-offset_left = 536.0
+offset_left = 540.0
 offset_top = 645.0
-offset_right = 596.0
+offset_right = 600.0
 offset_bottom = 701.0
 text = "1x"
 
 [node name="Pause" type="Button" parent="UI/HUD"]
 layout_mode = 0
-offset_left = 606.0
+offset_left = 447.0
 offset_top = 645.0
-offset_right = 686.0
+offset_right = 527.0
 offset_bottom = 701.0
 text = "일시정지"
 
 [node name="Sell" type="Button" parent="UI/HUD"]
 layout_mode = 0
-offset_left = 246.0
+offset_left = 212.0
 offset_top = 645.0
-offset_right = 386.0
+offset_right = 306.0
 offset_bottom = 701.0
 text = "Sell (50%)"
 

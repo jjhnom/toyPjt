@@ -14,6 +14,9 @@ var _current_speed: float = 1.0
 var _is_paused: bool = false
 
 func _ready() -> void:
+	# 일시정지 상태에서도 UI가 작동하도록 설정
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	# BGM 반복 재생 설정
 	if bgm_player:
 		bgm_player.finished.connect(_on_bgm_finished)
@@ -60,6 +63,8 @@ func bind(gm:Node) -> void:
 	# 일시정지 버튼 연결
 	if btn_pause:
 		btn_pause.pressed.connect(_on_pause_pressed)
+		# 일시정지 상태에서도 버튼이 작동하도록 설정
+		btn_pause.process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	# 초기 속도 버튼 상태 설정
 	_current_speed = 1.0
@@ -410,6 +415,7 @@ func _on_bgm_finished() -> void:
 
 # 일시정지 버튼 처리
 func _on_pause_pressed() -> void:
+	print("일시정지 버튼 클릭됨! 현재 상태: %s" % ("일시정지" if _is_paused else "실행중"))
 	if _is_paused:
 		_resume_game()
 	else:
@@ -433,17 +439,20 @@ func _pause_game() -> void:
 
 # 게임 재개
 func _resume_game() -> void:
+	print("게임 재개 시작...")
 	_is_paused = false
 	get_tree().paused = false
+	print("get_tree().paused = %s" % get_tree().paused)
 	
 	# 재개 버튼 텍스트 변경
 	if btn_pause:
 		btn_pause.text = "일시정지"
 		btn_pause.modulate = Color.WHITE
+		print("일시정지 버튼 텍스트 변경: %s" % btn_pause.text)
 	
 	# BGM 재개
 	if bgm_player:
 		bgm_player.stream_paused = false
+		print("BGM 재개")
 	
-	print("게임 재개")
-
+	print("게임 재개 완료!")

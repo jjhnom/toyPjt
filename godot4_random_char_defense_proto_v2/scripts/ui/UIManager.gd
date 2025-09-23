@@ -7,9 +7,11 @@ extends Node
 @onready var btn_s2:Button = $HUD/Skill2
 @onready var btn_sell:Button = $HUD/Sell
 @onready var btn_speed:Button = $HUD/Speed
+@onready var btn_pause:Button = $HUD/Pause
 @onready var bgm_player:AudioStreamPlayer = $"../BGM"
 
 var _current_speed: float = 1.0
+var _is_paused: bool = false
 
 func _ready() -> void:
 	# BGM 반복 재생 설정
@@ -54,6 +56,10 @@ func bind(gm:Node) -> void:
 	# 속도 조절 버튼 연결
 	if btn_speed:
 		btn_speed.pressed.connect(_on_speed_pressed)
+	
+	# 일시정지 버튼 연결
+	if btn_pause:
+		btn_pause.pressed.connect(_on_pause_pressed)
 	
 	# 초기 속도 버튼 상태 설정
 	_current_speed = 1.0
@@ -176,8 +182,14 @@ func _on_timer_expired() -> void:
 func _on_game_over(win: bool) -> void:
 	print("게임 오버! 승리: %s" % win)
 	
-	# 게임 정지
+	# 일시정지 상태 초기화
+	_is_paused = false
 	get_tree().paused = true
+	
+	# 일시정지 버튼 상태 초기화
+	if btn_pause:
+		btn_pause.text = "일시정지"
+		btn_pause.modulate = Color.WHITE
 	
 	# 속도를 기본값으로 리셋
 	_current_speed = 1.0
@@ -395,3 +407,43 @@ func _on_bgm_finished() -> void:
 	if bgm_player:
 		print("BGM 재생 완료 - 다시 재생 시작")
 		bgm_player.play()
+
+# 일시정지 버튼 처리
+func _on_pause_pressed() -> void:
+	if _is_paused:
+		_resume_game()
+	else:
+		_pause_game()
+
+# 게임 일시정지
+func _pause_game() -> void:
+	_is_paused = true
+	get_tree().paused = true
+	
+	# 일시정지 버튼 텍스트 변경
+	if btn_pause:
+		btn_pause.text = "재개"
+		btn_pause.modulate = Color.GREEN
+	
+	# BGM 일시정지
+	if bgm_player and bgm_player.playing:
+		bgm_player.stream_paused = true
+	
+	print("게임 일시정지")
+
+# 게임 재개
+func _resume_game() -> void:
+	_is_paused = false
+	get_tree().paused = false
+	
+	# 재개 버튼 텍스트 변경
+	if btn_pause:
+		btn_pause.text = "일시정지"
+		btn_pause.modulate = Color.WHITE
+	
+	# BGM 재개
+	if bgm_player:
+		bgm_player.stream_paused = false
+	
+	print("게임 재개")
+

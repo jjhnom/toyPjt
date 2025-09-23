@@ -3,7 +3,7 @@
     "role": "dps",
     "atk": 7,
     "range": 150,
-    "rate": 0.8,
+    "rate": 0.6,
     "skill": "pierce",
     "cost": 50,
     "rarity": "common",

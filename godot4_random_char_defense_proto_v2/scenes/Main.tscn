@@ -114,6 +114,14 @@ offset_right = 596.0
 offset_bottom = 701.0
 text = "1x"
 
+[node name="Pause" type="Button" parent="UI/HUD"]
+layout_mode = 0
+offset_left = 606.0
+offset_top = 645.0
+offset_right = 686.0
+offset_bottom = 701.0
+text = "일시정지"
+
 [node name="Sell" type="Button" parent="UI/HUD"]
 layout_mode = 0
 offset_left = 246.0

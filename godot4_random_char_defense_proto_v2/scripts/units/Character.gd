@@ -604,8 +604,8 @@ func _handle_lancer_knockback(target: Node) -> void:
 	if not is_instance_valid(target) or not target.has_method("take_damage"):
 		return
 	
-	# 넉백 확률: 레벨에 따라 증가 (기본 25%, 레벨당 5% 증가)
-	var knockback_chance = 0.25 + (level - 1) * 0.05
+	# 넉백 확률: 레벨에 따라 증가 (기본 15%, 레벨당 5% 증가)
+	var knockback_chance = 0.15 + (level - 1) * 0.05
 	var roll = randf()
 	
 	if roll <= knockback_chance:

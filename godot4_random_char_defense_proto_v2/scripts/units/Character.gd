@@ -391,7 +391,11 @@ func _fire(t:Node) -> void:
 		print("%s: 공격 거리 초과 - 거리: %.1f, 유효사거리: %.1f" % [id, distance_to_target, effective_range])
 		return
 	
-	print("%s: 공격 시도 - 타겟: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, t.name if t.has_method("get") else "적", distance_to_target, attack_range, enemy_hitbox_radius, effective_range])
+	# 슬롯 번호 확인
+	var slot_number = _get_slot_number()
+	var slot_info = "슬롯%d" % slot_number if slot_number >= 0 else "슬롯?"
+	
+	print("%s(%s): 공격 시도 - 타겟: %s, 거리: %.1f, 기본사거리: %.1f, 적히트박스: %.1f, 유효사거리: %.1f" % [id, slot_info, t.name if t.has_method("get") else "적", distance_to_target, attack_range, enemy_hitbox_radius, effective_range])
 	
 	# 공격 상태 업데이트
 	is_attacking = true
@@ -413,7 +417,11 @@ func _fire(t:Node) -> void:
 	p.global_position = global_position
 	p.shoot_at(t, damage)
 	
-	print("%s: %s를 공격 완료! 거리: %.1f" % [id, t.name if t.has_method("get") else "적", distance_to_target])
+	# 슬롯 번호 확인
+	var slot_number = _get_slot_number()
+	var slot_info = "슬롯%d" % slot_number if slot_number >= 0 else "슬롯?"
+	
+	print("%s(%s): %s를 공격 완료! 거리: %.1f" % [id, slot_info, t.name if t.has_method("get") else "적", distance_to_target])
 
 # 캐릭터별 애니메이션 재생 함수들
 func play_attack_animation() -> void:
@@ -596,3 +604,15 @@ func _get_character_config() -> Dictionary:
 			print("경고: DataHub에서 get_character_data 메서드를 찾을 수 없습니다.")
 	
 	return {}
+
+func _get_slot_number() -> int:
+	# CharacterManager에서 슬롯 정보를 확인
+	var character_manager = get_node_or_null("/root/Main/GameManager/CharacterManager")
+	if not character_manager:
+		character_manager = get_node_or_null("../../../GameManager/CharacterManager")
+	
+	if character_manager and character_manager.has_method("_slot_at"):
+		# 현재 위치로 슬롯 번호 찾기
+		return character_manager._slot_at(global_position)
+	
+	return -1

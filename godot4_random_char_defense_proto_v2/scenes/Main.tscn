@@ -10,7 +10,7 @@
 [ext_resource type="Script" uid="uid://bhctree1nwu3l" path="res://scripts/core/CharacterManager.gd" id="9"]
 [ext_resource type="Script" uid="uid://56q406grp8xa" path="res://scripts/core/SkillManager.gd" id="10"]
 [ext_resource type="Texture2D" uid="uid://d4fwe2p1cbwpc" path="res://assets/maps/background.png" id="10_lhr70"]
-[ext_resource type="AudioStream" path="res://assets/bgm/defense_bgm_happy.wav" id="11"]
+[ext_resource type="AudioStream" uid="uid://2qokikl0m73h" path="res://assets/bgm/defense_bgm_happy.wav" id="11"]
 
 [node name="Main" type="Node2D"]
 

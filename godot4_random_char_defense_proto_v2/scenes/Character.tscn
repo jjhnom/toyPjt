@@ -7,6 +7,11 @@ radius = 120.0
 
 [node name="Character" type="Node2D"]
 script = ExtResource("1")
+attack_range = null
+damage = null
+rate = null
+anim_name = null
+fps = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 

@@ -417,8 +417,7 @@ func _fire(t:Node) -> void:
 	p.global_position = global_position
 	p.shoot_at(t, damage)
 	
-	# 슬롯 번호 확인
-	var slot_number = _get_slot_number()
+	# 슬롯 정보 재사용 (이미 위에서 선언됨)
 	var slot_info = "슬롯%d" % slot_number if slot_number >= 0 else "슬롯?"
 	
 	print("%s(%s): %s를 공격 완료! 거리: %.1f" % [id, slot_info, t.name if t.has_method("get") else "적", distance_to_target])

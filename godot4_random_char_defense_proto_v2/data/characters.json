@@ -13,6 +13,13 @@
     "run_sprite": "res://assets/characters/Archer/Archer_Run.png",
     "projectile_sprite": "res://assets/characters/Archer/Arrow.png",
     "scale": 0.5,
+    "upgrades": {
+      "max_level": 6,
+      "atk_upgrade_cost": 200,
+      "range_upgrade_cost": 200,
+      "atk_upgrade_amount": 5,
+      "range_upgrade_amount": 30
+    },
     "animations": {
       "idle": {"frames": 6, "fps": 6.0},
       "attack": {"frames": 8, "fps": 8.0},
@@ -35,6 +42,13 @@
     "guard_sprite": "res://assets/characters/Warrior/Warrior_Guard.png",
     "run_sprite": "res://assets/characters/Warrior/Warrior_Run.png",
     "scale": 0.5,
+    "upgrades": {
+      "max_level": 6,
+      "atk_upgrade_cost": 200,
+      "range_upgrade_cost": 200,
+      "atk_upgrade_amount": 6,
+      "range_upgrade_amount": 25
+    },
     "animations": {
       "idle": {"frames": 6, "fps": 6.0},
       "attack": {"frames": 6, "fps": 6.0},
@@ -58,6 +72,13 @@
     "heal_effect_sprite": "res://assets/characters/Monk/Heal_Effect.png",
     "run_sprite": "res://assets/characters/Monk/Run.png",
     "scale": 0.5,
+    "upgrades": {
+      "max_level": 6,
+      "atk_upgrade_cost": 200,
+      "range_upgrade_cost": 200,
+      "atk_upgrade_amount": 4,
+      "range_upgrade_amount": 35
+    },
     "animations": {
       "idle": {"frames": 6, "fps": 6.0},
       "attack": {"frames": 11, "fps": 11.0},
@@ -88,6 +109,13 @@
     "defence_downright": "res://assets/characters/Lancer/Lancer_DownRight_Defence.png",
     "defence_upright": "res://assets/characters/Lancer/Lancer_UpRight_Defence.png",
     "scale": 0.5,
+    "upgrades": {
+      "max_level": 6,
+      "atk_upgrade_cost": 200,
+      "range_upgrade_cost": 200,
+      "atk_upgrade_amount": 7,
+      "range_upgrade_amount": 40
+    },
     "animations": {
       "idle": {"frames": 12, "fps": 8.0},
       "run": {"frames": 6, "fps": 12.0},

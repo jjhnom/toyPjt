@@ -69,6 +69,10 @@ func bind(gm:Node) -> void:
 	# 초기 속도 버튼 상태 설정
 	_current_speed = 1.0
 	_update_speed_button()
+	
+	# 초기 Summon 버튼 상태 설정 (슬롯이 설정될 때까지 대기)
+	await get_tree().create_timer(0.2).timeout
+	_update_initial_summon_state()
 
 func _on_summon_pressed() -> void:
 	var character_manager = $"/root/Main/GameManager/CharacterManager"
@@ -100,6 +104,24 @@ func _show_no_slots_feedback() -> void:
 		btn_summon.text = "슬롯 없음!"
 		await get_tree().create_timer(1.0).timeout
 		btn_summon.text = original_text
+
+# Summon 버튼 활성화/비활성화
+func set_summon_button_enabled(enabled: bool) -> void:
+	if btn_summon:
+		btn_summon.disabled = not enabled
+		if enabled:
+			btn_summon.modulate = Color.WHITE
+			btn_summon.text = "Summon (50)"
+		else:
+			btn_summon.modulate = Color.GRAY
+			btn_summon.text = "슬롯 없음"
+
+# 초기 Summon 버튼 상태 업데이트
+func _update_initial_summon_state() -> void:
+	var character_manager = $"/root/Main/GameManager/CharacterManager"
+	if character_manager:
+		var has_empty_slot = character_manager.has_empty_slot()
+		set_summon_button_enabled(has_empty_slot)
 
 func _on_sell_pressed() -> void:
 	var character_manager = $"/root/Main/GameManager/CharacterManager"

@@ -15,6 +15,20 @@ var original_position: Vector2 = Vector2.ZERO
 var range_indicator: Node2D = null
 var selected_character: Node2D = null
 
+# 업그레이드 UI 관련 변수들
+var upgrade_panel: Control = null
+var atk_upgrade_button: Button = null
+var range_upgrade_button: Button = null
+
+# 통계 표시 UI 관련 변수들
+var stats_panel: Control = null
+var stats_name_label: Label = null
+var stats_level_label: Label = null
+var stats_atk_label: Label = null
+var stats_range_label: Label = null
+var stats_rate_label: Label = null
+var stats_rarity_label: Label = null
+
 func _ready() -> void:
 	# 새로운 맵의 슬롯들을 찾아서 등록
 	# Builder가 슬롯을 생성할 시간을 충분히 주기 위해 더 늦게 호출
@@ -33,6 +47,11 @@ func _setup_layer_and_slots() -> void:
 	
 	_setup_slots()
 	_create_range_indicator()
+	_create_upgrade_ui()
+	_create_stats_ui()
+	
+	# 슬롯 설정 완료 후 UI 상태 업데이트
+	call_deferred("_update_initial_ui_state")
 
 func _setup_slots() -> void:
 	
@@ -97,6 +116,10 @@ func sell_character_at(slot_index: int) -> int:
 		gm.add_gold(sell_price)
 	
 	print("캐릭터 판매: %s (레벨 %d) - %d골드 획득" % [character.id, character.level, sell_price])
+	
+	# 슬롯 상태 체크 및 UI 업데이트
+	_check_slot_status_and_update_ui()
+	
 	return sell_price
 
 # 캐릭터 판매 가격 계산
@@ -163,6 +186,9 @@ func summon(cost:int=50) -> void:
 	
 	# 소환 이펙트 (간단한 크기 애니메이션)
 	_play_summon_effect(c)
+	
+	# 슬롯 상태 체크 및 UI 업데이트
+	_check_slot_status_and_update_ui()
 
 func _play_summon_effect(character: Node2D) -> void:
 	if not character:
@@ -277,6 +303,9 @@ func _end_drag(pos: Vector2) -> void:
 	dragging_from_slot = -1
 	drag_offset = Vector2.ZERO
 	original_position = Vector2.ZERO
+	
+	# 슬롯 상태 체크 및 UI 업데이트
+	_check_slot_status_and_update_ui()
 
 func _return_to_original_position() -> void:
 	if dragging_character and dragging_from_slot >= 0:
@@ -380,6 +409,9 @@ func _perform_merge(from_slot: int, to_slot: int, char_a: Node2D, char_b: Node2D
 	
 	# 합성 이펙트
 	_play_merge_effect(c)
+	
+	# 슬롯 상태 체크 및 UI 업데이트
+	_check_slot_status_and_update_ui()
 
 # 사거리 표시기 생성
 func _create_range_indicator() -> void:
@@ -415,6 +447,8 @@ func select_character(character: Node2D) -> void:
 				break
 		
 		_show_range_indicator(character)
+		_update_upgrade_ui(character)
+		_update_stats_ui(character)
 		print("캐릭터 선택됨: %s (사거리: %.1f)" % [character.id, character.attack_range])
 
 # 캐릭터 선택 해제
@@ -425,6 +459,8 @@ func deselect_character() -> void:
 	selected_character = null
 	selected = -1  # 인덱스도 리셋
 	_hide_range_indicator()
+	_hide_upgrade_ui()
+	_hide_stats_ui()
 
 # 사거리 표시기 보이기
 func _show_range_indicator(character: Node2D) -> void:
@@ -460,3 +496,423 @@ func _play_merge_effect(character: Node2D) -> void:
 	tween.tween_property(character, "scale", target_scale, 0.4)
 	tween.tween_property(character, "modulate", Color.WHITE, 0.4)
 	tween.tween_callback(func(): print("Merge effect completed"))
+
+# 업그레이드 UI 생성
+func _create_upgrade_ui() -> void:
+	# UI 컨테이너 생성
+	upgrade_panel = Control.new()
+	upgrade_panel.name = "UpgradePanel"
+	upgrade_panel.visible = false
+	upgrade_panel.z_index = 50  # UI 레이어로 설정 (더 높게)
+	upgrade_panel.mouse_filter = Control.MOUSE_FILTER_STOP  # 마우스 이벤트 완전 차단
+	
+	# UI 스타일 설정
+	var style_box = StyleBoxFlat.new()
+	style_box.bg_color = Color(0, 0, 0, 0.8)
+	style_box.corner_radius_top_left = 10
+	style_box.corner_radius_top_right = 10
+	style_box.corner_radius_bottom_left = 10
+	style_box.corner_radius_bottom_right = 10
+	upgrade_panel.add_theme_stylebox_override("panel", style_box)
+	
+	# 패널 크기 설정
+	upgrade_panel.custom_minimum_size = Vector2(300, 120)
+	upgrade_panel.position = Vector2(50, 50)  # 화면 상단에 배치 (오른쪽으로 이동)
+	
+	# 제목 라벨
+	var title_label = Label.new()
+	title_label.text = "캐릭터 업그레이드"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_label.position = Vector2(10, 10)
+	title_label.size = Vector2(280, 30)
+	
+	var title_style = LabelSettings.new()
+	title_style.font_size = 18
+	title_style.font_color = Color.WHITE
+	title_style.outline_size = 2
+	title_style.outline_color = Color.BLACK
+	title_label.label_settings = title_style
+	
+	upgrade_panel.add_child(title_label)
+	
+	# 공격력 업그레이드 버튼
+	atk_upgrade_button = Button.new()
+	atk_upgrade_button.text = "공격력 업그레이드"
+	atk_upgrade_button.position = Vector2(20, 50)
+	atk_upgrade_button.size = Vector2(120, 40)
+	atk_upgrade_button.mouse_filter = Control.MOUSE_FILTER_STOP  # 마우스 이벤트 완전 차단
+	atk_upgrade_button.z_index = 100  # 슬롯보다 훨씬 앞에 배치
+	atk_upgrade_button.pressed.connect(_on_atk_upgrade_pressed)
+	# 마우스 이벤트 전파 방지 (제거 - pressed 신호만 사용)
+	# atk_upgrade_button.gui_input.connect(_on_upgrade_button_gui_input)
+	
+	# 사거리 업그레이드 버튼
+	range_upgrade_button = Button.new()
+	range_upgrade_button.text = "사거리 업그레이드"
+	range_upgrade_button.position = Vector2(160, 50)
+	range_upgrade_button.size = Vector2(120, 40)
+	range_upgrade_button.mouse_filter = Control.MOUSE_FILTER_STOP  # 마우스 이벤트 완전 차단
+	range_upgrade_button.z_index = 100  # 슬롯보다 훨씬 앞에 배치
+	range_upgrade_button.pressed.connect(_on_range_upgrade_pressed)
+	# 마우스 이벤트 전파 방지 (제거 - pressed 신호만 사용)
+	# range_upgrade_button.gui_input.connect(_on_upgrade_button_gui_input)
+	
+	upgrade_panel.add_child(atk_upgrade_button)
+	upgrade_panel.add_child(range_upgrade_button)
+	
+	# UI를 Main의 CanvasLayer에 추가
+	var main = get_node_or_null("/root/Main")
+	if main:
+		main.add_child(upgrade_panel)
+	else:
+		print("WARNING: Main 노드를 찾을 수 없어 업그레이드 UI를 생성할 수 없습니다")
+
+# 업그레이드 UI 업데이트
+func _update_upgrade_ui(character: Node2D) -> void:
+	print("업그레이드 UI 업데이트 시작 - 캐릭터: %s, 레벨: %d" % [character.id if character else "null", character.level if character else 0])
+	
+	if not upgrade_panel or not character:
+		print("업그레이드 UI 업데이트 실패 - 패널 또는 캐릭터가 null")
+		return
+	
+	# 6레벨 이상인지 확인
+	if character.level >= 6:
+		print("6레벨 이상 - 업그레이드 UI 표시")
+		upgrade_panel.visible = true
+	else:
+		print("6레벨 미만 - 업그레이드 UI 숨김 (레벨: %d)" % character.level)
+		upgrade_panel.visible = false
+		return
+	
+	# 공격력 업그레이드 버튼 상태 업데이트
+	var can_upgrade_atk = character.can_upgrade_attack()
+	atk_upgrade_button.disabled = not can_upgrade_atk
+	print("공격력 업그레이드 가능: %s" % can_upgrade_atk)
+	
+	if can_upgrade_atk:
+		var cost = character.get_upgrade_cost("attack")
+		atk_upgrade_button.text = "공격력 +%d\n(%d골드)" % [character._get_character_config().get("upgrades", {}).get("atk_upgrade_amount", 5), cost]
+	else:
+		atk_upgrade_button.text = "공격력 최대"
+	
+	# 사거리 업그레이드 버튼 상태 업데이트
+	var can_upgrade_range = character.can_upgrade_range()
+	range_upgrade_button.disabled = not can_upgrade_range
+	print("사거리 업그레이드 가능: %s" % can_upgrade_range)
+	
+	if can_upgrade_range:
+		var cost = character.get_upgrade_cost("range")
+		range_upgrade_button.text = "사거리 +%d\n(%d골드)" % [character._get_character_config().get("upgrades", {}).get("range_upgrade_amount", 30), cost]
+	else:
+		range_upgrade_button.text = "사거리 최대"
+
+# 업그레이드 UI 숨기기
+func _hide_upgrade_ui() -> void:
+	if upgrade_panel:
+		upgrade_panel.visible = false
+
+# 공격력 업그레이드 버튼 클릭
+func _on_atk_upgrade_pressed() -> void:
+	print("공격력 업그레이드 버튼 클릭됨")
+	
+	# 캐릭터 선택 상태 즉시 복원 (버튼 클릭으로 인한 선택 해제 방지)
+	var current_character = selected_character
+	if not current_character:
+		# 선택된 캐릭터가 없으면 현재 선택된 슬롯에서 찾기
+		if selected >= 0 and selected < slots.size() and slots[selected]["node"] != null:
+			current_character = slots[selected]["node"]
+			selected_character = current_character
+			print("선택된 슬롯 %d에서 캐릭터 복원: %s" % [selected, current_character.id])
+		else:
+			# 선택된 슬롯이 없으면 모든 슬롯에서 6레벨 이상 캐릭터 찾기
+			for i in slots.size():
+				if slots[i]["node"] != null and slots[i]["node"].level >= 6:
+					current_character = slots[i]["node"]
+					selected_character = current_character
+					selected = i
+					print("슬롯 %d에서 6레벨 캐릭터 복원: %s" % [i, current_character.id])
+					break
+			
+			if not current_character:
+				print("선택된 캐릭터가 없습니다")
+				return
+	
+	print("선택된 캐릭터: %s, 레벨: %d" % [current_character.id, current_character.level])
+	
+	if current_character.upgrade_attack():
+		print("공격력 업그레이드 성공")
+		# 업그레이드 성공 시 UI 업데이트
+		_update_upgrade_ui(current_character)
+		_update_stats_ui(current_character)  # 통계 UI도 업데이트
+		# 사거리 표시기 업데이트 (공격력은 사거리에 영향 없음)
+		if range_indicator and current_character:
+			_draw_range_circle(current_character)
+		
+		print("공격력 업그레이드 완료")
+	else:
+		print("공격력 업그레이드 실패")
+
+# 사거리 업그레이드 버튼 클릭
+func _on_range_upgrade_pressed() -> void:
+	print("사거리 업그레이드 버튼 클릭됨")
+	
+	# 캐릭터 선택 상태 즉시 복원 (버튼 클릭으로 인한 선택 해제 방지)
+	var current_character = selected_character
+	if not current_character:
+		# 선택된 캐릭터가 없으면 현재 선택된 슬롯에서 찾기
+		if selected >= 0 and selected < slots.size() and slots[selected]["node"] != null:
+			current_character = slots[selected]["node"]
+			selected_character = current_character
+			print("선택된 슬롯 %d에서 캐릭터 복원: %s" % [selected, current_character.id])
+		else:
+			# 선택된 슬롯이 없으면 모든 슬롯에서 6레벨 이상 캐릭터 찾기
+			for i in slots.size():
+				if slots[i]["node"] != null and slots[i]["node"].level >= 6:
+					current_character = slots[i]["node"]
+					selected_character = current_character
+					selected = i
+					print("슬롯 %d에서 6레벨 캐릭터 복원: %s" % [i, current_character.id])
+					break
+			
+			if not current_character:
+				print("선택된 캐릭터가 없습니다")
+				return
+	
+	print("선택된 캐릭터: %s, 레벨: %d" % [current_character.id, current_character.level])
+	
+	if current_character.upgrade_range():
+		print("사거리 업그레이드 성공")
+		# 업그레이드 성공 시 UI 업데이트
+		_update_upgrade_ui(current_character)
+		_update_stats_ui(current_character)  # 통계 UI도 업데이트
+		# 사거리 표시기 업데이트
+		if range_indicator and current_character:
+			_draw_range_circle(current_character)
+		
+		print("사거리 업그레이드 완료")
+	else:
+		print("사거리 업그레이드 실패")
+
+# 업그레이드 버튼 GUI 입력 이벤트 처리 (사용하지 않음 - pressed 신호만 사용)
+# func _on_upgrade_button_gui_input(event: InputEvent) -> void:
+#	# 마우스 이벤트를 여기서 처리하여 슬롯 선택과 충돌하지 않도록 함
+#	if event is InputEventMouseButton:
+#		# 마우스 버튼 이벤트를 처리했다고 표시
+#		get_viewport().set_input_as_handled()
+#		print("업그레이드 버튼 마우스 이벤트 소비")
+#	elif event is InputEventMouseMotion:
+#		# 마우스 이동 이벤트는 무시
+#		pass
+
+# 캐릭터 선택 상태 확실히 유지
+func _ensure_character_selected(character: Node2D) -> void:
+	if character and is_instance_valid(character):
+		# 선택된 캐릭터가 여전히 유효한지 확인
+		var still_exists = false
+		for slot in slots:
+			if slot["node"] == character:
+				still_exists = true
+				break
+		
+		if still_exists:
+			# 캐릭터가 여전히 존재하면 선택 상태 유지
+			selected_character = character
+			# 사거리 표시기 업데이트
+			if range_indicator:
+				_draw_range_circle(character)
+			print("캐릭터 선택 상태 유지 확인: %s" % character.id)
+		else:
+			# 캐릭터가 더 이상 존재하지 않으면 선택 해제
+			deselect_character()
+
+# 통계 UI 생성
+func _create_stats_ui() -> void:
+	# 통계 패널 생성
+	stats_panel = Control.new()
+	stats_panel.name = "StatsPanel"
+	stats_panel.visible = false
+	stats_panel.z_index = 5  # 슬롯보다는 뒤에, 하지만 UI는 보이도록
+	stats_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE  # 마우스 이벤트 무시
+	
+	# UI 스타일 설정
+	var style_box = StyleBoxFlat.new()
+	style_box.bg_color = Color(0, 0, 0, 0.9)
+	style_box.corner_radius_top_left = 10
+	style_box.corner_radius_top_right = 10
+	style_box.corner_radius_bottom_left = 10
+	style_box.corner_radius_bottom_right = 10
+	stats_panel.add_theme_stylebox_override("panel", style_box)
+	
+	# 패널 크기 설정
+	stats_panel.custom_minimum_size = Vector2(250, 140)  # 높이 줄임
+	stats_panel.position = Vector2(50, 400)  # 화면 하단에 배치하여 슬롯과 완전히 분리 (오른쪽으로 이동)
+	
+	# 캐릭터 이름 라벨
+	stats_name_label = Label.new()
+	stats_name_label.text = "캐릭터 정보"
+	stats_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT  # 통계와 같은 왼쪽 정렬
+	stats_name_label.position = Vector2(20, 5)  # 통계 라벨과 같은 x 좌표
+	stats_name_label.size = Vector2(210, 25)
+	
+	var title_style = LabelSettings.new()
+	title_style.font_size = 18
+	title_style.font_color = Color.WHITE
+	title_style.outline_size = 2
+	title_style.outline_color = Color.BLACK
+	stats_name_label.label_settings = title_style
+	
+	# 레벨 라벨
+	stats_level_label = Label.new()
+	stats_level_label.text = "레벨: 1"
+	stats_level_label.position = Vector2(20, 35)  # 캐릭터 이름 바로 아래
+	stats_level_label.size = Vector2(100, 20)
+	
+	# 공격력 라벨
+	stats_atk_label = Label.new()
+	stats_atk_label.text = "공격력: 0"
+	stats_atk_label.position = Vector2(20, 55)  # 더 가깝게 배치
+	stats_atk_label.size = Vector2(100, 20)
+	
+	# 사거리 라벨
+	stats_range_label = Label.new()
+	stats_range_label.text = "사거리: 0"
+	stats_range_label.position = Vector2(20, 75)  # 더 가깝게 배치
+	stats_range_label.size = Vector2(100, 20)
+	
+	# 공격속도 라벨
+	stats_rate_label = Label.new()
+	stats_rate_label.text = "공격속도: 0.0/s"
+	stats_rate_label.position = Vector2(20, 95)  # 더 가깝게 배치
+	stats_rate_label.size = Vector2(100, 20)
+	
+	# 희귀도 라벨 (역할 자리에 배치)
+	stats_rarity_label = Label.new()
+	stats_rarity_label.text = "희귀도: -"
+	stats_rarity_label.position = Vector2(20, 115)  # 더 가깝게 배치
+	stats_rarity_label.size = Vector2(200, 20)
+	
+	# 라벨 스타일 설정
+	var label_style = LabelSettings.new()
+	label_style.font_size = 14
+	label_style.font_color = Color.LIGHT_GRAY
+	label_style.outline_size = 1
+	label_style.outline_color = Color.BLACK
+	
+	stats_level_label.label_settings = label_style
+	stats_atk_label.label_settings = label_style
+	stats_range_label.label_settings = label_style
+	stats_rate_label.label_settings = label_style
+	stats_rarity_label.label_settings = label_style
+	
+	# 패널에 라벨들 추가
+	stats_panel.add_child(stats_name_label)
+	stats_panel.add_child(stats_level_label)
+	stats_panel.add_child(stats_atk_label)
+	stats_panel.add_child(stats_range_label)
+	stats_panel.add_child(stats_rate_label)
+	stats_panel.add_child(stats_rarity_label)
+	
+	# UI를 Main의 CanvasLayer에 추가
+	var main = get_node_or_null("/root/Main")
+	if main:
+		main.add_child(stats_panel)
+	else:
+		print("WARNING: Main 노드를 찾을 수 없어 통계 UI를 생성할 수 없습니다")
+
+# 통계 UI 업데이트
+func _update_stats_ui(character: Node2D) -> void:
+	if not stats_panel or not character:
+		return
+	
+	# 캐릭터 정보 표시
+	stats_panel.visible = true
+	
+	# 캐릭터 이름과 레벨
+	var character_name = character.id.capitalize()
+	stats_name_label.text = "%s (Lv.%d)" % [character_name, character.level]
+	
+	# 레벨 색상 적용
+	var level_color = character.get_level_color()
+	var name_style = stats_name_label.label_settings
+	name_style.font_color = level_color
+	stats_name_label.label_settings = name_style
+	
+	# 통계 정보 업데이트
+	stats_level_label.text = "레벨: %d" % character.level
+	stats_atk_label.text = "공격력: %d" % character.damage
+	stats_range_label.text = "사거리: %.0f" % character.attack_range
+	stats_rate_label.text = "공격속도: %.1f/s" % (1.0 / character.rate)
+	
+	# 캐릭터 설정 정보 가져오기
+	var config = character._get_character_config()
+	var rarity = config.get("rarity", "common")
+	
+	# 희귀도 정보 표시 (색상 변경 없이)
+	var rarity_text = "희귀도: "
+	match rarity:
+		"common":
+			rarity_text += "일반"
+		"rare":
+			rarity_text += "레어"
+		"epic":
+			rarity_text += "에픽"
+		"legendary":
+			rarity_text += "전설"
+		_:
+			rarity_text += rarity.capitalize()
+	
+	stats_rarity_label.text = rarity_text
+	
+	# 업그레이드 정보가 있으면 표시
+	var upgrade_text = ""
+	if character.atk_upgrades > 0:
+		upgrade_text += " (+%d)" % character.atk_upgrades
+	if character.range_upgrades > 0:
+		upgrade_text += " (+%d)" % character.range_upgrades
+	
+	if upgrade_text != "":
+		stats_name_label.text += upgrade_text
+
+# 통계 UI 숨기기
+func _hide_stats_ui() -> void:
+	if stats_panel:
+		stats_panel.visible = false
+
+# 슬롯 상태 체크 및 UI 업데이트
+func _check_slot_status_and_update_ui() -> void:
+	# 선택된 캐릭터가 여전히 유효한지 확인
+	if selected_character:
+		# 선택된 캐릭터가 여전히 슬롯에 있는지 확인
+		var still_exists = false
+		for slot in slots:
+			if slot["node"] == selected_character:
+				still_exists = true
+				break
+		
+		if not still_exists:
+			# 선택된 캐릭터가 더 이상 존재하지 않으면 UI 숨기기
+			deselect_character()
+		else:
+			# 캐릭터가 여전히 존재하면 통계 UI 업데이트
+			_update_stats_ui(selected_character)
+	
+	# 빈 슬롯이 있는지 확인하여 Summon 버튼 상태 업데이트
+	_update_summon_button_state()
+
+# Summon 버튼 상태 업데이트
+func _update_summon_button_state() -> void:
+	var has_empty_slot = _find_empty_slot() >= 0
+	
+	# UI Manager의 Summon 버튼 상태 업데이트
+	var ui_manager = get_node_or_null("/root/Main/UI")
+	if ui_manager and ui_manager.has_method("set_summon_button_enabled"):
+		ui_manager.set_summon_button_enabled(has_empty_slot)
+
+# 초기 UI 상태 업데이트
+func _update_initial_ui_state() -> void:
+	# 슬롯이 제대로 설정되었는지 확인
+	if slots.size() > 0:
+		print("슬롯 %d개 설정 완료, UI 상태 업데이트" % slots.size())
+		_update_summon_button_state()
+	else:
+		print("WARNING: 슬롯이 설정되지 않았습니다")

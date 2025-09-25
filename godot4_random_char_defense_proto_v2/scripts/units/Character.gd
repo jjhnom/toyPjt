@@ -13,6 +13,50 @@ var last_target:Node = null
 @onready var sprite:AnimatedSprite2D = $AnimatedSprite2D
 var level_label:Label = null
 
+# 업그레이드 관련 변수
+var atk_upgrades:int = 0  # 공격력 업그레이드 횟수
+var range_upgrades:int = 0  # 사거리 업그레이드 횟수
+var max_upgrades:int = 3  # 각 스탯당 최대 업그레이드 횟수
+
+# 레벨별 색상 시스템
+var level_colors: Array[Color] = [
+	Color.WHITE,           # 레벨 1: 흰색
+	Color.LIGHT_BLUE,      # 레벨 2: 연한 파란색
+	Color.GREEN,           # 레벨 3: 초록색
+	Color.YELLOW,          # 레벨 4: 노란색
+	Color.ORANGE,          # 레벨 5: 주황색
+	Color.RED,             # 레벨 6: 빨간색
+	Color.PURPLE,          # 레벨 7: 보라색 (업그레이드 후)
+	Color.GOLD,            # 레벨 8: 금색 (업그레이드 후)
+	Color.CYAN,            # 레벨 9: 청록색 (업그레이드 후)
+	Color.MAGENTA,         # 레벨 10: 자홍색 (최고급)
+	Color(1.0, 0.5, 0.0),  # 레벨 11: 주황-금색 (전설급)
+	Color(0.5, 0.0, 1.0)   # 레벨 12+: 보라-금색 (신화급)
+]
+
+# 레벨에 따른 색상 반환 함수
+func get_level_color() -> Color:
+	var effective_level = level
+	
+	# 업그레이드가 있으면 레벨에 추가 보너스 적용
+	var upgrade_bonus = atk_upgrades + range_upgrades
+	effective_level += upgrade_bonus
+	
+	# 색상 배열 범위 내에서 색상 반환
+	var color_index = min(effective_level - 1, level_colors.size() - 1)
+	return level_colors[max(0, color_index)]
+
+# 레벨에 따른 폰트 크기 반환 함수
+func get_level_font_size() -> int:
+	var effective_level = level
+	var upgrade_bonus = atk_upgrades + range_upgrades
+	effective_level += upgrade_bonus
+	
+	# 기본 14에서 시작해서 레벨이 높을수록 크기 증가
+	var base_size = 14
+	var size_bonus = max(0, (effective_level - 6) * 2)  # 6레벨부터 크기 증가
+	return base_size + size_bonus
+
 # 캐릭터 애니메이션 설정
 @export var anim_name := "idle"
 @export var fps := 8.0
@@ -25,6 +69,9 @@ func init_from_config(conf:Dictionary, _level:int, _id:String) -> void:
 	damage = conf.get("atk", damage) + (level-1)*4
 	attack_range = conf.get("range", attack_range) + (level-1)*12  # 사거리 증가량 증가 (8→12)
 	rate = conf.get("rate", rate) * max(0.5, 1.0 - (level-1)*0.08)  # 공격속도 증가량 증가 (0.05→0.08)
+	
+	# 업그레이드 보너스 적용
+	_apply_upgrade_bonuses(conf)
 	var shape:CollisionShape2D = area.get_node("CollisionShape2D")
 	if shape and shape.shape is CircleShape2D: shape.shape.radius = attack_range
 	
@@ -506,8 +553,8 @@ func _create_level_label() -> void:
 	
 	# 폰트 크기와 색상 설정
 	var label_settings = LabelSettings.new()
-	label_settings.font_size = 14
-	label_settings.font_color = Color.WHITE
+	label_settings.font_size = get_level_font_size()  # 레벨에 따른 폰트 크기 적용
+	label_settings.font_color = get_level_color()     # 레벨에 따른 색상 적용
 	label_settings.outline_size = 2
 	label_settings.outline_color = Color.BLACK
 	level_label.label_settings = label_settings
@@ -527,6 +574,18 @@ func _update_level_label() -> void:
 		return
 	
 	level_label.text = "Lv.%d" % level
+	
+	# 레벨에 따른 색상과 폰트 크기 업데이트
+	var label_settings = level_label.label_settings
+	if label_settings:
+		label_settings.font_color = get_level_color()
+		label_settings.font_size = get_level_font_size()
+		level_label.label_settings = label_settings
+	
+	# 높은 레벨에서는 특별한 효과 적용
+	var effective_level = level + atk_upgrades + range_upgrades
+	if effective_level >= 8:
+		_add_level_glow_effect()
 
 func play_idle_animation() -> void:
 	var config = _get_character_config()
@@ -650,24 +709,22 @@ func _apply_knockback(target: Node) -> void:
 
 # 적 속도 복원 (지연 후)
 func _restore_enemy_speed_after_delay(enemy: Node, original_speed: float, delay: float) -> void:
-	# 별도의 타이머 노드를 생성하여 안전하게 처리
+	# 더 안전한 방법: 직접 타이머 생성 및 처리
 	var timer = Timer.new()
 	add_child(timer)
 	timer.wait_time = delay
 	timer.one_shot = true
 	timer.start()
 	
-	# 타이머 완료 시 속도 복원 및 타이머 정리
-	timer.timeout.connect(_on_speed_restore_timer_timeout.bind(enemy, original_speed, timer), CONNECT_ONE_SHOT)
-
-# 타이머 완료 시 속도 복원 콜백
-func _on_speed_restore_timer_timeout(enemy: Node, original_speed: float, timer: Timer) -> void:
-	if is_instance_valid(enemy) and enemy.has_method("set") and "speed" in enemy:
-		enemy.speed = original_speed
-	
-	# 타이머 노드 정리
-	if is_instance_valid(timer):
-		timer.queue_free()
+	# 타이머 완료 시 속도 복원 (lambda 함수 사용, bind 없이)
+	timer.timeout.connect(func():
+		if is_instance_valid(enemy) and enemy.has_method("set") and "speed" in enemy:
+			enemy.speed = original_speed
+		
+		# 타이머 정리
+		if is_instance_valid(timer):
+			timer.queue_free()
+	, CONNECT_ONE_SHOT)
 
 # 넉백 시각적 효과
 func _show_knockback_effect(target: Node) -> void:
@@ -748,3 +805,171 @@ func _show_bash_effect(target: Node) -> void:
 				if "scale" in target:
 					target.scale = original_scale
 		)
+
+# 업그레이드 보너스 적용 함수
+func _apply_upgrade_bonuses(conf: Dictionary) -> void:
+	var upgrades = conf.get("upgrades", {})
+	if upgrades.is_empty():
+		return
+	
+	# 공격력 업그레이드 보너스 적용
+	var atk_upgrade_amount = upgrades.get("atk_upgrade_amount", 0)
+	damage += atk_upgrades * atk_upgrade_amount
+	
+	# 사거리 업그레이드 보너스 적용
+	var range_upgrade_amount = upgrades.get("range_upgrade_amount", 0)
+	attack_range += range_upgrades * range_upgrade_amount
+
+# 6레벨 달성 시 업그레이드 가능 여부 확인
+func can_upgrade() -> bool:
+	return level >= 6 and (atk_upgrades < max_upgrades or range_upgrades < max_upgrades)
+
+# 공격력 업그레이드 가능 여부 확인
+func can_upgrade_attack() -> bool:
+	return level >= 6 and atk_upgrades < max_upgrades
+
+# 사거리 업그레이드 가능 여부 확인
+func can_upgrade_range() -> bool:
+	return level >= 6 and range_upgrades < max_upgrades
+
+# 공격력 업그레이드
+func upgrade_attack() -> bool:
+	if not can_upgrade_attack():
+		return false
+	
+	var conf = _get_character_config()
+	var upgrades = conf.get("upgrades", {})
+	var cost = upgrades.get("atk_upgrade_cost", 100)
+	
+	# 골드 확인 및 차감
+	var game_manager = get_node_or_null("/root/Main/GameManager")
+	if not game_manager or not game_manager.has_method("spend_gold"):
+		return false
+	
+	if not game_manager.spend_gold(cost):
+		return false
+	
+	# 업그레이드 적용
+	atk_upgrades += 1
+	var atk_upgrade_amount = upgrades.get("atk_upgrade_amount", 5)
+	damage += atk_upgrade_amount
+	
+	# 레벨 라벨 색상 업데이트
+	_update_level_label()
+	
+	# 시각적 효과
+	_show_upgrade_effect("공격력")
+	
+	print("공격력 업그레이드 완료! +%d (총 %d회)" % [atk_upgrade_amount, atk_upgrades])
+	return true
+
+# 사거리 업그레이드
+func upgrade_range() -> bool:
+	if not can_upgrade_range():
+		return false
+	
+	var conf = _get_character_config()
+	var upgrades = conf.get("upgrades", {})
+	var cost = upgrades.get("range_upgrade_cost", 80)
+	
+	# 골드 확인 및 차감
+	var game_manager = get_node_or_null("/root/Main/GameManager")
+	if not game_manager or not game_manager.has_method("spend_gold"):
+		return false
+	
+	if not game_manager.spend_gold(cost):
+		return false
+	
+	# 업그레이드 적용
+	range_upgrades += 1
+	var range_upgrade_amount = upgrades.get("range_upgrade_amount", 30)
+	attack_range += range_upgrade_amount
+	
+	# 사거리 영역 업데이트
+	var shape: CollisionShape2D = area.get_node("CollisionShape2D")
+	if shape and shape.shape is CircleShape2D:
+		shape.shape.radius = attack_range
+	
+	# 레벨 라벨 색상 업데이트
+	_update_level_label()
+	
+	# 시각적 효과
+	_show_upgrade_effect("사거리")
+	
+	print("사거리 업그레이드 완료! +%d (총 %d회)" % [range_upgrade_amount, range_upgrades])
+	return true
+
+# 업그레이드 비용 가져오기
+func get_upgrade_cost(upgrade_type: String) -> int:
+	var conf = _get_character_config()
+	var upgrades = conf.get("upgrades", {})
+	
+	match upgrade_type:
+		"attack":
+			return upgrades.get("atk_upgrade_cost", 100)
+		"range":
+			return upgrades.get("range_upgrade_cost", 80)
+		_:
+			return 0
+
+# 업그레이드 효과 표시
+func _show_upgrade_effect(stat_name: String) -> void:
+	if not sprite:
+		return
+	
+	# 골드 색상으로 깜빡이는 효과
+	var original_modulate = sprite.modulate
+	var tween = create_tween()
+	tween.set_loops(2)
+	tween.tween_property(sprite, "modulate", Color.GOLD, 0.3)
+	tween.tween_property(sprite, "modulate", original_modulate, 0.3)
+	
+	# 업그레이드 텍스트 표시 (선택사항)
+	_show_upgrade_text(stat_name)
+
+# 업그레이드 텍스트 표시
+func _show_upgrade_text(stat_name: String) -> void:
+	var upgrade_label = Label.new()
+	upgrade_label.text = "+%s 업그레이드!" % stat_name
+	upgrade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	upgrade_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	var label_settings = LabelSettings.new()
+	label_settings.font_size = 16
+	label_settings.font_color = Color.GOLD
+	label_settings.outline_size = 2
+	label_settings.outline_color = Color.BLACK
+	upgrade_label.label_settings = label_settings
+	
+	upgrade_label.position = Vector2(-60, -80)
+	add_child(upgrade_label)
+	
+	# 2초 후 제거
+	var tween = create_tween()
+	tween.tween_interval(2.0)
+	tween.tween_callback(func(): upgrade_label.queue_free())
+
+# 레벨 라벨 글로우 효과 추가
+func _add_level_glow_effect() -> void:
+	if not level_label:
+		return
+	
+	# 이미 글로우 효과가 있는지 확인
+	if level_label.get_node_or_null("GlowEffect"):
+		return
+	
+	# 글로우 효과를 위한 Tween 생성
+	var glow_tween = create_tween()
+	glow_tween.set_loops()  # 무한 반복
+	
+	# 색상이 서서히 변하는 효과
+	var base_color = get_level_color()
+	var glow_color = base_color.lightened(0.3)  # 더 밝은 색상
+	
+	glow_tween.tween_method(_update_glow_color, base_color, glow_color, 1.0)
+	glow_tween.tween_method(_update_glow_color, glow_color, base_color, 1.0)
+
+# 글로우 색상 업데이트
+func _update_glow_color(color: Color) -> void:
+	if level_label and level_label.label_settings:
+		level_label.label_settings.font_color = color

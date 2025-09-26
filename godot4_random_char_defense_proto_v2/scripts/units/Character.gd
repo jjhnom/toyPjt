@@ -291,10 +291,8 @@ func _ready() -> void:
 	_create_level_label()
 	
 func _on_area_enter(area:Area2D) -> void:
-	print("캐릭터 %s (Lv.%d) Area2D 진입 감지: %s" % [id, level, area.name])
 	var enemy = area.get_parent()  # HitboxArea의 부모는 Enemy
 	if enemy.has_method("take_damage"):
-		print("캐릭터 %s (Lv.%d) Enemy 감지: %s" % [id, level, enemy.name])
 		# Enemy의 히트박스 크기 확인
 		var enemy_hitbox_radius = 16.0  # 기본값 (Enemy.tscn에서 확인된 값)
 		var enemy_area = enemy.get_node_or_null("HitboxArea")
@@ -307,16 +305,8 @@ func _on_area_enter(area:Area2D) -> void:
 		var distance = global_position.distance_to(enemy.global_position)
 		var effective_range = attack_range + enemy_hitbox_radius + 15.0  # 모바일 터치 정확도 고려하여 15픽셀 추가
 		
-		print("캐릭터 %s (Lv.%d) Enemy %s 거리 검사 - 거리: %.1f, 사거리: %.1f, 유효거리: %.1f, 범위내: %s" % [
-			id, level, enemy.name, distance, attack_range, effective_range,
-			"YES" if distance <= effective_range else "NO"
-		])
-		
 		if distance <= effective_range:
 			in_range.append(enemy)
-			print("캐릭터 %s (Lv.%d) Enemy %s를 in_range에 추가! 총 %d개" % [id, level, enemy.name, in_range.size()])
-	else:
-		print("캐릭터 %s (Lv.%d) Enemy가 아님: %s" % [id, level, enemy.name if enemy else "없음"])
 
 func _on_area_exit(area:Area2D) -> void:
 	var enemy = area.get_parent()  # HitboxArea의 부모는 Enemy
@@ -354,12 +344,6 @@ func _process(delta:float) -> void:
 	# 유효한 적들만 필터링
 	in_range = in_range.filter(is_instance_valid)
 	
-	# 디버깅: 5초마다 상태 출력
-	if int(Time.get_time_dict_from_system()["second"]) % 5 == 0 and int(Time.get_time_dict_from_system()["second"]) != 0:
-		print("캐릭터 %s (Lv.%d) _process 상태 - in_range: %d개, 공격중: %s, 쿨다운: %.2f" % [
-			id, level, in_range.size(), is_attacking, cd
-		])
-	
 	# 사거리 내에 정확히 있는 적들만 다시 필터링 (Enemy 히트박스 크기 고려)
 	var valid_targets = []
 	for enemy in in_range:
@@ -395,7 +379,6 @@ func _process(delta:float) -> void:
 	# 가장 가까운 적을 우선 타겟으로 선택
 	var closest_target = _get_closest_target(valid_targets)
 	if closest_target:
-		print("캐릭터 %s (Lv.%d) 공격 시작! 타겟: %s" % [id, level, closest_target.name])
 		_fire(closest_target)
 		cd = rate
 
@@ -713,7 +696,6 @@ func _apply_knockback(target: Node) -> void:
 			knockback_progress = max(0.0, knockback_progress)  # 0 이하로 가지 않도록 제한
 			
 			# 넉백 적용 - 더 강력한 효과
-			print("넉백 적용: %.2f → %.2f (%.1f픽셀 뒤로)" % [target_progress, knockback_progress, knockback_distance])
 			target.progress = knockback_progress
 			
 			# 넉백 시각적 효과
@@ -792,7 +774,6 @@ func _apply_bash_damage(target: Node) -> void:
 	
 	# 추가 데미지는 기본 공격력과 동일 (2배 데미지 효과)
 	var bash_damage = damage
-	print("전사 배쉬 발동! 추가 데미지: %d" % bash_damage)
 	
 	# 적에게 추가 데미지 적용
 	if target.has_method("take_damage"):
@@ -883,7 +864,6 @@ func upgrade_attack() -> bool:
 	# 시각적 효과
 	_show_upgrade_effect("공격력")
 	
-	print("공격력 업그레이드 완료! +%d (총 %d회)" % [atk_upgrade_amount, atk_upgrades])
 	return true
 
 # 사거리 업그레이드
@@ -922,7 +902,6 @@ func upgrade_range() -> bool:
 	# 시각적 효과
 	_show_upgrade_effect("사거리")
 	
-	print("사거리 업그레이드 완료! +%d (총 %d회)" % [range_upgrade_amount, range_upgrades])
 	return true
 
 # 업그레이드 비용 가져오기
@@ -1003,7 +982,6 @@ func _update_glow_color(color: Color) -> void:
 # 안전한 사거리 적용 함수
 func _apply_attack_range(new_range: float) -> void:
 	"""사거리를 안전하게 변경하고 관련 상태를 초기화합니다."""
-	print("캐릭터 %s (Lv.%d) 사거리 변경: %.1f → %.1f" % [id, level, attack_range, new_range])
 	
 	# 1. RangeArea 모니터링 일시 중단 (물리 재평가 유도)
 	area.monitoring = false
@@ -1029,7 +1007,6 @@ func _apply_attack_range(new_range: float) -> void:
 # 조용한 사거리 적용 (다른 캐릭터들 초기화하지 않음)
 func _apply_attack_range_silent(new_range: float) -> void:
 	"""사거리를 안전하게 변경하되 다른 캐릭터들은 초기화하지 않습니다."""
-	print("캐릭터 %s (Lv.%d) 사거리 조용히 변경: %.1f → %.1f" % [id, level, attack_range, new_range])
 	
 	# 1. RangeArea 모니터링 일시 중단 (물리 재평가 유도)
 	area.monitoring = false
@@ -1061,39 +1038,27 @@ func _restore_range_area_monitoring() -> void:
 	
 	# 레이어/마스크 보호 및 시그널 연결 보강
 	_ensure_range_area_integrity()
-	
-	print("캐릭터 %s (Lv.%d) RangeArea 모니터링 복원 완료" % [id, level])
 
 # RangeArea 무결성 보장
 func _ensure_range_area_integrity() -> void:
 	"""RangeArea의 레이어/마스크와 시그널 연결을 보장합니다."""
 	if not area:
-		print("ERROR: RangeArea가 없습니다!")
 		return
 	
 	# 레이어/마스크 설정 (Enemy의 HitboxArea와 충돌하도록)
 	area.collision_layer = 0  # 자신은 레이어에 없음
 	area.collision_mask = 2   # Enemy의 HitboxArea 레이어 (2번)
 	
-	print("캐릭터 %s (Lv.%d) RangeArea collision 설정 - layer: %d, mask: %d" % [id, level, area.collision_layer, area.collision_mask])
-	
 	# 시그널 연결 확인 및 재연결
 	if not area.area_entered.is_connected(_on_area_enter):
 		area.area_entered.connect(_on_area_enter)
-		print("캐릭터 %s (Lv.%d) area_entered 시그널 재연결" % [id, level])
 	
 	if not area.area_exited.is_connected(_on_area_exit):
 		area.area_exited.connect(_on_area_exit)
-		print("캐릭터 %s (Lv.%d) area_exited 시그널 재연결" % [id, level])
-	
-	print("캐릭터 %s (Lv.%d) RangeArea 무결성 보장 완료" % [id, level])
 
 # 현재 겹치는 적들을 스냅샷으로 재구축
 func _rebuild_enemy_snapshot() -> void:
 	"""get_overlapping_areas()를 사용하여 현재 겹치는 적들을 재구축합니다."""
-	print("캐릭터 %s (Lv.%d) 적 스냅샷 재구축 시작" % [id, level])
-	print("캐릭터 %s (Lv.%d) 현재 위치: %s, 사거리: %.1f" % [id, level, global_position, attack_range])
-	print("캐릭터 %s (Lv.%d) 기존 in_range: %d개" % [id, level, in_range.size()])
 	
 	# 기존 in_range 배열을 백업하고 새로 구축
 	var old_in_range = in_range.duplicate()
@@ -1103,25 +1068,14 @@ func _rebuild_enemy_snapshot() -> void:
 	var overlapping_areas = []
 	if area.monitoring:
 		overlapping_areas = area.get_overlapping_areas()
-		print("캐릭터 %s (Lv.%d) 겹치는 Area2D 수: %d개" % [id, level, overlapping_areas.size()])
-	else:
-		print("캐릭터 %s (Lv.%d) monitoring이 꺼져있음 - 직접 검사" % [id, level])
 	
 	# 모든 Enemy 노드 검사 (monitoring이 꺼져있을 때도 작동)
 	var all_enemies = get_tree().get_nodes_in_group("enemy")
-	print("캐릭터 %s (Lv.%d) 전체 Enemy 수: %d개" % [id, level, all_enemies.size()])
-	
-	# monitoring이 켜져있으면 Area2D 정보도 출력
-	if area.monitoring:
-		for i in range(overlapping_areas.size()):
-			var area_node = overlapping_areas[i]
-			print("캐릭터 %s (Lv.%d) Area2D[%d]: %s, 부모: %s" % [id, level, i, area_node.name, area_node.get_parent().name if area_node.get_parent() else "없음"])
 	
 	# 모든 Enemy를 직접 거리 검사
 	for enemy in all_enemies:
 		if is_instance_valid(enemy):
 			var distance = global_position.distance_to(enemy.global_position)
-			print("캐릭터 %s (Lv.%d) Enemy %s - 위치: %s, 거리: %.1f" % [id, level, enemy.name, enemy.global_position, distance])
 			
 			# 거리 검증
 			var enemy_hitbox_radius = 16.0
@@ -1135,16 +1089,8 @@ func _rebuild_enemy_snapshot() -> void:
 			
 			var effective_range = attack_range + enemy_hitbox_radius + 15.0
 			
-			print("캐릭터 %s (Lv.%d) 적 %s 검사 - 거리: %.1f, 사거리: %.1f, 유효거리: %.1f, 범위내: %s" % [
-				id, level, enemy.name, distance, attack_range, effective_range, 
-				"YES" if distance <= effective_range else "NO"
-			])
-			
 			if distance <= effective_range:
 				in_range.append(enemy)
-				print("캐릭터 %s (Lv.%d) 적 재감지: %s (거리: %.1f)" % [id, level, enemy.name, distance])
-	
-	print("캐릭터 %s (Lv.%d) 적 스냅샷 재구축 완료: %d개" % [id, level, in_range.size()])
 
 # 공격 상태 리셋
 func _reset_attack_state() -> void:
@@ -1152,7 +1098,6 @@ func _reset_attack_state() -> void:
 	is_attacking = false
 	cd = 0.0
 	last_target = null
-	print("캐릭터 %s (Lv.%d) 공격 상태 리셋 완료" % [id, level])
 
 # 타겟 재설정
 func _reset_target() -> void:
@@ -1164,14 +1109,12 @@ func _reset_target() -> void:
 # 기존 적들을 다시 감지
 func _detect_existing_enemies() -> void:
 	"""기존 적들을 다시 감지합니다."""
-	print("캐릭터 %s (Lv.%d) 기존 적 재감지 시작" % [id, level])
 	
 	# 기존 in_range 배열 초기화
 	in_range.clear()
 	
 	# 모든 Enemy 노드를 찾아서 사거리 안에 있는지 확인
 	var enemies = get_tree().get_nodes_in_group("enemy")
-	print("캐릭터 %s (Lv.%d) - 그룹 'enemies'에서 발견된 적 수: %d개" % [id, level, enemies.size()])
 	
 	var detected_count = 0
 	for enemy in enemies:
@@ -1190,6 +1133,3 @@ func _detect_existing_enemies() -> void:
 			if distance <= effective_range:
 				in_range.append(enemy)
 				detected_count += 1
-				print("캐릭터 %s (Lv.%d) - 적 %s 재감지 성공! (거리: %.1f)" % [id, level, enemy.name, distance])
-	
-	print("캐릭터 %s (Lv.%d) 기존 적 %d개 재감지 완료" % [id, level, detected_count])

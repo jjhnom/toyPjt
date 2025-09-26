@@ -42,7 +42,6 @@ func _setup_layer_and_slots() -> void:
 		# 대안 경로 시도
 		layer = get_node_or_null("../../Map/CharacterLayer")
 		if not layer:
-			print("WARNING: CharacterLayer를 찾을 수 없습니다")
 			return
 	
 	_setup_slots()
@@ -69,7 +68,6 @@ func _setup_slots() -> void:
 						slots_root = child
 						break
 			else:
-				print("WARNING: Map 노드를 찾을 수 없습니다")
 				return
 	
 	if not slots_root:
@@ -115,7 +113,6 @@ func sell_character_at(slot_index: int) -> int:
 	if gm:
 		gm.add_gold(sell_price)
 	
-	print("캐릭터 판매: %s (레벨 %d) - %d골드 획득" % [character.id, character.level, sell_price])
 	
 	# 슬롯 상태 체크 및 UI 업데이트
 	_check_slot_status_and_update_ui()
@@ -153,12 +150,10 @@ func summon(cost:int=50) -> void:
 	# 먼저 빈 슬롯이 있는지 확인
 	var idx = _find_empty_slot()
 	if idx < 0: 
-		print("소환 실패: 빈 슬롯이 없습니다!")
 		return
 	
 	# 빈 슬롯이 있으면 골드 차감
 	if not gm.spend_gold(cost): 
-		print("소환 실패: 골드가 부족합니다!")
 		return
 	
 	var keys = data.characters.keys()
@@ -210,7 +205,6 @@ func _play_summon_effect(character: Node2D) -> void:
 	tween.tween_property(character, "scale", target_scale, 0.3)  # 크기 확대
 	tween.tween_property(character, "modulate", Color.YELLOW, 0.15)  # 노란색으로
 	tween.tween_property(character, "modulate", Color.WHITE, 0.15)   # 다시 흰색으로
-	tween.tween_callback(func(): print("Summon effect completed - Final scale: ", character.scale))
 func toggle_select_at(pos:Vector2) -> void:
 	var idx = _slot_at(pos); if idx < 0: return
 	if selected == -1: selected = idx
@@ -336,9 +330,6 @@ func _perform_swap(from_slot: int, to_slot: int, dragging_char: Node2D, target_c
 	elif selected_character == target_char:
 		_update_range_indicator_position()
 	
-	print("캐릭터 위치 교체: %s (%d슬롯) ↔ %s (%d슬롯)" % [
-		dragging_char.id, to_slot, target_char.id, from_slot
-	])
 func _try_merge(a:int, b:int) -> void:
 	if slots[a]["node"] == null or slots[b]["node"] == null: return
 	var A = slots[a]["node"]; var B = slots[b]["node"]
@@ -449,12 +440,10 @@ func select_character(character: Node2D) -> void:
 		_show_range_indicator(character)
 		_update_upgrade_ui(character)
 		_update_stats_ui(character)
-		print("캐릭터 선택됨: %s (사거리: %.1f)" % [character.id, character.attack_range])
 
 # 캐릭터 선택 해제
 func deselect_character() -> void:
 	if selected_character:
-		print("캐릭터 선택 해제됨: %s" % selected_character.id)
 	
 	selected_character = null
 	selected = -1  # 인덱스도 리셋
@@ -495,7 +484,6 @@ func _play_merge_effect(character: Node2D) -> void:
 	tween.set_parallel(true)
 	tween.tween_property(character, "scale", target_scale, 0.4)
 	tween.tween_property(character, "modulate", Color.WHITE, 0.4)
-	tween.tween_callback(func(): print("Merge effect completed"))
 
 # 업그레이드 UI 생성
 func _create_upgrade_ui() -> void:
@@ -564,30 +552,22 @@ func _create_upgrade_ui() -> void:
 	var main = get_node_or_null("/root/Main")
 	if main:
 		main.add_child(upgrade_panel)
-	else:
-		print("WARNING: Main 노드를 찾을 수 없어 업그레이드 UI를 생성할 수 없습니다")
 
 # 업그레이드 UI 업데이트
 func _update_upgrade_ui(character: Node2D) -> void:
-	print("업그레이드 UI 업데이트 시작 - 캐릭터: %s, 레벨: %d" % [character.id if character else "null", character.level if character else 0])
-	
 	if not upgrade_panel or not character:
-		print("업그레이드 UI 업데이트 실패 - 패널 또는 캐릭터가 null")
 		return
 	
 	# 6레벨 이상인지 확인
 	if character.level >= 6:
-		print("6레벨 이상 - 업그레이드 UI 표시")
 		upgrade_panel.visible = true
 	else:
-		print("6레벨 미만 - 업그레이드 UI 숨김 (레벨: %d)" % character.level)
 		upgrade_panel.visible = false
 		return
 	
 	# 공격력 업그레이드 버튼 상태 업데이트
 	var can_upgrade_atk = character.can_upgrade_attack()
 	atk_upgrade_button.disabled = not can_upgrade_atk
-	print("공격력 업그레이드 가능: %s" % can_upgrade_atk)
 	
 	if can_upgrade_atk:
 		var cost = character.get_upgrade_cost("attack")
@@ -598,7 +578,6 @@ func _update_upgrade_ui(character: Node2D) -> void:
 	# 사거리 업그레이드 버튼 상태 업데이트
 	var can_upgrade_range = character.can_upgrade_range()
 	range_upgrade_button.disabled = not can_upgrade_range
-	print("사거리 업그레이드 가능: %s" % can_upgrade_range)
 	
 	if can_upgrade_range:
 		var cost = character.get_upgrade_cost("range")
@@ -613,8 +592,6 @@ func _hide_upgrade_ui() -> void:
 
 # 공격력 업그레이드 버튼 클릭
 func _on_atk_upgrade_pressed() -> void:
-	print("공격력 업그레이드 버튼 클릭됨")
-	
 	# 캐릭터 선택 상태 즉시 복원 (버튼 클릭으로 인한 선택 해제 방지)
 	var current_character = selected_character
 	if not current_character:
@@ -622,7 +599,6 @@ func _on_atk_upgrade_pressed() -> void:
 		if selected >= 0 and selected < slots.size() and slots[selected]["node"] != null:
 			current_character = slots[selected]["node"]
 			selected_character = current_character
-			print("선택된 슬롯 %d에서 캐릭터 복원: %s" % [selected, current_character.id])
 		else:
 			# 선택된 슬롯이 없으면 모든 슬롯에서 6레벨 이상 캐릭터 찾기
 			for i in slots.size():
@@ -630,32 +606,21 @@ func _on_atk_upgrade_pressed() -> void:
 					current_character = slots[i]["node"]
 					selected_character = current_character
 					selected = i
-					print("슬롯 %d에서 6레벨 캐릭터 복원: %s" % [i, current_character.id])
 					break
 			
 			if not current_character:
-				print("선택된 캐릭터가 없습니다")
 				return
 	
-	print("선택된 캐릭터: %s, 레벨: %d" % [current_character.id, current_character.level])
-	
 	if current_character.upgrade_attack():
-		print("공격력 업그레이드 성공")
 		# 업그레이드 성공 시 UI 업데이트
 		_update_upgrade_ui(current_character)
 		_update_stats_ui(current_character)  # 통계 UI도 업데이트
 		# 사거리 표시기 업데이트 (공격력은 사거리에 영향 없음)
 		if range_indicator and current_character:
 			_draw_range_circle(current_character)
-		
-		print("공격력 업그레이드 완료")
-	else:
-		print("공격력 업그레이드 실패")
 
 # 사거리 업그레이드 버튼 클릭
 func _on_range_upgrade_pressed() -> void:
-	print("사거리 업그레이드 버튼 클릭됨")
-	
 	# 캐릭터 선택 상태 즉시 복원 (버튼 클릭으로 인한 선택 해제 방지)
 	var current_character = selected_character
 	if not current_character:
@@ -663,7 +628,6 @@ func _on_range_upgrade_pressed() -> void:
 		if selected >= 0 and selected < slots.size() and slots[selected]["node"] != null:
 			current_character = slots[selected]["node"]
 			selected_character = current_character
-			print("선택된 슬롯 %d에서 캐릭터 복원: %s" % [selected, current_character.id])
 		else:
 			# 선택된 슬롯이 없으면 모든 슬롯에서 6레벨 이상 캐릭터 찾기
 			for i in slots.size():
@@ -671,27 +635,18 @@ func _on_range_upgrade_pressed() -> void:
 					current_character = slots[i]["node"]
 					selected_character = current_character
 					selected = i
-					print("슬롯 %d에서 6레벨 캐릭터 복원: %s" % [i, current_character.id])
 					break
 			
 			if not current_character:
-				print("선택된 캐릭터가 없습니다")
 				return
 	
-	print("선택된 캐릭터: %s, 레벨: %d" % [current_character.id, current_character.level])
-	
 	if current_character.upgrade_range():
-		print("사거리 업그레이드 성공")
 		# 업그레이드 성공 시 UI 업데이트
 		_update_upgrade_ui(current_character)
 		_update_stats_ui(current_character)  # 통계 UI도 업데이트
 		# 사거리 표시기 업데이트
 		if range_indicator and current_character:
 			_draw_range_circle(current_character)
-		
-		print("사거리 업그레이드 완료")
-	else:
-		print("사거리 업그레이드 실패")
 
 # 업그레이드 버튼 GUI 입력 이벤트 처리 (사용하지 않음 - pressed 신호만 사용)
 # func _on_upgrade_button_gui_input(event: InputEvent) -> void:
@@ -720,7 +675,6 @@ func _ensure_character_selected(character: Node2D) -> void:
 			# 사거리 표시기 업데이트
 			if range_indicator:
 				_draw_range_circle(character)
-			print("캐릭터 선택 상태 유지 확인: %s" % character.id)
 		else:
 			# 캐릭터가 더 이상 존재하지 않으면 선택 해제
 			deselect_character()
@@ -816,8 +770,6 @@ func _create_stats_ui() -> void:
 	var main = get_node_or_null("/root/Main")
 	if main:
 		main.add_child(stats_panel)
-	else:
-		print("WARNING: Main 노드를 찾을 수 없어 통계 UI를 생성할 수 없습니다")
 
 # 통계 UI 업데이트
 func _update_stats_ui(character: Node2D) -> void:
@@ -912,15 +864,11 @@ func _update_summon_button_state() -> void:
 func _update_initial_ui_state() -> void:
 	# 슬롯이 제대로 설정되었는지 확인
 	if slots.size() > 0:
-		print("슬롯 %d개 설정 완료, UI 상태 업데이트" % slots.size())
 		_update_summon_button_state()
-	else:
-		print("WARNING: 슬롯이 설정되지 않았습니다")
 
 # 사거리 업그레이드 후 모든 캐릭터의 상태 초기화
 func _reset_all_characters_state_after_range_upgrade() -> void:
 	"""사거리 업그레이드 후 모든 캐릭터의 상태를 초기화합니다."""
-	print("사거리 업그레이드 후 모든 캐릭터 상태 초기화 시작")
 	
 	for slot in slots:
 		if slot["node"] and is_instance_valid(slot["node"]):
@@ -937,5 +885,3 @@ func _reset_all_characters_state_after_range_upgrade() -> void:
 			# 캐릭터의 사거리 내 적 재감지
 			if character.has_method("_detect_existing_enemies"):
 				character._detect_existing_enemies()
-	
-	print("사거리 업그레이드 후 모든 캐릭터 상태 초기화 완료")

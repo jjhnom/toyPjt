@@ -916,3 +916,26 @@ func _update_initial_ui_state() -> void:
 		_update_summon_button_state()
 	else:
 		print("WARNING: 슬롯이 설정되지 않았습니다")
+
+# 사거리 업그레이드 후 모든 캐릭터의 상태 초기화
+func _reset_all_characters_state_after_range_upgrade() -> void:
+	"""사거리 업그레이드 후 모든 캐릭터의 상태를 초기화합니다."""
+	print("사거리 업그레이드 후 모든 캐릭터 상태 초기화 시작")
+	
+	for slot in slots:
+		if slot["node"] and is_instance_valid(slot["node"]):
+			var character = slot["node"]
+			
+			# 캐릭터의 공격 상태 초기화
+			if character.has_method("_reset_attack_state"):
+				character._reset_attack_state()
+			
+			# 캐릭터의 타겟 재설정
+			if character.has_method("_reset_target"):
+				character._reset_target()
+			
+			# 캐릭터의 사거리 내 적 재감지
+			if character.has_method("_detect_existing_enemies"):
+				character._detect_existing_enemies()
+	
+	print("사거리 업그레이드 후 모든 캐릭터 상태 초기화 완료")

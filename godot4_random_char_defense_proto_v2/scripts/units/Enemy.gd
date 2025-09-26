@@ -51,6 +51,13 @@ func _ready() -> void:
 	health_bar = get_node("HealthBar")
 	health_bar_fill = get_node("HealthBar/HealthBarFill")
 	
+	# HitboxArea collision layer 설정 (Character의 RangeArea가 감지할 수 있도록)
+	var hitbox_area = get_node("HitboxArea")
+	if hitbox_area:
+		hitbox_area.collision_layer = 2  # Enemy HitboxArea는 layer 2
+		hitbox_area.collision_mask = 0   # 다른 것과 충돌하지 않음
+		print("Enemy %s HitboxArea collision layer 설정: %d" % [name, hitbox_area.collision_layer])
+	
 	# 스프라이트가 타일 위에 보이도록 z_index 설정
 	if sprite:
 		sprite.z_index = 1

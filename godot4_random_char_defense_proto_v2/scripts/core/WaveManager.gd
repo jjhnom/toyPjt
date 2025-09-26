@@ -66,10 +66,16 @@ func start_next_wave() -> void:
 	wave_idx += 1
 	emit_signal("wave_cleared", wave_idx)
 func _spawn_one(enemy_id:String) -> void:
+	print("적 스폰 시도: %s" % enemy_id)
 	var pool = $"../ObjectPool"
 	var enemy = pool.pop("Enemy", func(): return enemy_scene.instantiate())
 	var map = $"/root/Main/Map"
 	
+	if not enemy:
+		print("ERROR: 적 생성 실패!")
+		return
+	
+	print("적 생성 성공: %s" % enemy.name)
 	
 	# EnemyLayer 찾기 - 여러 방법 시도
 	var enemy_layer = null
@@ -93,6 +99,7 @@ func _spawn_one(enemy_id:String) -> void:
 		enemy_layer = Node2D.new()
 		enemy_layer.name = "EnemyLayer"
 		map.add_child(enemy_layer)
+		print("EnemyLayer 생성됨")
 	
 	
 	# Path2D 안전하게 찾기 (Path2D_A 또는 Path2D)
@@ -100,7 +107,10 @@ func _spawn_one(enemy_id:String) -> void:
 	if not path:
 		path = map.get_node_or_null("Path2D")
 		if not path:
+			print("ERROR: Path2D를 찾을 수 없습니다!")
 			return
+	
+	print("Path2D 찾음: %s" % path.name)
 	
 	# PathFollow2D는 Path2D의 자식이어야 함
 	path.add_child(enemy)
@@ -110,10 +120,12 @@ func _spawn_one(enemy_id:String) -> void:
 	
 	enemy.init_from_config($"../DataHub".enemies.get(enemy_id, {}))
 	
+	print("적 초기화 완료: %s, 위치: %s" % [enemy.name, enemy.global_position])
 	
 	enemy.connect("escaped", Callable(self, "_on_enemy_escaped"), CONNECT_ONE_SHOT)
 	enemy.connect("died", Callable(self, "_on_enemy_died"), CONNECT_ONE_SHOT)
 	alive += 1
+	print("현재 살아있는 적 수: %d" % alive)
 func _process(delta: float) -> void:
 	if is_wave_active and wave_timer > 0.0:
 		wave_timer -= delta

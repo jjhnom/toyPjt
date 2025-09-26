@@ -4,7 +4,8 @@ res://scenes/Character.tscn
 res://scenes/Enemy.tscn
 res://scenes/Map.tscn
 res://scenes/Projectile.tscn
-res://scripts/core/CharacterManager.gd
 res://scripts/units/Character.gd
-res://scripts/ui/UIManager.gd
-res://scripts/core/SkillManager.gd
+res://scripts/units/Enemy.gd
+res://scripts/core/CharacterManager.gd
+res://scripts/core/GameManager.gd
+res://scripts/core/WaveManager.gd

@@ -443,8 +443,6 @@ func select_character(character: Node2D) -> void:
 
 # 캐릭터 선택 해제
 func deselect_character() -> void:
-	if selected_character:
-	
 	selected_character = null
 	selected = -1  # 인덱스도 리셋
 	_hide_range_indicator()

@@ -4,7 +4,7 @@
     "atk": 7,
     "range": 150,
     "rate": 0.6,
-    "skill": "pierce",
+    "skill": "",
     "cost": 50,
     "rarity": "common",
     "spawn_weight": 35,
@@ -123,32 +123,32 @@
       "defence": {"frames": 4, "fps": 8.0}
     }
   },
-  "gd01": {
+  "hi-nu": {
     "role": "dps",
-    "atk": 12,
-    "range": 180,
-    "rate": 0.8,
+    "atk": 15,
+    "range": 200,
+    "rate": 0.7,
     "skill": "multi_shot",
-    "cost": 120,
-    "rarity": "epic",
-    "spawn_weight": 100,
-    "sprite_path": "res://ani/gd01.tscn",
-    "attack_sprite": "res://ani/gd01.tscn",
-    "run_sprite": "res://ani/gd01.tscn",
-    "special_sprite": "res://ani/gd01.tscn",
-    "projectile_sprite": "res://ani/gd01.tscn",
-    "scale": 1,
+    "cost": 150,
+    "rarity": "legendary",
+    "spawn_weight": 10,
+    "sprite_path": "res://ani/Hi-Nu_Idle.tscn",
+    "attack_sprite": "res://ani/Hi-Nu_Attck.tscn",
+    "run_sprite": "res://ani/Hi-Nu.tscn",
+    "special_sprite": "res://ani/Hi-Nu_Attck.tscn",
+    "projectile_sprite": "res://ani/Hi-Nu.tscn",
+    "scale": 0.3,
     "upgrades": {
       "max_level": 6,
-      "atk_upgrade_cost": 250,
-      "range_upgrade_cost": 250,
-      "atk_upgrade_amount": 8,
-      "range_upgrade_amount": 35
+      "atk_upgrade_cost": 300,
+      "range_upgrade_cost": 300,
+      "atk_upgrade_amount": 10,
+      "range_upgrade_amount": 40
     },
     "animations": {
-      "idle": {"frames": 4, "fps": 6.0},
-      "attack": {"frames": 6, "fps": 6.0},
-      "run": {"frames": 1, "fps": 1.0}
+      "idle": {"frames": 4, "fps": 4.0},
+      "attack": {"frames": 3, "fps": 3.0},
+      "run": {"frames": 6, "fps": 12.0}
     }
   }
 }

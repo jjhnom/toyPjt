@@ -112,9 +112,9 @@ func _setup_animation(sprite_strip_path: String) -> void:
 	if not sprite:
 		return
 	
-	# GD01의 경우 .tscn 파일 처리
-	if id == "gd01" and sprite_strip_path.ends_with(".tscn"):
-		_setup_gd01_tscn_animation(sprite_strip_path)
+	# .tscn 파일 처리 (공통)
+	if sprite_strip_path.ends_with(".tscn"):
+		_setup_tscn_animation(sprite_strip_path)
 		return
 	
 	# 스프라이트 경로에 따라 애니메이션 이름 결정
@@ -240,7 +240,7 @@ func _setup_animation(sprite_strip_path: String) -> void:
 func _get_animation_name_from_path(sprite_path: String) -> String:
 	var filename = sprite_path.get_file().get_basename().to_lower()
 	
-	if "attack" in filename:
+	if "attack" in filename or "attck" in filename:
 		return "attack"
 	elif "heal" in filename:
 		return "heal"
@@ -441,17 +441,14 @@ func _fire(t:Node) -> void:
 	p.global_position = global_position
 	p.shoot_at(t, damage)
 	
-	# 창병 넉백 스킬 처리
+	# 개별 스킬 처리 (기존 호환성을 위해 유지)
 	if id == "lancer":
 		_handle_lancer_knockback(t)
-	
-	# 전사 배쉬 스킬 처리
-	if id == "warrior":
+	elif id == "warrior":
 		_handle_warrior_bash(t)
 	
-	# GD01 멀티샷 스킬 처리
-	if id == "gd01":
-		_handle_gd01_multishot(t)
+	# 스킬 처리 (공통)
+	_handle_character_skill(t)
 	
 
 # 캐릭터별 애니메이션 재생 함수들
@@ -462,9 +459,22 @@ func play_attack_animation() -> void:
 	if id == "lancer":
 		_play_lancer_directional_attack(config)
 	elif config.has("attack_sprite"):
+		# 공격 애니메이션 설정 전에 현재 상태 백업
+		var current_animation = sprite.animation if sprite else ""
 		_set_character_sprite_from_path(config.attack_sprite)
+		
+		# 공격 애니메이션이 제대로 설정되지 않았으면 idle로 폴백
+		if sprite and sprite.animation == current_animation:
+			play_idle_animation()
 	elif config.has("attack2_sprite") and randf() > 0.5:
+		var current_animation = sprite.animation if sprite else ""
 		_set_character_sprite_from_path(config.attack2_sprite)
+		
+		if sprite and sprite.animation == current_animation:
+			play_idle_animation()
+	else:
+		# 공격 스프라이트가 없으면 idle 애니메이션 사용
+		play_idle_animation()
 
 # Lancer 전용 방향별 공격 애니메이션
 func _play_lancer_directional_attack(config: Dictionary) -> void:
@@ -612,14 +622,8 @@ func play_special_animation(anim_type: String) -> void:
 
 # 레벨업 효과 표시 함수
 func _show_levelup_effect() -> void:
-	
-	# 시각적 효과 (선택사항)
-	if sprite:
-		var original_modulate = sprite.modulate
-		var tween = create_tween()
-		tween.set_loops(3)
-		tween.tween_property(sprite, "modulate", Color.GOLD, 0.2)
-		tween.tween_property(sprite, "modulate", original_modulate, 0.2)
+	# 레벨업 효과는 텍스트만 표시 (색상 변화 없음)
+	pass
 
 func _get_character_config() -> Dictionary:
 	# 여러 경로를 시도해서 DataHub 찾기
@@ -746,7 +750,7 @@ func _show_knockback_effect(target: Node) -> void:
 		# 0.3초 후 원래 색상과 크기로 복원
 		var tween = create_tween()
 		tween.tween_interval(0.3)
-		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
+		tween.tween_callback(func(): _restore_target_appearance(target, original_modulate, original_scale))
 
 # 전사 배쉬 스킬 처리
 func _handle_warrior_bash(target: Node) -> void:
@@ -795,7 +799,7 @@ func _show_bash_effect(target: Node) -> void:
 		# 0.2초 후 원래 색상과 크기로 복원
 		var tween = create_tween()
 		tween.tween_interval(0.2)
-		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
+		tween.tween_callback(func(): _restore_target_appearance(target, original_modulate, original_scale))
 
 # 업그레이드 보너스 적용 함수
 func _apply_upgrade_bonuses(conf: Dictionary) -> void:
@@ -916,14 +920,7 @@ func _show_upgrade_effect(stat_name: String) -> void:
 	if not sprite:
 		return
 	
-	# 골드 색상으로 깜빡이는 효과
-	var original_modulate = sprite.modulate
-	var tween = create_tween()
-	tween.set_loops(2)
-	tween.tween_property(sprite, "modulate", Color.GOLD, 0.3)
-	tween.tween_property(sprite, "modulate", original_modulate, 0.3)
-	
-	# 업그레이드 텍스트 표시 (선택사항)
+	# 업그레이드 텍스트만 표시 (색상 변화 없음)
 	_show_upgrade_text(stat_name)
 
 # 업그레이드 텍스트 표시
@@ -946,7 +943,7 @@ func _show_upgrade_text(stat_name: String) -> void:
 	# 2초 후 제거
 	var tween = create_tween()
 	tween.tween_interval(2.0)
-	tween.tween_callback(_remove_upgrade_label.bind(upgrade_label))
+	tween.tween_callback(func(): _remove_upgrade_label(upgrade_label))
 
 # 타겟 외관 복원 헬퍼 함수
 func _restore_target_appearance(target: Node, original_modulate: Color, original_scale: Vector2) -> void:
@@ -1140,8 +1137,28 @@ func _detect_existing_enemies() -> void:
 				in_range.append(enemy)
 				detected_count += 1
 
-# GD01 멀티샷 스킬 처리
-func _handle_gd01_multishot(target: Node) -> void:
+# 공통 스킬 처리 함수
+func _handle_character_skill(target: Node) -> void:
+	var config = _get_character_config()
+	var skill = config.get("skill", "")
+	
+	match skill:
+		"multi_shot":
+			_handle_multishot_skill(target)
+		"pierce":
+			_handle_pierce_skill(target)
+		"bash":
+			_handle_bash_skill(target)
+		"knockback_attack":
+			_handle_knockback_skill(target)
+		"heal":
+			_handle_heal_skill(target)
+		_:
+			# 기본 스킬이 없으면 아무것도 하지 않음
+			pass
+
+# 멀티샷 스킬 처리 (공통)
+func _handle_multishot_skill(target: Node) -> void:
 	if not is_instance_valid(target):
 		return
 	
@@ -1153,6 +1170,87 @@ func _handle_gd01_multishot(target: Node) -> void:
 	if roll <= multishot_chance:
 		# 멀티샷 발동 - 추가 화살 발사
 		_fire_additional_arrows(target)
+
+# 관통 스킬 처리 (공통)
+func _handle_pierce_skill(target: Node) -> void:
+	# 관통 스킬은 프로젝타일에서 처리되므로 여기서는 시각적 효과만
+	_show_skill_effect("pierce")
+
+# 배쉬 스킬 처리 (공통)
+func _handle_bash_skill(target: Node) -> void:
+	if not is_instance_valid(target):
+		return
+	
+	# 배쉬 확률: 기본 25% + 레벨당 5%
+	var bash_chance = 0.25 + (level - 1) * 0.05
+	bash_chance = min(bash_chance, 0.6)  # 최대 60%로 제한
+	
+	var roll = randf()
+	if roll <= bash_chance:
+		# 배쉬 성공 - 추가 데미지 적용
+		_apply_bash_damage(target)
+
+# 넉백 스킬 처리 (공통)
+func _handle_knockback_skill(target: Node) -> void:
+	if not is_instance_valid(target):
+		return
+	
+	# 넉백 확률: 레벨에 따라 증가 (기본 15%, 레벨당 5% 증가)
+	var knockback_chance = 0.15 + (level - 1) * 0.05
+	var roll = randf()
+	
+	if roll <= knockback_chance:
+		# 넉백 적용
+		_apply_knockback(target)
+
+# 힐 스킬 처리 (공통)
+func _handle_heal_skill(target: Node) -> void:
+	# 힐 스킬은 아군에게 적용되므로 여기서는 시각적 효과만
+	_show_skill_effect("heal")
+
+# 공통 스킬 효과 표시 (텍스트만)
+func _show_skill_effect(skill_type: String) -> void:
+	var effect_text: String
+	var effect_color: Color = Color.WHITE  # 기본 색상
+	
+	match skill_type:
+		"pierce":
+			effect_text = "관통!"
+		"heal":
+			effect_text = "치유!"
+		"bash":
+			effect_text = "배쉬!"
+		"knockback":
+			effect_text = "넉백!"
+		"multi_shot":
+			effect_text = "멀티샷!"
+		_:
+			effect_text = "스킬!"
+	
+	# 스킬 텍스트만 표시 (색상 변화 없음)
+	_show_skill_text(effect_text, effect_color)
+
+# 스킬 텍스트 표시
+func _show_skill_text(text: String, color: Color) -> void:
+	var skill_label = Label.new()
+	skill_label.text = text
+	skill_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	skill_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	var label_settings = LabelSettings.new()
+	label_settings.font_size = 14
+	label_settings.font_color = color
+	label_settings.outline_size = 2
+	label_settings.outline_color = Color.BLACK
+	skill_label.label_settings = label_settings
+	
+	skill_label.position = Vector2(-30, -80)
+	add_child(skill_label)
+	
+	# 1.5초 후 제거
+	var tween = create_tween()
+	tween.tween_interval(1.5)
+	tween.tween_callback(func(): _remove_upgrade_label(skill_label))
 
 # 추가 화살 발사 (멀티샷)
 func _fire_additional_arrows(target: Node) -> void:
@@ -1198,30 +1296,23 @@ func _fire_single_arrow(target: Node) -> void:
 	p.global_position = global_position
 	p.shoot_at(target, damage)
 
-# 멀티샷 시각적 효과
+# 멀티샷 시각적 효과 (공통)
 func _show_multishot_effect(arrows_count: int) -> void:
 	if not sprite:
 		return
 	
-	# GD01 특별 스프라이트로 변경 (멀티샷 시)
+	# 특별 스프라이트로 변경 (스킬 사용 시)
 	var config = _get_character_config()
 	if config.has("special_sprite"):
 		_set_character_sprite_from_path(config.special_sprite)
 	
-	# 청록색으로 깜빡이는 효과
-	var original_modulate = sprite.modulate
-	var tween = create_tween()
-	tween.set_loops(3)
-	tween.tween_property(sprite, "modulate", Color.CYAN, 0.2)
-	tween.tween_property(sprite, "modulate", original_modulate, 0.2)
-	
-	# 멀티샷 텍스트 표시
+	# 멀티샷 텍스트 표시 (색상 변화 없음)
 	_show_multishot_text(arrows_count)
 	
 	# 1초 후 기본 스프라이트로 복원
 	var restore_tween = create_tween()
 	restore_tween.tween_interval(1.0)
-	restore_tween.tween_callback(_restore_gd01_sprite)
+	restore_tween.tween_callback(_restore_character_sprite)
 
 # 멀티샷 텍스트 표시
 func _show_multishot_text(arrows_count: int) -> void:
@@ -1243,10 +1334,10 @@ func _show_multishot_text(arrows_count: int) -> void:
 	# 2초 후 제거
 	var tween = create_tween()
 	tween.tween_interval(2.0)
-	tween.tween_callback(_remove_upgrade_label.bind(multishot_label))
+	tween.tween_callback(func(): _remove_upgrade_label(multishot_label))
 
-# GD01 스프라이트 복원 함수
-func _restore_gd01_sprite() -> void:
+# 캐릭터 스프라이트 복원 함수 (공통)
+func _restore_character_sprite() -> void:
 	if not sprite:
 		return
 	
@@ -1254,50 +1345,110 @@ func _restore_gd01_sprite() -> void:
 	if config.has("sprite_path"):
 		_set_character_sprite_from_path(config.sprite_path)
 
-# GD01의 .tscn 파일 애니메이션 처리
-func _setup_gd01_tscn_animation(tscn_path: String) -> void:
+# .tscn 파일 애니메이션 처리 (공통)
+func _setup_tscn_animation(tscn_path: String) -> void:
 	if not sprite:
 		return
 	
+	# 경로에서 애니메이션 이름 추출
+	var animation_name = _get_animation_name_from_path(tscn_path)
+	
 	# 캐시 먼저 확인
-	var cache_key = tscn_path + "_gd01_idle"
+	var cache_key = tscn_path + "_" + id + "_" + animation_name
 	if _frames_cache.has(cache_key):
 		sprite.sprite_frames = _frames_cache[cache_key]
-		sprite.animation = "idle"
+		sprite.animation = animation_name
 		sprite.play()
 		return
 	
-	# gd01.tscn 파일을 실제로 로드
-	var gd01_scene = load(tscn_path) as PackedScene
-	if not gd01_scene:
+	# .tscn 파일을 실제로 로드
+	var scene = load(tscn_path) as PackedScene
+	if not scene:
 		return
 	
-	var gd01_node = gd01_scene.instantiate()
-	if not gd01_node:
+	var scene_node = scene.instantiate()
+	if not scene_node:
 		return
 	
 	# SpriteFrames 생성
 	var frames := SpriteFrames.new()
-	frames.add_animation("idle")
-	frames.set_animation_speed("idle", 6.0)  # 6 FPS
+	frames.add_animation(animation_name)
 	
-	# gd01.tscn의 idle1~4 노드에서 텍스처 정보 가져오기
-	var idle_nodes = ["idle1", "idle2", "idle3", "idle4"]
-	for node_name in idle_nodes:
-		var idle_node = gd01_node.get_node_or_null(node_name) as Sprite2D
-		if idle_node and idle_node.texture:
+	# 캐릭터 설정에서 FPS 가져오기
+	var config = _get_character_config()
+	var animations = config.get("animations", {})
+	var anim_data = animations.get(animation_name, {"fps": 6.0})
+	var fps = anim_data.get("fps", 6.0)
+	frames.set_animation_speed(animation_name, fps)
+	
+	# 애니메이션 타입에 따른 노드 이름 패턴 처리
+	var node_names = _get_animation_node_names(id, animation_name)
+	var frame_count = 0
+	for node_name in node_names:
+		var anim_node = scene_node.get_node_or_null(node_name) as Sprite2D
+		if anim_node and anim_node.texture:
 			var atlas_texture = AtlasTexture.new()
-			atlas_texture.atlas = idle_node.texture
-			atlas_texture.region = idle_node.region_rect
-			frames.add_frame("idle", atlas_texture)
+			atlas_texture.atlas = anim_node.texture
+			atlas_texture.region = anim_node.region_rect
+			frames.add_frame(animation_name, atlas_texture)
+			frame_count += 1
+	
+	# 프레임이 없으면 기본 idle 애니메이션으로 폴백
+	if frame_count == 0:
+		# 기본 idle 애니메이션으로 폴백
+		_setup_tscn_animation_fallback(tscn_path, animation_name)
+		return
 	
 	# 임시 노드 정리
-	gd01_node.queue_free()
+	scene_node.queue_free()
 	
 	# 캐시에 저장
 	_frames_cache[cache_key] = frames
 	
 	# 애니메이션 설정 및 재생
 	sprite.sprite_frames = frames
-	sprite.animation = "idle"
+	sprite.animation = animation_name
 	sprite.play()
+
+# 캐릭터별 애니메이션 노드 이름 패턴 반환
+func _get_animation_node_names(character_id: String, animation_type: String) -> Array[String]:
+	match character_id:
+		"gd01", "hi-nu", "hinu":
+			match animation_type:
+				"idle":
+					return ["idle1", "idle2", "idle3", "idle4", "idle5", "idle6", "idle7", "idle8"]
+				"attack":
+					return ["attck1", "attck2", "attack1", "attack2", "attack3", "attack4", "attack5", "attack6"]
+				"run":
+					return ["run1", "run2", "run3", "run4", "run5", "run6", "run7", "run8"]
+				_:
+					# 기본적으로 idle 노드들 사용
+					return ["idle1", "idle2", "idle3", "idle4", "idle5", "idle6", "idle7", "idle8"]
+		_:
+			# 기본 패턴: animation_type에 따라 노드 이름 생성
+			match animation_type:
+				"idle":
+					return ["idle", "idle1", "idle2", "idle3", "idle4"]
+				"attack":
+					return ["attack", "attack1", "attack2", "attack3", "attack4"]
+				"run":
+					return ["run", "run1", "run2", "run3", "run4"]
+				_:
+					return ["idle", "idle1", "idle2", "idle3", "idle4"]
+
+# .tscn 애니메이션 폴백 함수
+func _setup_tscn_animation_fallback(tscn_path: String, animation_name: String) -> void:
+	if not sprite:
+		return
+	
+	# 기본 idle 애니메이션으로 폴백
+	var config = _get_character_config()
+	if config.has("sprite_path"):
+		_set_character_sprite_from_path(config.sprite_path)
+	else:
+		# 최후의 수단: 기본 스프라이트 사용
+		pass
+
+# 캐릭터별 idle 노드 이름 패턴 반환 (하위 호환성을 위해 유지)
+func _get_idle_node_names(character_id: String) -> Array[String]:
+	return _get_animation_node_names(character_id, "idle")

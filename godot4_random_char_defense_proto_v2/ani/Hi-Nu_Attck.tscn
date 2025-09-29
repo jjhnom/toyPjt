@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://bombjj660gbkl"]
+
+[ext_resource type="Texture2D" uid="uid://cq62o6e2vhruj" path="res://assets/characters/HiNu/Hi-Nu.png" id="1_dex1t"]
+
+[node name="Hi-Nu" type="Node2D"]
+
+[node name="attack1" type="Sprite2D" parent="."]
+position = Vector2(-5, 0)
+texture = ExtResource("1_dex1t")
+region_enabled = true
+region_rect = Rect2(0, 741, 265, 246.406)
+
+[node name="attack2" type="Sprite2D" parent="."]
+position = Vector2(9, 4)
+texture = ExtResource("1_dex1t")
+region_enabled = true
+region_rect = Rect2(6, 241.891, 283, 246.406)
+
+[node name="attack4" type="Sprite2D" parent="."]
+position = Vector2(8, 3)
+texture = ExtResource("1_dex1t")
+region_enabled = true
+region_rect = Rect2(297.156, 241.891, 283, 246.406)
+
+[node name="attack3" type="Sprite2D" parent="."]
+position = Vector2(9, 4)
+texture = ExtResource("1_dex1t")
+region_enabled = true
+region_rect = Rect2(6, 241.891, 283, 246.406)

@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3 uid="uid://vp0hs5pij1q4"]
+
+[ext_resource type="Texture2D" uid="uid://cq62o6e2vhruj" path="res://assets/characters/HiNu/Hi-Nu.png" id="1_2gmrd"]
+
+[node name="Hi-Nu" type="Node2D"]
+
+[node name="idle1" type="Sprite2D" parent="."]
+texture = ExtResource("1_2gmrd")
+region_enabled = true
+region_rect = Rect2(527, 0, 254, 245)
+
+[node name="idle5" type="Sprite2D" parent="."]
+texture = ExtResource("1_2gmrd")
+region_enabled = true
+region_rect = Rect2(527, 0, 254, 245)
+
+[node name="idle2" type="Sprite2D" parent="."]
+texture = ExtResource("1_2gmrd")
+region_enabled = true
+region_rect = Rect2(791, 0, 254, 245)
+
+[node name="idle6" type="Sprite2D" parent="."]
+texture = ExtResource("1_2gmrd")
+region_enabled = true
+region_rect = Rect2(791, 0, 254, 245)
+
+[node name="idle3" type="Sprite2D" parent="."]
+texture = ExtResource("1_2gmrd")
+region_enabled = true
+region_rect = Rect2(241, 490, 282, 255)
+
+[node name="idle4" type="Sprite2D" parent="."]
+position = Vector2(-14, -1)
+texture = ExtResource("1_2gmrd")
+region_enabled = true
+region_rect = Rect2(240, 740, 254, 255)

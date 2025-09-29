@@ -571,7 +571,7 @@ func _update_upgrade_ui(character: Node2D) -> void:
 		var cost = character.get_upgrade_cost("attack")
 		atk_upgrade_button.text = "공격력 +%d\n(%d골드)" % [character._get_character_config().get("upgrades", {}).get("atk_upgrade_amount", 5), cost]
 	else:
-		atk_upgrade_button.text = "공격력 최대"
+		atk_upgrade_button.text = "공격력 업그레이드\n(6레벨 필요)"
 	
 	# 사거리 업그레이드 버튼 상태 업데이트
 	var can_upgrade_range = character.can_upgrade_range()

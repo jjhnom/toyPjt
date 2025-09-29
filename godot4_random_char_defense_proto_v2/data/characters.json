@@ -65,7 +65,7 @@
     "skill": "heal",
     "cost": 80,
     "rarity": "rare",
-    "spawn_weight": 15,
+    "spawn_weight": 0,
     "sprite_path": "res://assets/characters/Monk/Idle.png",
     "attack_sprite": "res://assets/characters/Monk/Heal.png",
     "heal_sprite": "res://assets/characters/Monk/Heal.png",
@@ -94,7 +94,7 @@
     "skill": "knockback_attack",
     "cost": 90,
     "rarity": "rare",
-    "spawn_weight": 10,
+    "spawn_weight": 0,
     "sprite_path": "res://assets/characters/Lancer/Lancer_Idle.png",
     "attack_sprite": "res://assets/characters/Lancer/Lancer_Right_Attack.png",
     "run_sprite": "res://assets/characters/Lancer/Lancer_Run.png",
@@ -121,6 +121,34 @@
       "run": {"frames": 6, "fps": 12.0},
       "attack": {"frames": 3, "fps": 6.0},
       "defence": {"frames": 4, "fps": 8.0}
+    }
+  },
+  "gd01": {
+    "role": "dps",
+    "atk": 12,
+    "range": 180,
+    "rate": 0.8,
+    "skill": "multi_shot",
+    "cost": 120,
+    "rarity": "epic",
+    "spawn_weight": 100,
+    "sprite_path": "res://ani/gd01.tscn",
+    "attack_sprite": "res://ani/gd01.tscn",
+    "run_sprite": "res://ani/gd01.tscn",
+    "special_sprite": "res://ani/gd01.tscn",
+    "projectile_sprite": "res://ani/gd01.tscn",
+    "scale": 1,
+    "upgrades": {
+      "max_level": 6,
+      "atk_upgrade_cost": 250,
+      "range_upgrade_cost": 250,
+      "atk_upgrade_amount": 8,
+      "range_upgrade_amount": 35
+    },
+    "animations": {
+      "idle": {"frames": 4, "fps": 6.0},
+      "attack": {"frames": 6, "fps": 6.0},
+      "run": {"frames": 1, "fps": 1.0}
     }
   }
 }

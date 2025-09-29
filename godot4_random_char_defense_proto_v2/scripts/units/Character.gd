@@ -16,7 +16,7 @@ var level_label:Label = null
 # 업그레이드 관련 변수
 var atk_upgrades:int = 0  # 공격력 업그레이드 횟수
 var range_upgrades:int = 0  # 사거리 업그레이드 횟수
-var max_upgrades:int = 3  # 각 스탯당 최대 업그레이드 횟수
+var max_upgrades:int = 3  # 사거리 최대 업그레이드 횟수 (공격력은 무제한)
 
 # 레벨별 색상 시스템
 var level_colors: Array[Color] = [
@@ -110,6 +110,11 @@ func _set_character_sprite_from_path(sprite_path: String) -> void:
 
 func _setup_animation(sprite_strip_path: String) -> void:
 	if not sprite:
+		return
+	
+	# GD01의 경우 .tscn 파일 처리
+	if id == "gd01" and sprite_strip_path.ends_with(".tscn"):
+		_setup_gd01_tscn_animation(sprite_strip_path)
 		return
 	
 	# 스프라이트 경로에 따라 애니메이션 이름 결정
@@ -444,6 +449,10 @@ func _fire(t:Node) -> void:
 	if id == "warrior":
 		_handle_warrior_bash(t)
 	
+	# GD01 멀티샷 스킬 처리
+	if id == "gd01":
+		_handle_gd01_multishot(t)
+	
 
 # 캐릭터별 애니메이션 재생 함수들
 func play_attack_animation() -> void:
@@ -737,12 +746,7 @@ func _show_knockback_effect(target: Node) -> void:
 		# 0.3초 후 원래 색상과 크기로 복원
 		var tween = create_tween()
 		tween.tween_interval(0.3)
-		tween.tween_callback(func(): 
-			if is_instance_valid(target):
-				target.modulate = original_modulate
-				if "scale" in target:
-					target.scale = original_scale
-		)
+		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
 
 # 전사 배쉬 스킬 처리
 func _handle_warrior_bash(target: Node) -> void:
@@ -791,12 +795,7 @@ func _show_bash_effect(target: Node) -> void:
 		# 0.2초 후 원래 색상과 크기로 복원
 		var tween = create_tween()
 		tween.tween_interval(0.2)
-		tween.tween_callback(func(): 
-			if is_instance_valid(target):
-				target.modulate = original_modulate
-				if "scale" in target:
-					target.scale = original_scale
-		)
+		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
 
 # 업그레이드 보너스 적용 함수
 func _apply_upgrade_bonuses(conf: Dictionary) -> void:
@@ -817,11 +816,11 @@ func _apply_upgrade_bonuses(conf: Dictionary) -> void:
 
 # 6레벨 달성 시 업그레이드 가능 여부 확인
 func can_upgrade() -> bool:
-	return level >= 6 and (atk_upgrades < max_upgrades or range_upgrades < max_upgrades)
+	return level >= 6 and (can_upgrade_attack() or range_upgrades < max_upgrades)
 
-# 공격력 업그레이드 가능 여부 확인
+# 공격력 업그레이드 가능 여부 확인 (무제한)
 func can_upgrade_attack() -> bool:
-	return level >= 6 and atk_upgrades < max_upgrades
+	return level >= 6  # 공격력은 무제한 업그레이드 가능
 
 # 사거리 업그레이드 가능 여부 확인
 func can_upgrade_range() -> bool:
@@ -832,9 +831,8 @@ func upgrade_attack() -> bool:
 	if not can_upgrade_attack():
 		return false
 	
-	var conf = _get_character_config()
-	var upgrades = conf.get("upgrades", {})
-	var cost = upgrades.get("atk_upgrade_cost", 100)
+	# 점진적으로 증가하는 비용 계산
+	var cost = get_upgrade_cost("attack")
 	
 	# 골드 확인 및 차감
 	var game_manager = get_node_or_null("/root/Main/GameManager")
@@ -846,6 +844,8 @@ func upgrade_attack() -> bool:
 	
 	# 업그레이드 적용
 	atk_upgrades += 1
+	var conf = _get_character_config()
+	var upgrades = conf.get("upgrades", {})
 	var atk_upgrade_amount = upgrades.get("atk_upgrade_amount", 5)
 	damage += atk_upgrade_amount
 	
@@ -902,9 +902,12 @@ func get_upgrade_cost(upgrade_type: String) -> int:
 	
 	match upgrade_type:
 		"attack":
-			return upgrades.get("atk_upgrade_cost", 100)
+			# 공격력 업그레이드 비용은 점진적으로 증가
+			var base_cost = upgrades.get("atk_upgrade_cost", 200)
+			var cost_multiplier = 1.5  # 매번 50%씩 증가
+			return int(base_cost * pow(cost_multiplier, atk_upgrades))
 		"range":
-			return upgrades.get("range_upgrade_cost", 80)
+			return upgrades.get("range_upgrade_cost", 200)
 		_:
 			return 0
 
@@ -943,7 +946,19 @@ func _show_upgrade_text(stat_name: String) -> void:
 	# 2초 후 제거
 	var tween = create_tween()
 	tween.tween_interval(2.0)
-	tween.tween_callback(func(): upgrade_label.queue_free())
+	tween.tween_callback(_remove_upgrade_label.bind(upgrade_label))
+
+# 타겟 외관 복원 헬퍼 함수
+func _restore_target_appearance(target: Node, original_modulate: Color, original_scale: Vector2) -> void:
+	if is_instance_valid(target):
+		target.modulate = original_modulate
+		if "scale" in target:
+			target.scale = original_scale
+
+# 업그레이드 라벨 제거 헬퍼 함수
+func _remove_upgrade_label(upgrade_label: Label) -> void:
+	if is_instance_valid(upgrade_label):
+		upgrade_label.queue_free()
 
 # 레벨 라벨 글로우 효과 추가
 func _add_level_glow_effect() -> void:
@@ -1124,3 +1139,165 @@ func _detect_existing_enemies() -> void:
 			if distance <= effective_range:
 				in_range.append(enemy)
 				detected_count += 1
+
+# GD01 멀티샷 스킬 처리
+func _handle_gd01_multishot(target: Node) -> void:
+	if not is_instance_valid(target):
+		return
+	
+	# 멀티샷 확률: 기본 30% + 레벨당 10%
+	var multishot_chance = 0.30 + (level - 1) * 0.10
+	multishot_chance = min(multishot_chance, 0.80)  # 최대 80%로 제한
+	
+	var roll = randf()
+	if roll <= multishot_chance:
+		# 멀티샷 발동 - 추가 화살 발사
+		_fire_additional_arrows(target)
+
+# 추가 화살 발사 (멀티샷)
+func _fire_additional_arrows(target: Node) -> void:
+	if not is_instance_valid(target):
+		return
+	
+	# 추가 화살 개수: 레벨에 따라 증가 (기본 2개, 레벨당 1개)
+	var additional_arrows = 2 + (level - 1)
+	additional_arrows = min(additional_arrows, 5)  # 최대 5개로 제한
+	
+	# 사거리 내의 다른 적들 찾기
+	var valid_targets = []
+	for enemy in in_range:
+		if is_instance_valid(enemy) and enemy != target:
+			valid_targets.append(enemy)
+	
+	# 추가 화살 발사
+	var arrows_fired = 0
+	for i in range(min(additional_arrows, valid_targets.size())):
+		var enemy = valid_targets[i]
+		if is_instance_valid(enemy):
+			_fire_single_arrow(enemy)
+			arrows_fired += 1
+	
+	# 멀티샷 시각적 효과
+	_show_multishot_effect(arrows_fired)
+
+# 단일 화살 발사 (멀티샷용)
+func _fire_single_arrow(target: Node) -> void:
+	if not is_instance_valid(target):
+		return
+	
+	# 프로젝타일 생성
+	var pool = get_node_or_null("/root/Main/GameManager/ObjectPool")
+	if not pool:
+		return
+	
+	var ps = preload("res://scenes/Projectile.tscn")
+	var p = pool.pop("Projectile", func(): return ps.instantiate())
+	
+	var target_parent = get_parent()
+	target_parent.add_child(p)
+	p.global_position = global_position
+	p.shoot_at(target, damage)
+
+# 멀티샷 시각적 효과
+func _show_multishot_effect(arrows_count: int) -> void:
+	if not sprite:
+		return
+	
+	# GD01 특별 스프라이트로 변경 (멀티샷 시)
+	var config = _get_character_config()
+	if config.has("special_sprite"):
+		_set_character_sprite_from_path(config.special_sprite)
+	
+	# 청록색으로 깜빡이는 효과
+	var original_modulate = sprite.modulate
+	var tween = create_tween()
+	tween.set_loops(3)
+	tween.tween_property(sprite, "modulate", Color.CYAN, 0.2)
+	tween.tween_property(sprite, "modulate", original_modulate, 0.2)
+	
+	# 멀티샷 텍스트 표시
+	_show_multishot_text(arrows_count)
+	
+	# 1초 후 기본 스프라이트로 복원
+	var restore_tween = create_tween()
+	restore_tween.tween_interval(1.0)
+	restore_tween.tween_callback(_restore_gd01_sprite)
+
+# 멀티샷 텍스트 표시
+func _show_multishot_text(arrows_count: int) -> void:
+	var multishot_label = Label.new()
+	multishot_label.text = "멀티샷! +%d화살" % arrows_count
+	multishot_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	multishot_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	var label_settings = LabelSettings.new()
+	label_settings.font_size = 14
+	label_settings.font_color = Color.CYAN
+	label_settings.outline_size = 2
+	label_settings.outline_color = Color.BLACK
+	multishot_label.label_settings = label_settings
+	
+	multishot_label.position = Vector2(-50, -100)
+	add_child(multishot_label)
+	
+	# 2초 후 제거
+	var tween = create_tween()
+	tween.tween_interval(2.0)
+	tween.tween_callback(_remove_upgrade_label.bind(multishot_label))
+
+# GD01 스프라이트 복원 함수
+func _restore_gd01_sprite() -> void:
+	if not sprite:
+		return
+	
+	var config = _get_character_config()
+	if config.has("sprite_path"):
+		_set_character_sprite_from_path(config.sprite_path)
+
+# GD01의 .tscn 파일 애니메이션 처리
+func _setup_gd01_tscn_animation(tscn_path: String) -> void:
+	if not sprite:
+		return
+	
+	# 캐시 먼저 확인
+	var cache_key = tscn_path + "_gd01_idle"
+	if _frames_cache.has(cache_key):
+		sprite.sprite_frames = _frames_cache[cache_key]
+		sprite.animation = "idle"
+		sprite.play()
+		return
+	
+	# gd01.tscn 파일을 실제로 로드
+	var gd01_scene = load(tscn_path) as PackedScene
+	if not gd01_scene:
+		return
+	
+	var gd01_node = gd01_scene.instantiate()
+	if not gd01_node:
+		return
+	
+	# SpriteFrames 생성
+	var frames := SpriteFrames.new()
+	frames.add_animation("idle")
+	frames.set_animation_speed("idle", 6.0)  # 6 FPS
+	
+	# gd01.tscn의 idle1~4 노드에서 텍스처 정보 가져오기
+	var idle_nodes = ["idle1", "idle2", "idle3", "idle4"]
+	for node_name in idle_nodes:
+		var idle_node = gd01_node.get_node_or_null(node_name) as Sprite2D
+		if idle_node and idle_node.texture:
+			var atlas_texture = AtlasTexture.new()
+			atlas_texture.atlas = idle_node.texture
+			atlas_texture.region = idle_node.region_rect
+			frames.add_frame("idle", atlas_texture)
+	
+	# 임시 노드 정리
+	gd01_node.queue_free()
+	
+	# 캐시에 저장
+	_frames_cache[cache_key] = frames
+	
+	# 애니메이션 설정 및 재생
+	sprite.sprite_frames = frames
+	sprite.animation = "idle"
+	sprite.play()

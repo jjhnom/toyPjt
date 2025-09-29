@@ -851,12 +851,12 @@ func _check_slot_status_and_update_ui() -> void:
 
 # Summon 버튼 상태 업데이트
 func _update_summon_button_state() -> void:
-	var has_empty_slot = _find_empty_slot() >= 0
+	var empty_slot_available = _find_empty_slot() >= 0
 	
 	# UI Manager의 Summon 버튼 상태 업데이트
 	var ui_manager = get_node_or_null("/root/Main/UI")
 	if ui_manager and ui_manager.has_method("set_summon_button_enabled"):
-		ui_manager.set_summon_button_enabled(has_empty_slot)
+		ui_manager.set_summon_button_enabled(empty_slot_available)
 
 # 초기 UI 상태 업데이트
 func _update_initial_ui_state() -> void:

@@ -186,14 +186,14 @@ func _generate_infinite_wave() -> void:
 	
 	# 무한 레벨에 따른 적 수 증가
 	var enemy_count = 3 + (infinite_level * 2)  # 레벨당 2마리씩 증가
-	var spawn_interval = max(0.3, 0.8 - (infinite_level * 0.02))  # 레벨이 올라갈수록 빠른 스폰
+	var current_spawn_interval = max(0.3, 0.8 - (infinite_level * 0.02))  # 레벨이 올라갈수록 빠른 스폰
 	
 	# 적 스폰
 	for i in range(enemy_count):
 		if not is_wave_active:
 			break
 		
-		await get_tree().create_timer(spawn_interval).timeout
+		await get_tree().create_timer(current_spawn_interval).timeout
 		
 		if is_wave_active:
 			# 랜덤하게 적 타입 선택

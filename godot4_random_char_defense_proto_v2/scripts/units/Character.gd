@@ -189,28 +189,19 @@ func _setup_animation(sprite_strip_path: String) -> void:
 			else:
 				cols = 1
 			
-		frame_width = float(tex.get_width()) / float(cols)
-		rows = 1
-		
-		var character_name = ""
-		if sprite_strip_path.contains("Archer"):
-			character_name = "Archer"
-		elif sprite_strip_path.contains("Warrior"):
-			character_name = "Warrior"  
-		elif sprite_strip_path.contains("Lancer"):
-			character_name = "Lancer"
-			
+		frame_width = int(float(tex.get_width()) / float(cols))
+		rows = 1	
 			  
 	elif sprite_strip_path.contains("Monk"):
 		# Monk 애니메이션들
 		frame_height = tex.get_height()
 		if sprite_strip_path.contains("Heal") and not sprite_strip_path.contains("Effect"):
 			# Heal: 11프레임
-			frame_width = tex.get_width() / 11
+			frame_width = int(float(tex.get_width()) / 11.0)
 			cols = 11
 		else:
 			# Idle, Run: 6프레임
-			frame_width = tex.get_width() / 6
+			frame_width = int(float(tex.get_width()) / 6.0)
 			cols = 6
 		rows = 1
 	elif sprite_strip_path.ends_with("archer.png"):
@@ -223,7 +214,7 @@ func _setup_animation(sprite_strip_path: String) -> void:
 		# 기본: 가로로 나열된 정사각형 프레임들
 		frame_height = tex.get_height()
 		frame_width = frame_height  # 정사각형 가정
-		cols = int(tex.get_width() / float(frame_width))
+		cols = int(float(tex.get_width()) / float(frame_width))
 		rows = 1
 	
 	# 그리드에서 프레임들 추출
@@ -290,8 +281,8 @@ func _ready() -> void:
 	# 레벨 라벨 생성
 	_create_level_label()
 	
-func _on_area_enter(area:Area2D) -> void:
-	var enemy = area.get_parent()  # HitboxArea의 부모는 Enemy
+func _on_area_enter(entered_area:Area2D) -> void:
+	var enemy = entered_area.get_parent()  # HitboxArea의 부모는 Enemy
 	if enemy.has_method("take_damage"):
 		# Enemy의 히트박스 크기 확인
 		var enemy_hitbox_radius = 16.0  # 기본값 (Enemy.tscn에서 확인된 값)
@@ -308,8 +299,8 @@ func _on_area_enter(area:Area2D) -> void:
 		if distance <= effective_range:
 			in_range.append(enemy)
 
-func _on_area_exit(area:Area2D) -> void:
-	var enemy = area.get_parent()  # HitboxArea의 부모는 Enemy
+func _on_area_exit(exited_area:Area2D) -> void:
+	var enemy = exited_area.get_parent()  # HitboxArea의 부모는 Enemy
 	in_range.erase(enemy)
 
 func _on_animation_finished() -> void:

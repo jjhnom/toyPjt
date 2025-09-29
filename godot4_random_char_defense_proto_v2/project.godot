@@ -22,4 +22,5 @@ window/stretch/mode="viewport"
 
 [rendering]
 
+textures/vram_compression/import_etc2_astc=true
 2d/batching/use_batching=true

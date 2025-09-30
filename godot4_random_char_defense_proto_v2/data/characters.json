@@ -137,7 +137,7 @@
     "run_sprite": "res://ani/Hi-Nu.tscn",
     "special_sprite": "res://ani/Hi-Nu_Attck.tscn",
     "projectile_sprite": "res://ani/Hi-Nu.tscn",
-    "scale": 0.3,
+    "scale": 0.18,
     "upgrades": {
       "max_level": 6,
       "atk_upgrade_cost": 300,
@@ -146,8 +146,8 @@
       "range_upgrade_amount": 40
     },
     "animations": {
-      "idle": {"frames": 4, "fps": 4.0},
-      "attack": {"frames": 3, "fps": 3.0},
+      "idle": {"frames": 16, "fps": 16.0},
+      "attack": {"frames": 16, "fps": 16.0},
       "run": {"frames": 6, "fps": 12.0}
     }
   }

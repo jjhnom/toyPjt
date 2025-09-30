@@ -459,19 +459,10 @@ func play_attack_animation() -> void:
 	if id == "lancer":
 		_play_lancer_directional_attack(config)
 	elif config.has("attack_sprite"):
-		# 공격 애니메이션 설정 전에 현재 상태 백업
-		var current_animation = sprite.animation if sprite else ""
+		# 공격 애니메이션 설정
 		_set_character_sprite_from_path(config.attack_sprite)
-		
-		# 공격 애니메이션이 제대로 설정되지 않았으면 idle로 폴백
-		if sprite and sprite.animation == current_animation:
-			play_idle_animation()
 	elif config.has("attack2_sprite") and randf() > 0.5:
-		var current_animation = sprite.animation if sprite else ""
 		_set_character_sprite_from_path(config.attack2_sprite)
-		
-		if sprite and sprite.animation == current_animation:
-			play_idle_animation()
 	else:
 		# 공격 스프라이트가 없으면 idle 애니메이션 사용
 		play_idle_animation()
@@ -1064,7 +1055,7 @@ func _rebuild_enemy_snapshot() -> void:
 	"""get_overlapping_areas()를 사용하여 현재 겹치는 적들을 재구축합니다."""
 	
 	# 기존 in_range 배열을 백업하고 새로 구축
-	var old_in_range = in_range.duplicate()
+	var _old_in_range = in_range.duplicate()
 	in_range.clear()
 	
 	# monitoring이 꺼져있으면 모든 Enemy를 직접 검사
@@ -1416,9 +1407,9 @@ func _get_animation_node_names(character_id: String, animation_type: String) -> 
 		"gd01", "hi-nu", "hinu":
 			match animation_type:
 				"idle":
-					return ["idle1", "idle2", "idle3", "idle4", "idle5", "idle6", "idle7", "idle8"]
+					return ["idle1", "idle2", "idle3", "idle4", "idle5", "idle6", "idle7", "idle8","idle9", "idle10", "idle11", "idle12", "idle13", "idle14", "idle15", "idle16"]
 				"attack":
-					return ["attck1", "attck2", "attack1", "attack2", "attack3", "attack4", "attack5", "attack6"]
+					return ["attack1", "attack2", "attack3", "attack4", "attack5", "attack6", "attack7", "attack8","attack9", "attack10", "attack11", "attack12", "attack13", "attack14", "attack15", "attack16"]
 				"run":
 					return ["run1", "run2", "run3", "run4", "run5", "run6", "run7", "run8"]
 				_:

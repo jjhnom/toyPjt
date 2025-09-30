@@ -1,36 +1,100 @@
-[gd_scene load_steps=2 format=3 uid="uid://vp0hs5pij1q4"]
+[gd_scene load_steps=17 format=3 uid="uid://vp0hs5pij1q4"]
 
-[ext_resource type="Texture2D" uid="uid://cq62o6e2vhruj" path="res://assets/characters/HiNu/Hi-Nu.png" id="1_2gmrd"]
+[ext_resource type="Texture2D" uid="uid://dws1nvvclfvrp" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_001.png" id="1_2gmrd"]
+[ext_resource type="Texture2D" uid="uid://clsoeosb4svwx" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_002.png" id="2_f05wr"]
+[ext_resource type="Texture2D" uid="uid://druo61k3sju6p" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_003.png" id="3_4glml"]
+[ext_resource type="Texture2D" uid="uid://d173hslngk8es" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_004.png" id="4_o7ut6"]
+[ext_resource type="Texture2D" uid="uid://c2cu6v3b7y8n6" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_005.png" id="5_n011m"]
+[ext_resource type="Texture2D" uid="uid://bxogceaqwk00c" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_006.png" id="6_hter2"]
+[ext_resource type="Texture2D" uid="uid://dtaafi2tffdk6" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_007.png" id="7_dfy55"]
+[ext_resource type="Texture2D" uid="uid://c3vj32dk51jfy" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_008.png" id="8_fde88"]
+[ext_resource type="Texture2D" uid="uid://bojt57042jir0" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_009.png" id="9_v56k5"]
+[ext_resource type="Texture2D" uid="uid://b360ft1rfqd0x" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_010.png" id="10_ls2wp"]
+[ext_resource type="Texture2D" uid="uid://ctxncrcd16bb3" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_011.png" id="11_uqho4"]
+[ext_resource type="Texture2D" uid="uid://dhd8ocg00lrkb" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_012.png" id="12_whta8"]
+[ext_resource type="Texture2D" uid="uid://bae6j0hmbh8qm" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_013.png" id="13_rgtx7"]
+[ext_resource type="Texture2D" uid="uid://ctfcnqhak0ghl" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_014.png" id="14_3nn0f"]
+[ext_resource type="Texture2D" uid="uid://c4nmdgcblwa10" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_015.png" id="15_858yn"]
+[ext_resource type="Texture2D" uid="uid://b0e5whhreh6s" path="res://assets/characters/HiNu/idle/sprite-256px-16_frame_016.png" id="16_bcurl"]
 
 [node name="Hi-Nu" type="Node2D"]
 
 [node name="idle1" type="Sprite2D" parent="."]
 texture = ExtResource("1_2gmrd")
 region_enabled = true
-region_rect = Rect2(527, 0, 254, 245)
-
-[node name="idle5" type="Sprite2D" parent="."]
-texture = ExtResource("1_2gmrd")
-region_enabled = true
-region_rect = Rect2(527, 0, 254, 245)
+region_rect = Rect2(145, 145, 350, 350)
 
 [node name="idle2" type="Sprite2D" parent="."]
-texture = ExtResource("1_2gmrd")
+texture = ExtResource("2_f05wr")
 region_enabled = true
-region_rect = Rect2(791, 0, 254, 245)
-
-[node name="idle6" type="Sprite2D" parent="."]
-texture = ExtResource("1_2gmrd")
-region_enabled = true
-region_rect = Rect2(791, 0, 254, 245)
+region_rect = Rect2(145, 145, 350, 350)
 
 [node name="idle3" type="Sprite2D" parent="."]
-texture = ExtResource("1_2gmrd")
+texture = ExtResource("3_4glml")
 region_enabled = true
-region_rect = Rect2(241, 490, 282, 255)
+region_rect = Rect2(145, 145, 350, 350)
 
 [node name="idle4" type="Sprite2D" parent="."]
-position = Vector2(-14, -1)
-texture = ExtResource("1_2gmrd")
+texture = ExtResource("4_o7ut6")
 region_enabled = true
-region_rect = Rect2(240, 740, 254, 255)
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle5" type="Sprite2D" parent="."]
+texture = ExtResource("5_n011m")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle6" type="Sprite2D" parent="."]
+texture = ExtResource("6_hter2")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle7" type="Sprite2D" parent="."]
+texture = ExtResource("7_dfy55")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle8" type="Sprite2D" parent="."]
+texture = ExtResource("8_fde88")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle9" type="Sprite2D" parent="."]
+texture = ExtResource("9_v56k5")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle10" type="Sprite2D" parent="."]
+texture = ExtResource("10_ls2wp")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle11" type="Sprite2D" parent="."]
+texture = ExtResource("11_uqho4")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle12" type="Sprite2D" parent="."]
+texture = ExtResource("12_whta8")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle13" type="Sprite2D" parent="."]
+texture = ExtResource("13_rgtx7")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle14" type="Sprite2D" parent="."]
+texture = ExtResource("14_3nn0f")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle15" type="Sprite2D" parent="."]
+texture = ExtResource("15_858yn")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)
+
+[node name="idle16" type="Sprite2D" parent="."]
+texture = ExtResource("16_bcurl")
+region_enabled = true
+region_rect = Rect2(145, 145, 350, 350)

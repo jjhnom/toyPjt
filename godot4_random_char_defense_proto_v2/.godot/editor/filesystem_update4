@@ -1,10 +1,9 @@
-res://ani/Hi-Nu.tscn
+res://ani/Hi-Nu_Idle.tscn
+res://scripts/units/Character.gd
 res://scenes/dice_rect_map.tscn
 res://scenes/Main.tscn
 res://scenes/Character.tscn
 res://scenes/Enemy.tscn
 res://scenes/Map.tscn
 res://scenes/Projectile.tscn
-res://scripts/units/Character.gd
-res://ani/Hi-Nu_Idle.tscn
 res://ani/Hi-Nu_Attck.tscn

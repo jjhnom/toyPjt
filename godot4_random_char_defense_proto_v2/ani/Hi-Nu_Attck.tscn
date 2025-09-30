@@ -1,29 +1,131 @@
-[gd_scene load_steps=2 format=3 uid="uid://bombjj660gbkl"]
+[gd_scene load_steps=17 format=3 uid="uid://bombjj660gbkl"]
 
-[ext_resource type="Texture2D" uid="uid://cq62o6e2vhruj" path="res://assets/characters/HiNu/Hi-Nu.png" id="1_dex1t"]
+[ext_resource type="Texture2D" uid="uid://ciwru33yhhdpw" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_001.png" id="1_dex1t"]
+[ext_resource type="Texture2D" uid="uid://dxlj5xwfenf00" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_002.png" id="2_tu8cc"]
+[ext_resource type="Texture2D" uid="uid://bayofd7ubpvru" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_003.png" id="3_y8xt3"]
+[ext_resource type="Texture2D" uid="uid://bns5g84yutyiy" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_004.png" id="4_gb5e7"]
+[ext_resource type="Texture2D" uid="uid://csk8u7leked0r" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_005.png" id="5_atg6f"]
+[ext_resource type="Texture2D" uid="uid://by8eq3nnf07fi" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_006.png" id="6_futib"]
+[ext_resource type="Texture2D" uid="uid://dqnjqbtyu4pkg" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_007.png" id="7_36732"]
+[ext_resource type="Texture2D" uid="uid://dje550ibuh4t" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_008.png" id="8_n8kk8"]
+[ext_resource type="Texture2D" uid="uid://cp0gho6n8qsor" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_009.png" id="9_2fj2n"]
+[ext_resource type="Texture2D" uid="uid://cxbr0fbk0ibjw" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_010.png" id="10_yg3tr"]
+[ext_resource type="Texture2D" uid="uid://cs23xb7lte6uy" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_011.png" id="11_rc8sk"]
+[ext_resource type="Texture2D" uid="uid://b8tkrpgfkb4p8" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_012.png" id="12_var0i"]
+[ext_resource type="Texture2D" uid="uid://cg67j0heax7i5" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_013.png" id="13_72otn"]
+[ext_resource type="Texture2D" uid="uid://baselq7y8xdmc" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_014.png" id="14_lyspp"]
+[ext_resource type="Texture2D" uid="uid://7moidpae1rvl" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_015.png" id="15_h21xd"]
+[ext_resource type="Texture2D" uid="uid://bl024mx322gx8" path="res://assets/characters/HiNu/attack/sprite-256px-16 (1)_frame_016.png" id="16_nlxpv"]
 
 [node name="Hi-Nu" type="Node2D"]
 
 [node name="attack1" type="Sprite2D" parent="."]
+visible = false
 position = Vector2(-5, 0)
 texture = ExtResource("1_dex1t")
 region_enabled = true
-region_rect = Rect2(0, 741, 265, 246.406)
+region_rect = Rect2(113, 145, 417, 350)
 
 [node name="attack2" type="Sprite2D" parent="."]
-position = Vector2(9, 4)
-texture = ExtResource("1_dex1t")
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("2_tu8cc")
 region_enabled = true
-region_rect = Rect2(6, 241.891, 283, 246.406)
-
-[node name="attack4" type="Sprite2D" parent="."]
-position = Vector2(8, 3)
-texture = ExtResource("1_dex1t")
-region_enabled = true
-region_rect = Rect2(297.156, 241.891, 283, 246.406)
+region_rect = Rect2(113, 145, 417, 350)
 
 [node name="attack3" type="Sprite2D" parent="."]
-position = Vector2(9, 4)
-texture = ExtResource("1_dex1t")
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("3_y8xt3")
 region_enabled = true
-region_rect = Rect2(6, 241.891, 283, 246.406)
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack4" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("4_gb5e7")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack5" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("5_atg6f")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack6" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("6_futib")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack7" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("7_36732")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack8" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("8_n8kk8")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack9" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("9_2fj2n")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack10" type="Sprite2D" parent="."]
+position = Vector2(-5, 0)
+texture = ExtResource("10_yg3tr")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack11" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("11_rc8sk")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack12" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("12_var0i")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack13" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("13_72otn")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack14" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("14_lyspp")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack15" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("15_h21xd")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)
+
+[node name="attack16" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-5, 0)
+texture = ExtResource("16_nlxpv")
+region_enabled = true
+region_rect = Rect2(113, 145, 417, 350)

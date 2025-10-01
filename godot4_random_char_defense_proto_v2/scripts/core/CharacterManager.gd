@@ -186,9 +186,16 @@ func summon(cost:int=50) -> void:
 	_check_slot_status_and_update_ui()
 
 func _play_summon_effect(character: Node2D) -> void:
-	if not character:
+	if not character or not is_instance_valid(character):
 		return
 	
+	# 캐릭터가 유효한지 확인 후 애니메이션 적용
+	call_deferred("_apply_summon_effect", character)
+
+func _apply_summon_effect(character: Node2D) -> void:
+	# 캐릭터가 여전히 유효한지 다시 확인
+	if not character or not is_instance_valid(character):
+		return
 	
 	# 캐릭터의 최종 스케일 저장 (이미 JSON과 레벨에 따라 설정됨)
 	var target_scale = character.scale
@@ -198,13 +205,9 @@ func _play_summon_effect(character: Node2D) -> void:
 	character.modulate = Color.WHITE
 	character.visible = true
 	
-	
 	# 크기 확대 + 깜빡임 효과
-	var tween = create_tween()
-	tween.set_parallel(true)  # 병렬 실행
-	tween.tween_property(character, "scale", target_scale, 0.3)  # 크기 확대
-	tween.tween_property(character, "modulate", Color.YELLOW, 0.15)  # 노란색으로
-	tween.tween_property(character, "modulate", Color.WHITE, 0.15)   # 다시 흰색으로
+	if is_instance_valid(character):
+		call_deferred("_safe_summon_effect", character, target_scale)
 func toggle_select_at(pos:Vector2) -> void:
 	var idx = _slot_at(pos); if idx < 0: return
 	if selected == -1: selected = idx
@@ -384,8 +387,8 @@ func _perform_merge(from_slot: int, to_slot: int, char_a: Node2D, char_b: Node2D
 	slots[from_slot]["node"] = null  # from_slot도 비우기
 	slots[to_slot]["node"] = null
 	
-	# 새로운 높은 레벨 캐릭터 생성
-	var new_id = _get_random_character_by_weight()
+	# 새로운 높은 레벨 캐릭터 생성 (같은 종류)
+	var new_id = char_a.id  # 같은 종류 유지
 	var new_level = char_a.level + 1
 	var c = preload("res://scenes/Character.tscn").instantiate()
 	
@@ -469,19 +472,71 @@ func _update_range_indicator_position() -> void:
 		range_indicator.global_position = selected_character.global_position
 
 func _play_merge_effect(character: Node2D) -> void:
-	if not character:
+	if not character or not is_instance_valid(character):
 		return
-		
+	
+	# 캐릭터가 유효한지 확인 후 애니메이션 적용
+	call_deferred("_apply_merge_effect", character)
+
+func _apply_merge_effect(character: Node2D) -> void:
+	# 캐릭터가 여전히 유효한지 다시 확인
+	if not character or not is_instance_valid(character):
+		return
 	
 	# 합성 이펙트: 크기 펄스 + 색상 변화
 	var target_scale = character.scale
 	character.scale = target_scale * 1.5  # 1.5배로 시작
 	character.modulate = Color.GREEN
 	
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(character, "scale", target_scale, 0.4)
-	tween.tween_property(character, "modulate", Color.WHITE, 0.4)
+	if is_instance_valid(character):
+		call_deferred("_safe_merge_effect", character, target_scale)
+
+# 안전한 소환 효과 함수 (Timer 사용)
+func _safe_summon_effect(character, target_scale: Vector2) -> void:
+	if not is_instance_valid(character) or not is_instance_valid(self):
+		return
+	
+	# 즉시 노란색으로 변경
+	character.modulate = Color.YELLOW
+	
+	# 0.15초 후 흰색으로 복원
+	var timer1 = Timer.new()
+	add_child(timer1)
+	timer1.wait_time = 0.15
+	timer1.one_shot = true
+	timer1.timeout.connect(_summon_phase2.bind(character))
+	timer1.start()
+	
+	# 크기 확대는 즉시 적용
+	character.scale = target_scale
+
+# 안전한 합치기 효과 함수 (Timer 사용)
+func _safe_merge_effect(character, target_scale: Vector2) -> void:
+	if not is_instance_valid(character) or not is_instance_valid(self):
+		return
+	
+	# 0.4초 후 흰색으로 복원
+	var timer = Timer.new()
+	add_child(timer)
+	timer.wait_time = 0.4
+	timer.one_shot = true
+	timer.timeout.connect(_merge_phase2.bind(character, target_scale))
+	timer.start()
+
+# 소환 효과 단계 2
+func _summon_phase2(character) -> void:
+	if not is_instance_valid(character) or not is_instance_valid(self):
+		return
+	
+	character.modulate = Color.WHITE
+
+# 합치기 효과 단계 2
+func _merge_phase2(character, target_scale: Vector2) -> void:
+	if not is_instance_valid(character) or not is_instance_valid(self):
+		return
+	
+	character.modulate = Color.WHITE
+	character.scale = target_scale
 
 # 업그레이드 UI 생성
 func _create_upgrade_ui() -> void:
@@ -883,3 +938,64 @@ func _reset_all_characters_state_after_range_upgrade() -> void:
 			# 캐릭터의 사거리 내 적 재감지
 			if character.has_method("_detect_existing_enemies"):
 				character._detect_existing_enemies()
+
+# 자동 레벨업 함수 (A키 단축키용) - 캐릭터 합치기
+func auto_upgrade_all_characters() -> void:
+	print("자동 캐릭터 합치기 시작...")
+	
+	var merged_count = 0
+	
+	# 모든 가능한 합치기를 시도
+	var has_merged = true
+	while has_merged:
+		has_merged = false
+		
+		# 모든 캐릭터 쌍을 확인
+		for i in range(slots.size()):
+			for j in range(i + 1, slots.size()):
+				var slot_a = slots[i]
+				var slot_b = slots[j]
+				
+				# 두 슬롯 모두에 캐릭터가 있는지 확인
+				if not slot_a.node or not slot_b.node:
+					continue
+				
+				var char_a = slot_a.node
+				var char_b = slot_b.node
+				
+				# 유효한 캐릭터인지 확인
+				if not is_instance_valid(char_a) or not is_instance_valid(char_b):
+					continue
+				
+				# 합치기 가능한지 확인
+				if _can_merge(char_a, char_b):
+					print("캐릭터 합치기: %s Lv.%d + %s Lv.%d → %s Lv.%d" % [
+						char_a.id, char_a.level,
+						char_b.id, char_b.level,
+						char_a.id, char_a.level + 1
+					])
+					
+					# 합치기 실행
+					_perform_merge(i, j, char_a, char_b)
+					merged_count += 1
+					has_merged = true
+					break  # 합치기 후 다시 처음부터 스캔
+			
+			if has_merged:
+				break  # 합치기 후 다시 처음부터 스캔
+	
+	print("자동 캐릭터 합치기 완료: %d번 합치기" % merged_count)
+	
+	# 결과 UI에 표시
+	if merged_count > 0:
+		_show_auto_merge_feedback(merged_count)
+	else:
+		_show_no_merge_feedback()
+
+# 자동 합치기 성공 피드백
+func _show_auto_merge_feedback(count: int) -> void:
+	print("✅ 자동 합치기 성공: %d번 합치기 완료" % count)
+
+# 합치기 불가능 피드백
+func _show_no_merge_feedback() -> void:
+	print("❌ 합칠 수 있는 같은 종류의 같은 레벨 캐릭터가 없습니다")

@@ -333,14 +333,48 @@ func update_health_bar() -> void:
 		health_bar_fill.color = Color(1.0, 0.0, 0.0, 1.0)  # 밝은 빨간색
 
 func damage_animation():
-	var tween := create_tween()
-	tween.tween_property(self, "v_offset", 0, 0.05)
-	tween.tween_property(self, "modulate", Color.ORANGE_RED, 0.1)
-	tween.tween_property(self, "modulate", Color.WHITE, 0.3)
-	tween.set_parallel()
-	tween.tween_property(self, "v_offset", -5, 0.2)
-	tween.set_parallel(false)
-	tween.tween_property(self, "v_offset", 0, 0.2)
+	if not is_instance_valid(self):
+		return
+	call_deferred("_safe_damage_animation")
+
+# 안전한 데미지 애니메이션 함수 (Timer 사용)
+func _safe_damage_animation() -> void:
+	if not is_instance_valid(self):
+		return
+	
+	# 즉시 빨간색으로 변경
+	self.modulate = Color.ORANGE_RED
+	self.v_offset = 0
+	
+	# 0.1초 후 흰색으로 복원
+	var timer1 = Timer.new()
+	add_child(timer1)
+	timer1.wait_time = 0.1
+	timer1.one_shot = true
+	timer1.timeout.connect(_damage_phase2.bind())
+	timer1.start()
+
+# 데미지 애니메이션 단계 2
+func _damage_phase2() -> void:
+	if not is_instance_valid(self):
+		return
+	
+	self.modulate = Color.WHITE
+	
+	# 0.3초 후 위치 복원
+	var timer2 = Timer.new()
+	add_child(timer2)
+	timer2.wait_time = 0.3
+	timer2.one_shot = true
+	timer2.timeout.connect(_damage_phase3.bind())
+	timer2.start()
+
+# 데미지 애니메이션 단계 3
+func _damage_phase3() -> void:
+	if not is_instance_valid(self):
+		return
+	
+	self.v_offset = 0
 
 func init_from_config(conf: Dictionary) -> void:
 	max_hp = conf.get("hp", max_hp)

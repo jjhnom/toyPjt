@@ -89,7 +89,8 @@ func init_from_config(conf:Dictionary, _level:int, _id:String) -> void:
 	var base_scale = conf.get("scale", 1.0)
 	
 	# 레벨에 따른 추가 크기 조정
-	var level_scale_bonus = (level - 1) * 0.05  # 레벨당 5% 크기 증가
+	var scale_increase_rate = 0.05  # 기본 스케일의 5%씩 증가
+	var level_scale_bonus = (level - 1) * (base_scale * scale_increase_rate)
 	var final_scale = base_scale + level_scale_bonus
 	
 	# 스프라이트 크기 적용
@@ -442,10 +443,10 @@ func _fire(t:Node) -> void:
 	p.shoot_at(t, damage)
 	
 	# 개별 스킬 처리 (기존 호환성을 위해 유지)
-	if id == "lancer":
-		_handle_lancer_knockback(t)
-	elif id == "warrior":
-		_handle_warrior_bash(t)
+	#if id == "lancer":
+	#	_handle_lancer_knockback(t)
+	#elif id == "warrior":
+	#	_handle_warrior_bash(t)
 	
 	# 스킬 처리 (공통)
 	_handle_character_skill(t)
@@ -732,9 +733,8 @@ func _show_knockback_effect(target: Node) -> void:
 			target.scale = original_scale * 1.2
 		
 		# 0.3초 후 원래 색상과 크기로 복원
-		var tween = create_tween()
-		tween.tween_interval(0.3)
-		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
+		if is_instance_valid(target):
+			call_deferred("_safe_restore_target", target, original_modulate, original_scale, 0.3)
 
 # 전사 배쉬 스킬 처리
 func _handle_warrior_bash(target: Node) -> void:
@@ -781,9 +781,8 @@ func _show_bash_effect(target: Node) -> void:
 			target.scale = original_scale * 1.3
 		
 		# 0.2초 후 원래 색상과 크기로 복원
-		var tween = create_tween()
-		tween.tween_interval(0.2)
-		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
+		if is_instance_valid(target):
+			call_deferred("_safe_restore_target", target, original_modulate, original_scale, 0.2)
 
 # 업그레이드 보너스 적용 함수
 func _apply_upgrade_bonuses(conf: Dictionary) -> void:
@@ -925,9 +924,20 @@ func _show_upgrade_text(stat_name: String) -> void:
 	add_child(upgrade_label)
 	
 	# 2초 후 제거
-	var tween = create_tween()
-	tween.tween_interval(2.0)
-	tween.tween_callback(_remove_upgrade_label.bind(upgrade_label))
+	if is_instance_valid(upgrade_label):
+		call_deferred("_safe_remove_label", upgrade_label, 2.0)
+
+# 안전한 타겟 복원 함수 (Timer 사용)
+func _safe_restore_target(target, original_modulate, original_scale, delay: float) -> void:
+	if not is_instance_valid(target) or not is_instance_valid(self):
+		return
+	
+	var timer = Timer.new()
+	add_child(timer)
+	timer.wait_time = delay
+	timer.one_shot = true
+	timer.timeout.connect(_restore_target_appearance.bind(target, original_modulate, original_scale))
+	timer.start()
 
 # 타겟 외관 복원 헬퍼 함수
 func _restore_target_appearance(target, original_modulate, original_scale) -> void:
@@ -935,6 +945,47 @@ func _restore_target_appearance(target, original_modulate, original_scale) -> vo
 		target.modulate = original_modulate
 		if "scale" in target:
 			target.scale = original_scale
+
+# 안전한 라벨 제거 함수 (Timer 사용)
+func _safe_remove_label(label, delay: float) -> void:
+	if not is_instance_valid(label) or not is_instance_valid(self):
+		return
+	
+	var timer = Timer.new()
+	add_child(timer)
+	timer.wait_time = delay
+	timer.one_shot = true
+	timer.timeout.connect(_remove_upgrade_label.bind(label))
+	timer.start()
+
+# 안전한 글로우 효과 함수 (Timer 사용)
+func _safe_glow_effect(label) -> void:
+	if not is_instance_valid(label) or not is_instance_valid(self):
+		return
+	
+	# 글로우 효과를 위한 반복 타이머
+	var glow_timer = Timer.new()
+	add_child(glow_timer)
+	glow_timer.wait_time = 0.1  # 0.1초마다 업데이트
+	glow_timer.timeout.connect(_glow_update.bind(label))
+	glow_timer.start()
+	
+	# 글로우 상태 저장
+	label.set_meta("glow_timer", glow_timer)
+	label.set_meta("glow_time", 0.0)
+	label.set_meta("glow_direction", 1)
+
+# 안전한 스프라이트 복원 함수 (Timer 사용)
+func _safe_restore_sprite() -> void:
+	if not is_instance_valid(self):
+		return
+	
+	var timer = Timer.new()
+	add_child(timer)
+	timer.wait_time = 1.0
+	timer.one_shot = true
+	timer.timeout.connect(_restore_character_sprite.bind())
+	timer.start()
 
 # 업그레이드 라벨 제거 헬퍼 함수
 func _remove_upgrade_label(upgrade_label) -> void:
@@ -951,17 +1002,42 @@ func _add_level_glow_effect() -> void:
 		return
 	
 	# 글로우 효과를 위한 Tween 생성
-	var glow_tween = create_tween()
-	glow_tween.set_loops()  # 무한 반복
-	
-	# 색상이 서서히 변하는 효과
-	var base_color = get_level_color()
-	var glow_color = base_color.lightened(0.3)  # 더 밝은 색상
-	
-	glow_tween.tween_method(_update_glow_color, base_color, glow_color, 1.0)
-	glow_tween.tween_method(_update_glow_color, glow_color, base_color, 1.0)
+	if is_instance_valid(level_label):
+		call_deferred("_safe_glow_effect", level_label)
 
-# 글로우 색상 업데이트
+# 글로우 업데이트 함수 (Timer 기반)
+func _glow_update(label) -> void:
+	if not is_instance_valid(label) or not is_instance_valid(self):
+		return
+	
+	var glow_time = label.get_meta("glow_time", 0.0)
+	var direction = label.get_meta("glow_direction", 1)
+	
+	# 시간 업데이트
+	glow_time += 0.1 * direction
+	label.set_meta("glow_time", glow_time)
+	
+	# 방향 전환 (0~1 사이에서 왕복)
+	if glow_time >= 1.0:
+		direction = -1
+		glow_time = 1.0
+	elif glow_time <= 0.0:
+		direction = 1
+		glow_time = 0.0
+	
+	label.set_meta("glow_direction", direction)
+	label.set_meta("glow_time", glow_time)
+	
+	# 색상 계산
+	var base_color = get_level_color()
+	var glow_color = base_color.lightened(0.3)
+	var current_color = base_color.lerp(glow_color, glow_time)
+	
+	# 색상 적용
+	if label.label_settings:
+		label.label_settings.font_color = current_color
+
+# 글로우 색상 업데이트 (기존 함수 유지)
 func _update_glow_color(color: Color) -> void:
 	if level_label and level_label.label_settings:
 		level_label.label_settings.font_color = color
@@ -1165,6 +1241,8 @@ func _handle_bash_skill(target: Node) -> void:
 	if roll <= bash_chance:
 		# 배쉬 성공 - 추가 데미지 적용
 		_apply_bash_damage(target)
+		# 배쉬 텍스트 표시 추가
+		_show_skill_effect("bash")
 
 # 넉백 스킬 처리 (공통)
 func _handle_knockback_skill(target: Node) -> void:
@@ -1178,7 +1256,9 @@ func _handle_knockback_skill(target: Node) -> void:
 	if roll <= knockback_chance:
 		# 넉백 적용
 		_apply_knockback(target)
-
+		# 넉백 텍스트 표시 추가
+		_show_skill_effect("knockback_attack")
+		
 # 힐 스킬 처리 (공통)
 func _handle_heal_skill() -> void:
 	# 힐 스킬은 아군에게 적용되므로 여기서는 시각적 효과만
@@ -1196,7 +1276,7 @@ func _show_skill_effect(skill_type: String) -> void:
 			effect_text = "치유!"
 		"bash":
 			effect_text = "배쉬!"
-		"knockback":
+		"knockback_attack":
 			effect_text = "넉백!"
 		"multi_shot":
 			effect_text = "멀티샷!"
@@ -1224,9 +1304,8 @@ func _show_skill_text(text: String, color: Color) -> void:
 	add_child(skill_label)
 	
 	# 1.5초 후 제거
-	var tween = create_tween()
-	tween.tween_interval(1.5)
-	tween.tween_callback(_remove_upgrade_label.bind(skill_label))
+	if is_instance_valid(skill_label):
+		call_deferred("_safe_remove_label", skill_label, 1.5)
 
 # 추가 화살 발사 (멀티샷)
 func _fire_additional_arrows(target: Node) -> void:
@@ -1286,9 +1365,8 @@ func _show_multishot_effect(arrows_count: int) -> void:
 	_show_multishot_text(arrows_count)
 	
 	# 1초 후 기본 스프라이트로 복원
-	var restore_tween = create_tween()
-	restore_tween.tween_interval(1.0)
-	restore_tween.tween_callback(_restore_character_sprite)
+	if is_instance_valid(self):
+		call_deferred("_safe_restore_sprite")
 
 # 멀티샷 텍스트 표시
 func _show_multishot_text(arrows_count: int) -> void:
@@ -1308,9 +1386,8 @@ func _show_multishot_text(arrows_count: int) -> void:
 	add_child(multishot_label)
 	
 	# 2초 후 제거
-	var tween = create_tween()
-	tween.tween_interval(2.0)
-	tween.tween_callback(_remove_upgrade_label.bind(multishot_label))
+	if is_instance_valid(multishot_label):
+		call_deferred("_safe_remove_label", multishot_label, 2.0)
 
 # 캐릭터 스프라이트 복원 함수 (공통)
 func _restore_character_sprite() -> void:

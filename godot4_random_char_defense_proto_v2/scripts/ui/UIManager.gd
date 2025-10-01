@@ -102,18 +102,15 @@ func _on_skill2_pressed() -> void:
 
 func _show_no_slots_feedback() -> void:
 	# 소환 버튼에 시각적 피드백 (빨간색 깜빡임)
-	if btn_summon:
-		var original_color = btn_summon.modulate
-		var tween = create_tween()
-		tween.set_loops(2)
-		tween.tween_property(btn_summon, "modulate", Color.RED, 0.1)
-		tween.tween_property(btn_summon, "modulate", original_color, 0.1)
+	if btn_summon and is_instance_valid(btn_summon):
+		call_deferred("_safe_summon_feedback", btn_summon)
 		
 		# 텍스트도 잠시 변경
 		var original_text = btn_summon.text
 		btn_summon.text = "슬롯 없음!"
 		await get_tree().create_timer(1.0).timeout
-		btn_summon.text = original_text
+		if btn_summon and is_instance_valid(btn_summon):
+			btn_summon.text = original_text
 
 # Summon 버튼 활성화/비활성화
 func set_summon_button_enabled(enabled: bool) -> void:
@@ -145,36 +142,131 @@ func _on_sell_pressed() -> void:
 
 func _show_sell_feedback(price: int) -> void:
 	# 판매 성공 피드백 (초록색 깜빡임)
-	if btn_sell:
-		var original_color = btn_sell.modulate
-		var tween = create_tween()
-		tween.set_loops(2)
-		tween.tween_property(btn_sell, "modulate", Color.GREEN, 0.1)
-		tween.tween_property(btn_sell, "modulate", original_color, 0.1)
+	if btn_sell and is_instance_valid(btn_sell):
+		call_deferred("_safe_sell_feedback", btn_sell, Color.GREEN)
 		
 		# 텍스트도 잠시 변경
 		var original_text = btn_sell.text
 		btn_sell.text = "+%d골드!" % price
 		await get_tree().create_timer(1.0).timeout
-		btn_sell.text = original_text
+		if btn_sell and is_instance_valid(btn_sell):
+			btn_sell.text = original_text
 
 func _show_no_selection_feedback() -> void:
 	# 선택된 캐릭터가 없을 때 피드백 (빨간색 깜빡임)
-	if btn_sell:
-		var original_color = btn_sell.modulate
-		var tween = create_tween()
-		tween.set_loops(2)
-		tween.tween_property(btn_sell, "modulate", Color.RED, 0.1)
-		tween.tween_property(btn_sell, "modulate", original_color, 0.1)
+	if btn_sell and is_instance_valid(btn_sell):
+		call_deferred("_safe_sell_feedback", btn_sell, Color.RED)
 		
 		# 텍스트도 잠시 변경
 		var original_text = btn_sell.text
 		btn_sell.text = "선택 필요!"
 		await get_tree().create_timer(1.0).timeout
-		btn_sell.text = original_text
+		if btn_sell and is_instance_valid(btn_sell):
+			btn_sell.text = original_text
 
-func _unhandled_input(event:InputEvent) -> void:
-	# 마우스 버튼이나 터치 이벤트만 처리
+# 안전한 소환 피드백 함수 (Timer 사용)
+func _safe_summon_feedback(button) -> void:
+	if not is_instance_valid(button) or not is_instance_valid(self):
+		return
+	
+	button.set_meta("original_color", button.modulate)
+	button.set_meta("feedback_count", 0)
+	
+	var timer = Timer.new()
+	add_child(timer)
+	timer.wait_time = 0.1
+	timer.timeout.connect(_summon_feedback_step.bind(button, timer))
+	timer.start()
+
+# 안전한 판매 피드백 함수 (Timer 사용)
+func _safe_sell_feedback(button, color: Color) -> void:
+	if not is_instance_valid(button) or not is_instance_valid(self):
+		return
+	
+	button.set_meta("original_color", button.modulate)
+	button.set_meta("feedback_color", color)
+	button.set_meta("feedback_count", 0)
+	
+	var timer = Timer.new()
+	add_child(timer)
+	timer.wait_time = 0.1
+	timer.timeout.connect(_sell_feedback_step.bind(button, timer))
+	timer.start()
+
+# 소환 피드백 단계별 처리
+func _summon_feedback_step(button, timer) -> void:
+	if not is_instance_valid(button) or not is_instance_valid(self):
+		timer.queue_free()
+		return
+	
+	var count = button.get_meta("feedback_count", 0)
+	var original_color = button.get_meta("original_color")
+	
+	if count < 4:  # 2번 깜빡임 (빨강 -> 원래색 -> 빨강 -> 원래색)
+		if count % 2 == 0:
+			button.modulate = Color.RED
+		else:
+			button.modulate = original_color
+		
+		button.set_meta("feedback_count", count + 1)
+	else:
+		button.modulate = original_color
+		timer.queue_free()
+
+# 판매 피드백 단계별 처리
+func _sell_feedback_step(button, timer) -> void:
+	if not is_instance_valid(button) or not is_instance_valid(self):
+		timer.queue_free()
+		return
+	
+	var count = button.get_meta("feedback_count", 0)
+	var original_color = button.get_meta("original_color")
+	var feedback_color = button.get_meta("feedback_color")
+	
+	if count < 4:  # 2번 깜빡임
+		if count % 2 == 0:
+			button.modulate = feedback_color
+		else:
+			button.modulate = original_color
+		
+		button.set_meta("feedback_count", count + 1)
+	else:
+		button.modulate = original_color
+		timer.queue_free()
+
+func _unhandled_input(event: InputEvent) -> void:
+	# 키보드 입력 처리 (단축키)
+	if event is InputEventKey and event.pressed:
+		match event.keycode:
+			KEY_S:
+				# Summon 단축키 (S키)
+				print("Summon 단축키 (S) 눌림")
+				_on_summon_pressed()
+				get_viewport().set_input_as_handled()
+			KEY_D:
+				# Sell 단축키 (D키) - 선택된 캐릭터가 있을 때만 동작
+				var char_manager = $"/root/Main/GameManager/CharacterManager"
+				if char_manager:
+					# selected_character 변수가 있는지 확인
+					if "selected_character" in char_manager and char_manager.selected_character != null:
+						print("Sell 단축키 (D) 눌림")
+						_on_sell_pressed()
+						get_viewport().set_input_as_handled()
+					else:
+						print("선택된 캐릭터가 없어서 Sell 단축키 무시")
+				else:
+					print("CharacterManager를 찾을 수 없음")
+			KEY_A:
+				# 자동 캐릭터 합치기 단축키 (A키)
+				print("자동 캐릭터 합치기 단축키 (A) 눌림")
+				var char_manager = $"/root/Main/GameManager/CharacterManager"
+				if char_manager and char_manager.has_method("auto_upgrade_all_characters"):
+					char_manager.auto_upgrade_all_characters()
+					get_viewport().set_input_as_handled()
+				else:
+					print("CharacterManager를 찾을 수 없거나 자동 합치기 함수가 없음")
+	
+	# 마우스 버튼이나 터치 이벤트 처리
 	if event is InputEventMouseButton or event is InputEventScreenTouch or event is InputEventMouseMotion or event is InputEventScreenDrag:
 		# 드래그 입력을 CharacterManager로 전달
 		var char_manager = $"/root/Main/GameManager/CharacterManager"
@@ -439,28 +531,34 @@ func _update_speed_button() -> void:
 		else:  # 3.0
 			btn_speed.modulate = Color.ORANGE_RED
 
-# BGM 플레이리스트 초기화 함수
+# BGM 플레이리스트 초기화 함수 (Export 호환) - 수정됨
 func _initialize_bgm_playlist() -> void:
 	bgm_playlist.clear()
 	
-	# BGM 폴더에서 MP3 파일들을 스캔
-	var bgm_dir = DirAccess.open("res://assets/bgm/")
-	if bgm_dir:
-		bgm_dir.list_dir_begin()
-		var file_name = bgm_dir.get_next()
-		
-		while file_name != "":
-			if file_name.ends_with(".mp3"):
-				var full_path = "res://assets/bgm/" + file_name
-				bgm_playlist.append(full_path)
-				print("BGM 파일 발견: %s" % file_name)
-			file_name = bgm_dir.get_next()
-		
-		print("총 %d개의 BGM 파일이 로드되었습니다." % bgm_playlist.size())
-	else:
-		print("BGM 폴더를 찾을 수 없습니다!")
+	print("BGM 초기화 시작... (수정된 버전)")
+	
+	# 모든 환경에서 직접 경로 사용 (안정성 우선)
+	var bgm_files = [
+		"res://assets/bgm/unicorn.mp3",
+		"res://assets/bgm/vgundam.mp3"
+	]
+	
+	print("직접 경로 방식으로 BGM 로드 시도...")
+	for bgm_path in bgm_files:
+		print("BGM 파일 확인 중: %s" % bgm_path)
+		if ResourceLoader.exists(bgm_path):
+			bgm_playlist.append(bgm_path)
+			print("✅ BGM 파일 로드 성공: %s" % bgm_path.get_file())
+		else:
+			print("❌ BGM 파일 없음: %s" % bgm_path)
+	
+	print("총 %d개의 BGM 파일이 로드되었습니다." % bgm_playlist.size())
+	
+	# 플레이리스트 내용 출력
+	for i in range(bgm_playlist.size()):
+		print("  [%d] %s" % [i, bgm_playlist[i]])
 
-# 현재 BGM 재생 함수
+# 현재 BGM 재생 함수 (Export 호환)
 func _play_current_bgm() -> void:
 	if bgm_playlist.is_empty():
 		print("BGM 플레이리스트가 비어있습니다!")
@@ -469,15 +567,29 @@ func _play_current_bgm() -> void:
 	if current_bgm_index >= bgm_playlist.size():
 		current_bgm_index = 0
 	
-	var bgm_path = bgm_playlist[current_bgm_index]
-	var bgm_stream = load(bgm_path) as AudioStream
+	var bgm_item = bgm_playlist[current_bgm_index]
+	var bgm_stream: AudioStream
+	
+	# 문자열 경로인 경우
+	if bgm_item is String:
+		print("BGM 경로 로드 시도: %s" % bgm_item)
+		bgm_stream = load(bgm_item) as AudioStream
+		if not bgm_stream:
+			print("❌ BGM 파일 로드 실패: %s" % bgm_item)
+			# 다음 BGM으로 시도
+			_next_bgm()
+			return
+	# 이미 AudioStream인 경우
+	elif bgm_item is AudioStream:
+		print("BGM 스트림 직접 사용")
+		bgm_stream = bgm_item
 	
 	if bgm_stream and bgm_player:
 		bgm_player.stream = bgm_stream
 		bgm_player.play()
-		print("BGM 재생 시작: %s" % bgm_path.get_file())
+		print("✅ BGM 재생 시작: %s" % (bgm_item.get_file() if bgm_item is String else "스트림"))
 	else:
-		print("BGM 파일을 로드할 수 없습니다: %s" % bgm_path)
+		print("❌ BGM 재생 실패 - 스트림: %s, 플레이어: %s" % [bgm_stream != null, bgm_player != null])
 
 # 다음 BGM으로 이동
 func _next_bgm() -> void:

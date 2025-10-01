@@ -62,7 +62,7 @@
     "atk": 9,
     "range": 150,
     "rate": 1.0,
-    "skill": "heal",
+    "skill": "",
     "cost": 80,
     "rarity": "rare",
     "spawn_weight": 15,

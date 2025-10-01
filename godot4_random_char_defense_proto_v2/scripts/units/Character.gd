@@ -89,7 +89,7 @@ func init_from_config(conf:Dictionary, _level:int, _id:String) -> void:
 	var base_scale = conf.get("scale", 1.0)
 	
 	# 레벨에 따른 추가 크기 조정
-	var level_scale_bonus = (level - 1) * 0.1  # 레벨당 10% 크기 증가
+	var level_scale_bonus = (level - 1) * 0.05  # 레벨당 5% 크기 증가
 	var final_scale = base_scale + level_scale_bonus
 	
 	# 스프라이트 크기 적용
@@ -713,15 +713,8 @@ func _restore_enemy_speed_after_delay(enemy: Node, original_speed: float, delay:
 	timer.one_shot = true
 	timer.start()
 	
-	# 타이머 완료 시 속도 복원 (lambda 함수 사용, bind 없이)
-	timer.timeout.connect(func():
-		if is_instance_valid(enemy) and enemy.has_method("set") and "speed" in enemy:
-			enemy.speed = original_speed
-		
-		# 타이머 정리
-		if is_instance_valid(timer):
-			timer.queue_free()
-	, CONNECT_ONE_SHOT)
+	# 타이머 완료 시 속도 복원 (안전한 방식)
+	timer.timeout.connect(_on_slow_timer_timeout.bind(enemy, original_speed, timer), CONNECT_ONE_SHOT)
 
 # 넉백 시각적 효과
 func _show_knockback_effect(target: Node) -> void:
@@ -741,7 +734,7 @@ func _show_knockback_effect(target: Node) -> void:
 		# 0.3초 후 원래 색상과 크기로 복원
 		var tween = create_tween()
 		tween.tween_interval(0.3)
-		tween.tween_callback(func(): _restore_target_appearance(target, original_modulate, original_scale))
+		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
 
 # 전사 배쉬 스킬 처리
 func _handle_warrior_bash(target: Node) -> void:
@@ -790,7 +783,7 @@ func _show_bash_effect(target: Node) -> void:
 		# 0.2초 후 원래 색상과 크기로 복원
 		var tween = create_tween()
 		tween.tween_interval(0.2)
-		tween.tween_callback(func(): _restore_target_appearance(target, original_modulate, original_scale))
+		tween.tween_callback(_restore_target_appearance.bind(target, original_modulate, original_scale))
 
 # 업그레이드 보너스 적용 함수
 func _apply_upgrade_bonuses(conf: Dictionary) -> void:
@@ -934,17 +927,17 @@ func _show_upgrade_text(stat_name: String) -> void:
 	# 2초 후 제거
 	var tween = create_tween()
 	tween.tween_interval(2.0)
-	tween.tween_callback(func(): _remove_upgrade_label(upgrade_label))
+	tween.tween_callback(_remove_upgrade_label.bind(upgrade_label))
 
 # 타겟 외관 복원 헬퍼 함수
-func _restore_target_appearance(target: Node, original_modulate: Color, original_scale: Vector2) -> void:
+func _restore_target_appearance(target, original_modulate, original_scale) -> void:
 	if is_instance_valid(target):
 		target.modulate = original_modulate
 		if "scale" in target:
 			target.scale = original_scale
 
 # 업그레이드 라벨 제거 헬퍼 함수
-func _remove_upgrade_label(upgrade_label: Label) -> void:
+func _remove_upgrade_label(upgrade_label) -> void:
 	if is_instance_valid(upgrade_label):
 		upgrade_label.queue_free()
 
@@ -1054,14 +1047,8 @@ func _ensure_range_area_integrity() -> void:
 func _rebuild_enemy_snapshot() -> void:
 	"""get_overlapping_areas()를 사용하여 현재 겹치는 적들을 재구축합니다."""
 	
-	# 기존 in_range 배열을 백업하고 새로 구축
-	var _old_in_range = in_range.duplicate()
+	# in_range 배열을 새로 구축
 	in_range.clear()
-	
-	# monitoring이 꺼져있으면 모든 Enemy를 직접 검사
-	var overlapping_areas = []
-	if area.monitoring:
-		overlapping_areas = area.get_overlapping_areas()
 	
 	# 모든 Enemy 노드 검사 (monitoring이 꺼져있을 때도 작동)
 	var all_enemies = get_tree().get_nodes_in_group("enemy")
@@ -1110,7 +1097,6 @@ func _detect_existing_enemies() -> void:
 	# 모든 Enemy 노드를 찾아서 사거리 안에 있는지 확인
 	var enemies = get_tree().get_nodes_in_group("enemy")
 	
-	var detected_count = 0
 	for enemy in enemies:
 		if is_instance_valid(enemy) and enemy.has_method("take_damage"):
 			# 거리 확인
@@ -1126,7 +1112,6 @@ func _detect_existing_enemies() -> void:
 			
 			if distance <= effective_range:
 				in_range.append(enemy)
-				detected_count += 1
 
 # 공통 스킬 처리 함수
 func _handle_character_skill(target: Node) -> void:
@@ -1137,13 +1122,13 @@ func _handle_character_skill(target: Node) -> void:
 		"multi_shot":
 			_handle_multishot_skill(target)
 		"pierce":
-			_handle_pierce_skill(target)
+			_handle_pierce_skill()
 		"bash":
 			_handle_bash_skill(target)
 		"knockback_attack":
 			_handle_knockback_skill(target)
 		"heal":
-			_handle_heal_skill(target)
+			_handle_heal_skill()
 		_:
 			# 기본 스킬이 없으면 아무것도 하지 않음
 			pass
@@ -1163,7 +1148,7 @@ func _handle_multishot_skill(target: Node) -> void:
 		_fire_additional_arrows(target)
 
 # 관통 스킬 처리 (공통)
-func _handle_pierce_skill(target: Node) -> void:
+func _handle_pierce_skill() -> void:
 	# 관통 스킬은 프로젝타일에서 처리되므로 여기서는 시각적 효과만
 	_show_skill_effect("pierce")
 
@@ -1195,7 +1180,7 @@ func _handle_knockback_skill(target: Node) -> void:
 		_apply_knockback(target)
 
 # 힐 스킬 처리 (공통)
-func _handle_heal_skill(target: Node) -> void:
+func _handle_heal_skill() -> void:
 	# 힐 스킬은 아군에게 적용되므로 여기서는 시각적 효과만
 	_show_skill_effect("heal")
 
@@ -1241,7 +1226,7 @@ func _show_skill_text(text: String, color: Color) -> void:
 	# 1.5초 후 제거
 	var tween = create_tween()
 	tween.tween_interval(1.5)
-	tween.tween_callback(func(): _remove_upgrade_label(skill_label))
+	tween.tween_callback(_remove_upgrade_label.bind(skill_label))
 
 # 추가 화살 발사 (멀티샷)
 func _fire_additional_arrows(target: Node) -> void:
@@ -1325,7 +1310,7 @@ func _show_multishot_text(arrows_count: int) -> void:
 	# 2초 후 제거
 	var tween = create_tween()
 	tween.tween_interval(2.0)
-	tween.tween_callback(func(): _remove_upgrade_label(multishot_label))
+	tween.tween_callback(_remove_upgrade_label.bind(multishot_label))
 
 # 캐릭터 스프라이트 복원 함수 (공통)
 func _restore_character_sprite() -> void:
@@ -1443,3 +1428,12 @@ func _setup_tscn_animation_fallback(tscn_path: String, animation_name: String) -
 # 캐릭터별 idle 노드 이름 패턴 반환 (하위 호환성을 위해 유지)
 func _get_idle_node_names(character_id: String) -> Array[String]:
 	return _get_animation_node_names(character_id, "idle")
+
+# 안전한 슬로우 타이머 콜백 함수
+func _on_slow_timer_timeout(enemy, original_speed, timer) -> void:
+	if is_instance_valid(enemy) and enemy.has_method("set") and "speed" in enemy:
+		enemy.speed = original_speed
+	
+	# 타이머 정리
+	if is_instance_valid(timer):
+		timer.queue_free()

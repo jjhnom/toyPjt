@@ -13,13 +13,23 @@ extends Node
 var _current_speed: float = 1.0
 var _is_paused: bool = false
 
+# BGM 플레이리스트 관련 변수들
+var bgm_playlist: Array[String] = []
+var current_bgm_index: int = 0
+var is_random_mode: bool = false
+
 func _ready() -> void:
 	# 일시정지 상태에서도 UI가 작동하도록 설정
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
+	# BGM 플레이리스트 초기화
+	_initialize_bgm_playlist()
+	
 	# BGM 반복 재생 설정
 	if bgm_player:
 		bgm_player.finished.connect(_on_bgm_finished)
+		# 첫 번째 BGM 재생 시작
+		_play_current_bgm()
 
 func bind(gm:Node) -> void:
 	# 게임 속도를 기본값으로 리셋
@@ -429,11 +439,83 @@ func _update_speed_button() -> void:
 		else:  # 3.0
 			btn_speed.modulate = Color.ORANGE_RED
 
-func _on_bgm_finished() -> void:
-	# BGM이 끝나면 다시 재생
-	if bgm_player:
-		print("BGM 재생 완료 - 다시 재생 시작")
+# BGM 플레이리스트 초기화 함수
+func _initialize_bgm_playlist() -> void:
+	bgm_playlist.clear()
+	
+	# BGM 폴더에서 MP3 파일들을 스캔
+	var bgm_dir = DirAccess.open("res://assets/bgm/")
+	if bgm_dir:
+		bgm_dir.list_dir_begin()
+		var file_name = bgm_dir.get_next()
+		
+		while file_name != "":
+			if file_name.ends_with(".mp3"):
+				var full_path = "res://assets/bgm/" + file_name
+				bgm_playlist.append(full_path)
+				print("BGM 파일 발견: %s" % file_name)
+			file_name = bgm_dir.get_next()
+		
+		print("총 %d개의 BGM 파일이 로드되었습니다." % bgm_playlist.size())
+	else:
+		print("BGM 폴더를 찾을 수 없습니다!")
+
+# 현재 BGM 재생 함수
+func _play_current_bgm() -> void:
+	if bgm_playlist.is_empty():
+		print("BGM 플레이리스트가 비어있습니다!")
+		return
+	
+	if current_bgm_index >= bgm_playlist.size():
+		current_bgm_index = 0
+	
+	var bgm_path = bgm_playlist[current_bgm_index]
+	var bgm_stream = load(bgm_path) as AudioStream
+	
+	if bgm_stream and bgm_player:
+		bgm_player.stream = bgm_stream
 		bgm_player.play()
+		print("BGM 재생 시작: %s" % bgm_path.get_file())
+	else:
+		print("BGM 파일을 로드할 수 없습니다: %s" % bgm_path)
+
+# 다음 BGM으로 이동
+func _next_bgm() -> void:
+	if bgm_playlist.is_empty():
+		return
+	
+	if is_random_mode:
+		current_bgm_index = randi() % bgm_playlist.size()
+	else:
+		current_bgm_index = (current_bgm_index + 1) % bgm_playlist.size()
+	
+	_play_current_bgm()
+
+func _on_bgm_finished() -> void:
+	# BGM이 끝나면 다음 BGM으로 이동
+	print("BGM 재생 완료 - 다음 BGM으로 이동")
+	_next_bgm()
+
+# BGM 랜덤 모드 토글 함수 (외부에서 호출 가능)
+func toggle_bgm_random_mode() -> void:
+	is_random_mode = !is_random_mode
+	print("BGM 랜덤 모드: %s" % ("ON" if is_random_mode else "OFF"))
+
+# BGM 건너뛰기 함수 (외부에서 호출 가능)
+func skip_bgm() -> void:
+	if bgm_playlist.is_empty():
+		return
+	
+	print("BGM 건너뛰기")
+	_next_bgm()
+
+# 현재 재생 중인 BGM 정보 반환
+func get_current_bgm_info() -> String:
+	if bgm_playlist.is_empty():
+		return "BGM 없음"
+	
+	var current_path = bgm_playlist[current_bgm_index]
+	return current_path.get_file().get_basename()
 
 # 일시정지 버튼 처리
 func _on_pause_pressed() -> void:

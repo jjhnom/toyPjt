@@ -46,11 +46,7 @@ func use_global_slow() -> void:
 		if enemy and is_instance_valid(enemy) and enemy not in all_enemies:
 			all_enemies.append(enemy)
 	
-	
-	var affected_count = 0
-	
 	for e in all_enemies:
 		if e.has_method("apply_slow"):
 			e.apply_slow(fac, dur)
-			affected_count += 1
 	

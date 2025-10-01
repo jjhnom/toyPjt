@@ -1,9 +1,11 @@
-res://ani/Hi-Nu_Idle.tscn
-res://scripts/units/Character.gd
 res://scenes/dice_rect_map.tscn
-res://scenes/Main.tscn
 res://scenes/Character.tscn
 res://scenes/Enemy.tscn
 res://scenes/Map.tscn
 res://scenes/Projectile.tscn
 res://ani/Hi-Nu_Attck.tscn
+res://ani/Hi-Nu_Idle.tscn
+res://scenes/Main.tscn
+res://scripts/ui/UIManager.gd
+res://scripts/units/Character.gd
+res://scripts/core/SkillManager.gd

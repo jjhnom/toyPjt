@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://b3pxkytqg34p1"]
+[gd_scene load_steps=11 format=3 uid="uid://b3pxkytqg34p1"]
 
 [ext_resource type="Script" uid="uid://bkopah31btx15" path="res://scripts/core/GameManager.gd" id="1"]
 [ext_resource type="Script" uid="uid://epdnowp06wv6" path="res://scripts/core/WaveManager.gd" id="2"]
@@ -9,7 +9,6 @@
 [ext_resource type="Script" uid="uid://diweat8nbkxde" path="res://scripts/core/ObjectPool.gd" id="8"]
 [ext_resource type="Script" uid="uid://bhctree1nwu3l" path="res://scripts/core/CharacterManager.gd" id="9"]
 [ext_resource type="Script" uid="uid://56q406grp8xa" path="res://scripts/core/SkillManager.gd" id="10"]
-[ext_resource type="AudioStream" uid="uid://2qokikl0m73h" path="res://assets/bgm/defense_bgm_happy.wav" id="11"]
 [ext_resource type="Texture2D" uid="uid://dfns8c7lkunl6" path="res://assets/maps/background_desert.png" id="11_wp0k4"]
 
 [node name="Main" type="Node2D"]
@@ -148,9 +147,7 @@ offset_bottom = 700.0
 text = "Sell (50%)"
 
 [node name="BGM" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("11")
 volume_db = -10.0
-autoplay = true
 
 [node name="BackgroundDesert" type="Sprite2D" parent="."]
 position = Vector2(357, 380)

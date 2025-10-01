@@ -1,0 +1,6 @@
+res://Scenes/maps/map0.tscn
+res://Scenes/turrets/wizardTurret/wizardTurret.gd
+res://Assets/bullets/bullet2.tres
+res://Scenes/maps/map1.tscn
+res://Scenes/main/main.tscn
+res://Scenes/maps/map2.tscn

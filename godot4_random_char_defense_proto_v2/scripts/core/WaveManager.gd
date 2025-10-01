@@ -171,8 +171,8 @@ func _on_enemy_died(reward:int) -> void:
 func _generate_infinite_wave() -> void:
 	var gm = $".."
 	
-	# 무한 웨이브 타이머 설정 (30초)
-	wave_time_limit = 30.0
+	# 무한 웨이브 타이머 설정 (무한 웨이브 레벨)
+	wave_time_limit = max(10, infinite_level)  # 최소 10초 보장
 	wave_timer = wave_time_limit
 	is_wave_active = true
 	
@@ -254,9 +254,9 @@ func _spawn_infinite_enemy(enemy_id: String) -> void:
 func _scale_enemy_for_infinite(base_config: Dictionary, level: int) -> Dictionary:
 	var scaled_config = base_config.duplicate()
 	
-	# HP 스케일링 (레벨당 50% 증가)
+	# HP 스케일링 (레벨당 5% 증가)
 	var base_hp = base_config.get("hp", 100)
-	scaled_config["hp"] = int(base_hp * (1.0 + level * 0.5))
+	scaled_config["hp"] = int(base_hp * (1.0 + level * 0.05))
 	
 	# 공격력 스케일링 (레벨당 30% 증가)
 	var base_damage = base_config.get("base_damage", 10)
@@ -266,8 +266,8 @@ func _scale_enemy_for_infinite(base_config: Dictionary, level: int) -> Dictionar
 	var base_speed = base_config.get("speed", 10)
 	scaled_config["speed"] = base_speed * (1.0 + level * 0.05)
 	
-	# 보상 스케일링 (레벨당 40% 증가)
+	# 보상 스케일링 (레벨당 5% 증가)
 	var base_reward = base_config.get("reward", 5)
-	scaled_config["reward"] = int(base_reward * (1.0 + level * 0.4))
+	scaled_config["reward"] = int(base_reward * (1.0 + level * 0.05))
 	
 	return scaled_config

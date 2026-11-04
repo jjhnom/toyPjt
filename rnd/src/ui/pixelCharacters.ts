@@ -1,4 +1,5 @@
 import type { DroneArchetype, EnemyArchetype } from '../types/game';
+import { ELEMENT_COLORS, UNIT_TYPES } from '../config/unitData';
 
 export const unitTexture = (type: DroneArchetype): string => `unit_${type}`;
 export const unitAnimation = (type: DroneArchetype): string => `walk_${type}`;
@@ -19,6 +20,38 @@ export function drawCharacter(ctx: CanvasRenderingContext2D, kind: string, frame
   const bob = frame % 2;
   const dark = '#172029', light = '#efe0b7', skin = '#e6b887', wood = '#98734d';
   rect(3, 14, 10, 1, '#111a21');
+  const unit = UNIT_TYPES[kind as DroneArchetype];
+  const legacy = ['BASIC_LASER', 'GATLING_BOT', 'ROCKET_BOT', 'STUN_BOT', 'PIERCE_BEAM', 'BLACKHOLE_MISSILE', 'CHAIN_LIGHTNING'];
+  if (unit && !legacy.includes(kind)) {
+    const color = `#${ELEMENT_COLORS[unit.elements[0]].toString(16).padStart(6, '0')}`;
+    const accent = `#${ELEMENT_COLORS[unit.elements[1] ?? unit.elements[0]].toString(16).padStart(6, '0')}`;
+    rect(5, 12, 2, 2 + bob, wood); rect(9, 12, 2, 3 - bob, wood);
+    rect(4, 7 + bob, 8, 6 - bob, dark); rect(5, 7 + bob, 6, 5 - bob, color);
+    rect(6, 4 + bob, 4, 4, skin); rect(7, 6 + bob, 1, 1, dark); rect(9, 6 + bob, 1, 1, dark);
+    if (unit.role === 'VANGUARD') {
+      rect(4, 3 + bob, 8, 2, accent); rect(2, 8, 4, 5, accent); rect(3, 9, 2, 3, dark);
+      rect(12, 5, 1, 8, light); rect(11, 10, 3, 1, wood);
+    } else if (unit.role === 'MELEE') {
+      rect(4, 2 + bob, 8, 3, color); rect(5, 4 + bob, 6, 2, dark); rect(7, 5 + bob, 3, 1, light);
+      rect(12, 8, 1, 5, light); rect(2, 8, 1, 4, light);
+    } else if (unit.role === 'RANGED') {
+      rect(5, 2 + bob, 6, 3, color); rect(12, 5, 1, 8, wood); rect(13, 6, 1, 6, accent);
+    } else {
+      rect(4, 4 + bob, 8, 1, color); rect(5, 2 + bob, 6, 2, color); rect(7, bob, 3, 2, accent);
+      rect(12, 4, 1, 10, wood); rect(11, 2 + bob, 3, 3, accent);
+      if (unit.role === 'SUPPORT') { rect(7, 8, 1, 4, light); rect(6, 9, 3, 1, light); }
+    }
+    if (unit.tier >= 3) { rect(3, 7, 1, 6, accent); rect(11, 7, 1, 6, accent); }
+    if (unit.tier === 4) { rect(5, 0, 1, 3, light); rect(10, 0, 1, 3, light); }
+    return;
+  }
+  if (kind === 'SPORE_SHOOTER' || kind === 'SUMMONER' || kind === 'EXPLODER') {
+    const color = kind === 'EXPLODER' ? '#ef8953' : kind === 'SUMMONER' ? '#88cfe1' : '#91ac66';
+    rect(4, 7 + bob, 8, 6 - bob, color); rect(5, 3 + bob, 6, 5, color);
+    rect(3, 2 + bob, 10, 2, dark); rect(6, 5 + bob, 1, 1, light); rect(9, 5 + bob, 1, 1, light);
+    rect(12, 4, 1, 10, wood); rect(11, 2, 3, 3, color);
+    return;
+  }
   if (kind === 'SWARMER') {
     rect(4, 7 - bob, 8, 1, '#1e3030'); rect(2, 9 - bob, 12, 5 + bob, '#3e755b');
     rect(3, 8 - bob, 10, 5, '#77af69'); rect(4, 8 - bob, 4, 2, '#b2d885');

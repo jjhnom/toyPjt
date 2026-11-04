@@ -5,6 +5,8 @@ import { MovementComponent } from '../components/MovementComponent';
 import { FireBulletFn } from '../components/WeaponComponent';
 import { SquadRoster } from '../systems/SquadRoster';
 import { DroneUnit } from './DroneUnit';
+import { UNIT_TYPES } from '../config/unitData';
+import { SUPPORT_HEAL_INTERVAL_MS, UNIT_REVIVE_RATIO } from '../config/squadData';
 
 export class PlayerSquad {
   public scene: Phaser.Scene;
@@ -53,7 +55,7 @@ export class PlayerSquad {
     this.drones = deployed.map((unit, index) => {
       const existing = this.drones.find(drone => drone.id === unit.id);
       if (existing) return existing;
-      const drone = new DroneUnit(this.scene, unit.id, unit.archetype, this.fireCallback);
+      const drone = new DroneUnit(this.scene, unit.id, unit.archetype, this.fireCallback, unit.star);
       drone.setPosition(
         Phaser.Math.Clamp(this.leader.x + (index % 3 - 1) * 44, ARENA_BOUNDS.left + 20, ARENA_BOUNDS.right - 20),
         Phaser.Math.Clamp(this.leader.y + 45 + Math.floor(index / 3) * 40, ARENA_BOUNDS.top + 20, ARENA_BOUNDS.bottom - 20)
@@ -64,6 +66,7 @@ export class PlayerSquad {
 
   public setPositionImmediate(x: number, y: number): void {
     this.leader.setPosition(x, y);
+    (this.leader.body as Phaser.Physics.Arcade.Body).reset(x, y);
     const count = this.drones.length;
     for (let i = 0; i < count; i++) {
       this.drones[i].setPosition(
@@ -74,12 +77,47 @@ export class PlayerSquad {
   }
 
   public receiveContactDamage(amount: number, time: number): boolean {
+    if (time < this.health.invulnerableUntil) return false;
+    const protector = this.drones.find(drone => !drone.health.isDead &&
+      (drone.archetype === 'PALADIN' || drone.archetype === 'EARTH_DEITY'));
+    if (protector) {
+      const absorbed = Math.round(amount * (protector.archetype === 'EARTH_DEITY' ? 0.4 : 0.3));
+      protector.health.takeDamage(absorbed, time, 0);
+      amount -= absorbed;
+    }
     const damaged = this.health.takeDamage(amount, time, 650);
     if (damaged) {
       this.leader.setTintFill(0xff4d4d);
       this.flashUntil = time + 160;
     }
     return damaged;
+  }
+
+  public reviveFallen(): void {
+    for (const drone of this.drones) {
+      if (!drone.health.isDead) continue;
+      drone.health.heal(Math.round(drone.health.maxHp * UNIT_REVIVE_RATIO));
+      drone.health.invulnerableUntil = 0;
+      drone.reviveAt = 0;
+      drone.setActive(true).setVisible(true);
+    }
+  }
+
+  public findEnemyTarget(enemyX: number, enemyY: number): DroneUnit | null {
+    let target: DroneUnit | null = null;
+    let nearest = (enemyX - this.leader.x) ** 2 + (enemyY - this.leader.y) ** 2;
+    let hasVanguard = false;
+    for (const drone of this.drones) {
+      if (drone.health.isDead) continue;
+      const dist = (drone.x - enemyX) ** 2 + (drone.y - enemyY) ** 2;
+      const vanguard = UNIT_TYPES[drone.archetype].role === 'VANGUARD' && dist < 300 ** 2;
+      if ((vanguard && !hasVanguard) || (vanguard === hasVanguard && dist < nearest)) {
+        target = drone;
+        nearest = dist;
+        hasVanguard = vanguard;
+      }
+    }
+    return target;
   }
 
   public update(
@@ -110,7 +148,19 @@ export class PlayerSquad {
     this.leader.y = Phaser.Math.Clamp(this.leader.y, ARENA_BOUNDS.top + 24, ARENA_BOUNDS.bottom - 24);
 
     for (let i = 0; i < this.drones.length; i++) {
-      this.drones[i].updateDrone(time, delta,
+      const drone = this.drones[i];
+      if (drone.health.isDead && time >= drone.reviveAt) {
+        drone.health.heal(Math.round(drone.health.maxHp * UNIT_REVIVE_RATIO));
+        drone.health.invulnerableUntil = time + 650;
+        drone.setActive(true).setVisible(true);
+      }
+      const type = UNIT_TYPES[drone.archetype];
+      if (!drone.health.isDead && type.healAmount > 0 && time - drone.lastHealAt >= SUPPORT_HEAL_INTERVAL_MS) {
+        drone.lastHealAt = time;
+        this.health.heal(type.healAmount * drone.star);
+        for (const ally of this.drones) if (!ally.health.isDead) ally.health.heal(type.healAmount * drone.star);
+      }
+      drone.updateDrone(time, delta,
         this.leader.x + (i % 3 - 1) * 44,
         this.leader.y + 45 + Math.floor(i / 3) * 40,
         enemies, damageMultiplier, attackSpeedMultiplier);

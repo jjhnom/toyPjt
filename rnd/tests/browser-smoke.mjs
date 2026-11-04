@@ -36,7 +36,9 @@ try {
     }
   };
   const send = (method, params = {}) => new Promise((resolve, reject) => {
-    pending.set(++id, { resolve, reject });
+    const timer = setTimeout(() => reject(new Error(`CDP timeout: ${method}`)), 15000);
+    pending.set(++id, { resolve: result => { clearTimeout(timer); resolve(result); },
+      reject: error => { clearTimeout(timer); reject(error); } });
     socket.send(JSON.stringify({ id, method, params }));
   });
   const evaluate = async expression => {
@@ -91,6 +93,8 @@ try {
 
   // Finish the first room through the actual wave-completion branch.
   await evaluate(`gs.enemies.getChildren().forEach(enemy => enemy.deactivate());
+    gs.pendingSpawns.length = 0; gs.hazards.clear();
+    gs.squad.roster.minerals = 30;
     gs.roomState = 'LOCKED_WAVES'; gs.currentWave = gs.totalWavesInRoom = 1;`);
   await waitFor("smash.scene.isActive('SquadScene') && smash.scene.isPaused('GameScene')");
   assert.equal(await evaluate('gs.squad.roster.minerals'), 55);
@@ -115,7 +119,7 @@ try {
   assert.equal(await evaluate('JSON.stringify(gs.squad.roster.units)'), afterCombine);
 
   await tap(575, 228); // Deployment.
-  await tap(570, 369);
+  await tap(570, 359);
   assert.equal(await evaluate('gs.squad.roster.units.filter(u => u.deployed).length'), 1);
   await tap(360, 1150);
   await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
@@ -191,22 +195,168 @@ try {
   })()`);
   assert.equal(chain, true, 'one chain must not bounce back to an already hit target');
 
+  // New type sprites, aggro, healing, individual defeat, and room revival.
+  const unitRoles = await evaluate(`(() => {
+    gs.clearEncounter();
+    gs.squad.roster.minerals = 1000;
+    gs.squad.roster.summon('STONE_GUARD'); gs.squad.roster.summon('HERBAL_PRIEST');
+    gs.squad.syncRoster();
+    const tank = gs.squad.drones.find(d => d.archetype === 'STONE_GUARD');
+    const healer = gs.squad.drones.find(d => d.archetype === 'HERBAL_PRIEST');
+    tank.setPosition(320, 400); gs.squad.leader.setPosition(320, 450);
+    const target = gs.squad.findEnemyTarget(320, 450);
+    gs.squad.health.currentHp = gs.squad.health.maxHp - 20;
+    healer.lastHealAt = gs.time.now - 3001;
+    const hp = gs.squad.health.currentHp;
+    gs.squad.update(gs.time.now, 16, 0, 0, gs.enemies, 1, 1, 0);
+    const healed = gs.squad.health.currentHp > hp;
+    tank.health.takeDamage(tank.health.maxHp, gs.time.now);
+    const defeated = tank.health.isDead && !tank.visible && !tank.active;
+    gs.squad.reviveFallen();
+    return { tankTarget: target.id === tank.id, healed, defeated,
+      revived: tank.active && tank.visible && tank.health.ratio === 0.5 };
+  })()`);
+  assert.deepEqual(unitRoles, { tankTarget: true, healed: true, defeated: true, revived: true });
+
+  // Material selection is reviewable and can be changed before a touch confirmation.
+  await evaluate('gs.openSquadModal()');
+  await waitFor("smash.scene.isActive('SquadScene')");
+  await tap(570, 381); await tap(570, 381);
+  const beforeManual = await evaluate('gs.squad.roster.units.length');
+  await tap(360, 228); await tap(170, 488);
+  assert.equal(await evaluate("smash.scene.getScene('SquadScene').editingRecipe.id"), 'gatling');
+  await tap(570, 374);
+  assert.equal(await evaluate("smash.scene.getScene('SquadScene').selectedIds.length"), 1);
+  await tap(570, 374);
+  await capture('manual-ingredients');
+  await tap(530, 1040);
+  assert.equal(await evaluate('gs.squad.roster.units.length'), beforeManual - 1);
+  assert.equal(await evaluate("smash.scene.getScene('SquadScene').editingRecipe"), null);
+  await tap(145, 228);
+  await tap(570, 1030); // More T1 offers, including new class sprites.
+  await capture('new-unit-offers');
+  await tap(360, 1150);
+  await waitFor("smash.scene.isActive('GameScene')");
+
+  const promotion = await evaluate(`(() => {
+    gs.squad.roster.summon('BASIC_LASER'); gs.squad.roster.summon('BASIC_LASER'); gs.squad.roster.summon('BASIC_LASER');
+    const combined = gs.squad.roster.combine('promote_BASIC_LASER_1'); gs.squad.syncRoster();
+    const unit = gs.squad.drones.find(d => d.archetype === 'BASIC_LASER' && d.star === 2);
+    unit.health.takeDamage(unit.health.maxHp, gs.time.now);
+    unit.reviveAt = gs.time.now - 1;
+    gs.squad.update(gs.time.now, 16, 0, 0, gs.enemies, 1, 1, 0);
+    return { combined, maxHp: unit.health.maxHp, resurrected: unit.active && unit.health.currentHp === Math.round(unit.health.maxHp * 0.5) };
+  })()`);
+  assert.deepEqual(promotion, { combined: true, maxHp: 105, resurrected: true });
+
+  const poolAndWarning = await evaluate(`(() => {
+    gs.clearEncounter();
+    for (let i = 0; i < 80; i++) gs.enemies.spawnEnemy('SWARMER', 100 + i, 300);
+    gs.queueEnemy('BOSS_CORE', 360, 300); gs.processSpawns(1000);
+    const queued = gs.pendingSpawns.length === 1;
+    gs.enemies.getChildren().forEach(e => e.deactivate()); gs.processSpawns(1000);
+    const retried = gs.pendingSpawns.length === 0 && gs.enemies.countActive(true) === 1;
+    gs.clearEncounter();
+    const enemy = gs.enemies.spawnEnemy('TANK', 300, 300, 3, 2, 1.2);
+    const scaled = enemy.health.maxHp === 525 && enemy.spec.contactDamage === 40 && enemy.spec.speed === 110.39999999999999;
+    enemy.deactivate(); enemy.spawn('TANK', 300, 300);
+    const reset = enemy.health.maxHp === 175 && enemy.spec.contactDamage === 20 && enemy.spec.speed === 92;
+    gs.clearEncounter();
+    gs.squad.health.invulnerableUntil = 0;
+    const hp = gs.squad.health.currentHp;
+    gs.hazards.add('METEOR', gs.squad.leader.x, gs.squad.leader.y, 7, 0);
+    gs.hazards.update(799);
+    const warned = gs.squad.health.currentHp === hp;
+    gs.hazards.update(1);
+    const hitAfterWarning = gs.squad.health.currentHp === hp - 7;
+    gs.clearEncounter();
+    return { queued, retried, scaled, reset, warned, hitAfterWarning };
+  })()`);
+  assert.deepEqual(poolAndWarning, { queued: true, retried: true, scaled: true, reset: true, warned: true, hitAfterWarning: true });
+
+  const performance = await evaluate(`(async () => {
+    gs.clearEncounter(); gs.roomState = 'TRANSITION';
+    gs.squad.health.invulnerableUntil = gs.time.now + 60000;
+    for (const unit of gs.squad.drones) { unit.health.maxHp = unit.health.currentHp = 100000; }
+    for (let i = 0; i < 28; i++) gs.enemies.spawnEnemy('TANK', 100 + (i % 7) * 80, 250 + Math.floor(i / 7) * 180, 1000, 1, 1.24);
+    const fps = []; let peakBullets = 0;
+    for (let sample = 0; sample < 20; sample++) {
+      const count = gs.bullets.countActive(true);
+      for (let i = count; i < 150; i++) gs.bullets.fireBullet({ x: 100 + (i % 7) * 80, y: 220 + (i % 9) * 85,
+        angle: i * 2.4, speed: 420, damage: 1, color: 0xffffff, aoeRadius: 0,
+        slowFactor: 1, slowDurationMs: 0, pierceCount: 1, chainCount: 0 });
+      peakBullets = Math.max(peakBullets, gs.bullets.countActive(true));
+      await new Promise(resolve => setTimeout(resolve, 500));
+      fps.push(gs.game.loop.actualFps);
+    }
+    return { browser: navigator.userAgent, durationSeconds: 10, enemies: gs.enemies.countActive(true), peakBullets,
+      averageFps: Math.round(fps.reduce((a, b) => a + b, 0) / fps.length * 10) / 10,
+      minFps: Math.round(Math.min(...fps) * 10) / 10 };
+  })()`);
+  assert.equal(performance.enemies, 28);
+  assert.equal(performance.peakBullets, 150);
+  await capture('combat-stress');
+
   // Restart after death must reset currency, ownership, and scene listeners.
   await evaluate('gs.handlePlayerDeath()');
   await waitFor("smash.scene.isActive('GameOverScene')");
   await evaluate("smash.scene.getScene('GameOverScene').scene.start('GameScene'); undefined;");
   await waitFor("smash.scene.isActive('GameScene')");
   assert.deepEqual(await evaluate("({ count: smash.scene.getScene('GameScene').squad.roster.units.length, minerals: smash.scene.getScene('GameScene').squad.roster.minerals })"), { count: 2, minerals: 30 });
-  await evaluate(`window.gs = smash.scene.getScene('GameScene');
-    gs.enemies.getChildren().forEach(enemy => enemy.deactivate());
-    gs.gridManager.getCurrentRoom().type = 'BOSS';
-    gs.gridManager.getCurrentRoom().cleared = false;
-    gs.roomState = 'LOCKED_WAVES'; gs.currentWave = gs.totalWavesInRoom = 1;`);
+  await evaluate(`window.gs = smash.scene.getScene('GameScene'); gs.squad.roster.combine('gatling'); gs.squad.syncRoster();
+    window.survivorId = gs.squad.roster.units[0].id; gs.stats.damageMultiplier = 1.7;`);
+  for (let stage = 0; stage < 5; stage++) {
+    const result = await evaluate(`(() => {
+      gs.clearEncounter();
+      gs.squad.health.currentHp = 30;
+      const room = gs.gridManager.getCurrentRoom(); room.type = 'BOSS'; room.cleared = false;
+      gs.startRoomLogic(room); gs.spawnNextWave(room); gs.processSpawns(1000);
+      const boss = gs.enemies.getChildren().find(e => e.active && e.spec.archetype === 'BOSS_CORE');
+      boss.receiveDamage(boss.health.maxHp, gs.time.now); gs.handleEnemyKilled(boss);
+      const minerals = gs.squad.roster.minerals;
+      gs.handleEnemyKilled(boss); gs.finishRoom(room);
+      return { stage: gs.stats.stageIndex, bosses: gs.stats.bossesDefeated,
+        clean: gs.enemies.countActive(true) === 0 && gs.bullets.countActive(true) === 0 && gs.pendingSpawns.length === 0,
+        once: gs.squad.roster.minerals === minerals };
+    })()`);
+    assert.deepEqual(result, { stage, bosses: stage + 1, clean: true, once: true });
+    if (stage < 4) {
+      await waitFor("smash.scene.isActive('SquadScene') && smash.scene.isPaused('GameScene')");
+      assert.equal(await evaluate("smash.scene.isActive('GameOverScene')"), false);
+      await capture(`stage${stage + 1}-clear`);
+      if (stage === 1) await evaluate("smash.events.emit('hidden'); smash.events.emit('visible'); undefined;");
+      assert.equal(await evaluate("smash.scene.isPaused('GameScene')"), true);
+      await tap(360, 1150);
+      await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
+      assert.deepEqual(await evaluate(`({ stage: gs.stats.stageIndex, hp: gs.squad.health.currentHp,
+        multiplier: gs.stats.damageMultiplier, units: gs.squad.roster.units.map(u => u.id),
+        fresh: gs.gridManager.grid.flat().filter(Boolean).every(r => !r.cleared),
+        width: gs.gridManager.grid[0].length, height: gs.gridManager.grid.length })`),
+      { stage: stage + 1, hp: 70, multiplier: 1.7, units: [await evaluate('survivorId')], fresh: true,
+        width: [3, 4, 4, 5][stage], height: [4, 4, 5, 5][stage] });
+      if (stage === 3) await capture('stage5-battle');
+    } else await waitFor("smash.scene.isActive('GameOverScene')");
+  }
+  assert.deepEqual(await evaluate('({ rooms: gs.stats.roomsCleared, boss: gs.stats.bossDefeated, bosses: gs.stats.bossesDefeated })'), { rooms: 5, boss: true, bosses: 5 });
+  // A death during a later stage also resets the stage gate and all run state.
+  await evaluate("smash.scene.getScene('GameOverScene').scene.start('GameScene'); undefined;");
+  await waitFor("smash.scene.isActive('GameScene')");
+  await evaluate(`(async () => {
+    window.gs = smash.scene.getScene('GameScene'); gs.progression.index = gs.stats.stageIndex = 2; gs.squad.roster.stageIndex = 2;
+    const { RoomGridManager } = await import('/src/systems/RoomGridManager.ts');
+    gs.gridManager = new RoomGridManager(gs.progression.current);
+    gs.handlePlayerDeath();
+  })()`);
   await waitFor("smash.scene.isActive('GameOverScene')");
-  assert.deepEqual(await evaluate('({ rooms: gs.stats.roomsCleared, boss: gs.stats.bossDefeated })'), { rooms: 1, boss: true });
+  await evaluate("smash.scene.getScene('GameOverScene').scene.start('GameScene'); undefined;");
+  await waitFor("smash.scene.isActive('GameScene')");
+  assert.deepEqual(await evaluate(`(() => { const scene = smash.scene.getScene('GameScene');
+    return { stage: scene.progression.index, bosses: scene.stats.bossesDefeated, units: scene.squad.roster.units.length,
+      minerals: scene.squad.roster.minerals, vouchers: scene.squad.roster.freeSummons }; })()`),
+    { stage: 0, bosses: 0, units: 2, minerals: 30, vouchers: 0 });
   assert.equal(errors.length, 0, JSON.stringify(errors));
-  console.log(JSON.stringify({ status: 'passed', viewport: '720x1280 touch', screenshotPath, screenshots,
-    checks: ['room reward', 'combat pause', 'summon', 'same/mixed recipes', 'failed recipe rollback', 'deployment sync', 'modal reopen', 'visibility pause', 'independent movement', 'piercing and recycled targets', 'chain hit uniqueness', 'run restart', 'boss victory counted once', 'no runtime exceptions'] }, null, 2));
+  console.log(JSON.stringify({ status: 'passed', viewport: '720x1280 touch', screenshotPath, screenshots, performance,
+    checks: ['room reward', 'combat pause', 'summon', 'same/mixed recipes', 'failed recipe rollback', 'deployment sync', 'modal reopen', 'visibility pause', 'independent movement', 'piercing and recycled targets', 'chain hit uniqueness', 'unit health and revival', 'vanguard aggro', 'support healing', 'required spawn retry', 'spawn stat reset', '800ms hazard warning', 'run restart', 'five stage transitions', 'state preservation', 'boss rewards counted once', 'final boss victory only', 'no runtime exceptions'] }, null, 2));
 } finally {
   socket?.close();
   browser.kill();

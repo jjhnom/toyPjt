@@ -1,4 +1,5 @@
 import { DroneArchetype, DroneSpec, EnemyArchetype, EnemySpec, RoomType } from '../types/game';
+import { UNIT_TYPES, UNIT_WEAPON_OVERRIDES } from './unitData';
 
 export const GAME_WIDTH = 720;
 export const GAME_HEIGHT = 1280;
@@ -15,8 +16,6 @@ export const ARENA_BOUNDS = {
   centerY: (170 + (GAME_HEIGHT - 190)) / 2
 };
 
-export const GRID_SIZE = 5; // 5x5 격자형 룸
-
 export const ROOM_TYPE_META: Record<
   RoomType,
   { label: string; badgeText: string; color: number; hex: string }
@@ -28,7 +27,7 @@ export const ROOM_TYPE_META: Record<
   BOSS: { label: '마왕의 성소', badgeText: '보스', color: 0xef4444, hex: '#ef4444' }
 };
 
-export const DRONE_SPECS: Record<DroneArchetype, DroneSpec> = {
+const LEGACY_DRONE_SPECS = {
   BASIC_LASER: {
     archetype: 'BASIC_LASER',
     name: '숲의 사수',
@@ -140,7 +139,13 @@ export const DRONE_SPECS: Record<DroneArchetype, DroneSpec> = {
     chainCount: 3,
     evolvesFrom: 'STUN_BOT'
   }
-};
+} satisfies Partial<Record<DroneArchetype, DroneSpec>>;
+
+export const DRONE_SPECS = Object.fromEntries(Object.values(UNIT_TYPES).map(unit => [unit.id, {
+  ...LEGACY_DRONE_SPECS[unit.weaponId as keyof typeof LEGACY_DRONE_SPECS],
+  ...UNIT_WEAPON_OVERRIDES[unit.id as keyof typeof UNIT_WEAPON_OVERRIDES],
+  archetype: unit.id, name: unit.name, tier: unit.tier
+}])) as Record<DroneArchetype, DroneSpec>;
 
 export const TIER2_ARCHETYPES: DroneArchetype[] = ['GATLING_BOT', 'ROCKET_BOT', 'STUN_BOT'];
 
@@ -151,6 +156,9 @@ export const TIER2_TO_TIER3_MAP: Partial<Record<DroneArchetype, DroneArchetype>>
 };
 
 export const ENEMY_SPECS: Record<EnemyArchetype, EnemySpec> = {
+  SPORE_SHOOTER: { archetype: 'SPORE_SHOOTER', name: '포자 사수', maxHp: 70, speed: 100, contactDamage: 10, radius: 16, color: 0xa3b864, scoreValue: 20, mineralValue: 8 },
+  EXPLODER: { archetype: 'EXPLODER', name: '잿불 폭탄', maxHp: 50, speed: 165, contactDamage: 18, radius: 16, color: 0xff9259, scoreValue: 22, mineralValue: 8 },
+  SUMMONER: { archetype: 'SUMMONER', name: '빙하 주술사', maxHp: 100, speed: 85, contactDamage: 12, radius: 19, color: 0x86cfef, scoreValue: 28, mineralValue: 10 },
   SWARMER: {
     archetype: 'SWARMER',
     name: '이끼 슬라임',

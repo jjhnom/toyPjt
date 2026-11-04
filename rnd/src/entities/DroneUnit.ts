@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
 import { unitTexture, unitAnimation } from '../ui/pixelCharacters';
 import { ARENA_BOUNDS, DRONE_SPECS } from '../config/gameData';
-import { UNIT_MOVEMENT } from '../config/squadData';
+import { UNIT_MOVEMENT, UNIT_REVIVE_DELAY_MS } from '../config/squadData';
+import { UNIT_TYPES } from '../config/unitData';
+import { HealthComponent } from '../components/HealthComponent';
 import { FireBulletFn, WeaponComponent } from '../components/WeaponComponent';
 import { DroneArchetype, DroneSpec } from '../types/game';
 
@@ -10,6 +12,10 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
   public archetype: DroneArchetype;
   public spec: DroneSpec;
   public weapon: WeaponComponent;
+  public readonly health: HealthComponent;
+  public lastHealAt = 0;
+  public star: 1 | 2 | 3;
+  public reviveAt = 0;
   private recoilTimerMs = 0;
   private readonly fallbackAngle: number;
 
@@ -17,13 +23,17 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     scene: Phaser.Scene,
     id: string,
     archetype: DroneArchetype,
-    fireCallback: FireBulletFn
+    fireCallback: FireBulletFn,
+    star: 1 | 2 | 3 = 1
   ) {
     const spec = DRONE_SPECS[archetype];
     const texKey = unitTexture(archetype);
 
     super(scene, 0, 0, texKey, 0);
     this.id = id;
+    this.star = star;
+    this.health = new HealthComponent(Math.round(UNIT_TYPES[archetype].maxHp * (1 + 0.5 * (star - 1))),
+      () => { this.reviveAt = this.scene.time.now + UNIT_REVIVE_DELAY_MS; this.setActive(false).setVisible(false); });
     this.fallbackAngle = Number(id.split('_')[1]) * 2.4;
     this.archetype = archetype;
     this.spec = spec;
@@ -65,6 +75,7 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     damageMultiplier: number,
     attackSpeedMultiplier: number
   ): void {
+    if (this.health.isDead) return;
     const movement = UNIT_MOVEMENT[this.archetype];
     let nearest: Phaser.GameObjects.Sprite | null = null;
     let nearestDistance = Number.POSITIVE_INFINITY;
@@ -102,7 +113,7 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
       this.x,
       this.y,
       enemies,
-      damageMultiplier,
+      damageMultiplier * (1 + 0.5 * (this.star - 1)),
       attackSpeedMultiplier
     );
 

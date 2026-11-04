@@ -4,7 +4,7 @@ import {
   ARENA_BOUNDS,
   GAME_HEIGHT,
   GAME_WIDTH,
-  GRID_SIZE,
+  ENEMY_SPECS,
   ROOM_TYPE_META,
 } from '../config/gameData';
 import { Bullet, BulletGroup } from '../entities/Bullet';
@@ -24,6 +24,11 @@ import {
 } from '../types/game';
 import { ROOM_REWARD, SQUAD_LIMITS } from '../config/squadData';
 import { VirtualJoystick } from '../ui/VirtualJoystick';
+import { STAGES, getStageScaling, SPAWN_INTERVAL_MS, STAGE_RECOVERY_RATIO } from '../config/stageData';
+import { StageProgression } from '../systems/StageProgression';
+import { EncounterHazards, HazardKind } from '../entities/EncounterHazards';
+
+interface SpawnRequest { archetype: EnemyArchetype; x: number; y: number; hp: number; damage: number; speed: number }
 
 interface DoorVisual {
   direction: DoorDirection;
@@ -69,8 +74,16 @@ export class GameScene extends Phaser.Scene {
   private backgroundPaused = false;
   private readonly chainHitLives = new Set<number>();
   private doorCooldownMs = 0;
+  private progression = new StageProgression();
+  private pendingSpawns: SpawnRequest[] = [];
+  private spawnTimerMs = 0;
+  private hazards!: EncounterHazards;
+  private nextBossPatternAt = 0;
+  private bossPatternNumber = 0;
 
   private stats: RunStats = {
+    stageIndex: 0,
+    bossesDefeated: 0,
     roomsCleared: 0,
     enemiesDefeated: 0,
     mineralsCollected: 30,
@@ -86,6 +99,8 @@ export class GameScene extends Phaser.Scene {
 
   public create(): void {
     this.stats = {
+      stageIndex: 0,
+      bossesDefeated: 0,
       roomsCleared: 0,
       enemiesDefeated: 0,
       mineralsCollected: 30,
@@ -101,6 +116,11 @@ export class GameScene extends Phaser.Scene {
     this.lightningClearAt = 0;
     this.physics.world.resume();
     this.doorCooldownMs = 0;
+    this.progression = new StageProgression();
+    this.pendingSpawns = [];
+    this.spawnTimerMs = 0;
+    this.nextBossPatternAt = 0;
+    this.bossPatternNumber = 0;
 
     // 물리 월드 경계를 아레나 내부로 설정
     this.physics.world.setBounds(
@@ -120,7 +140,15 @@ export class GameScene extends Phaser.Scene {
     // 오브젝트 풀링 그룹 초기화
     this.bullets = new BulletGroup(this);
     this.enemies = new EnemyGroup(this, (enemy: Enemy, damage: number) => {
-      if (this.runEnded || this.rewardModalOpen) return;
+      if (this.runEnded || this.rewardModalOpen || this.progression.state !== 'PLAYING') return;
+      if (enemy.targetUnitId) {
+        const target = this.squad.drones.find(drone => drone.id === enemy.targetUnitId);
+        if (target && !target.health.isDead) {
+          const damaged = target.health.takeDamage(damage, this.time.now, 650);
+          if (damaged && target.archetype === 'THORN_GUARD' && enemy.receiveDamage(Math.round(damage * 0.4), this.time.now)) this.handleEnemyKilled(enemy);
+        }
+        return;
+      }
       const hit = this.squad.receiveContactDamage(damage, this.time.now);
       if (hit) {
         this.particles.emitBurst(
@@ -135,6 +163,8 @@ export class GameScene extends Phaser.Scene {
     });
     this.damageTexts = new DamageTextGroup(this);
     this.particles = new EffectParticleGroup(this);
+    this.hazards = new EncounterHazards(this, (kind, x, y, radius, damage, sourceLife) =>
+      this.resolveHazard(kind, x, y, radius, damage, sourceLife));
 
     // 사방 문(Door) 및 다음 방 타입 뱃지 생성
     this.createDoors();
@@ -190,6 +220,7 @@ export class GameScene extends Phaser.Scene {
       if (this.runEnded) return;
       this.backgroundPaused = true;
       this.joystick.reset();
+      this.squad.movement.stop();
       this.input.enabled = false;
       this.scene.pause();
     };
@@ -213,6 +244,7 @@ export class GameScene extends Phaser.Scene {
 
     // 시작 룸 진입
     this.enterRoom(this.gridManager.getCurrentRoom(), null);
+    this.showStageBanner();
   }
 
   private createDoors(): void {
@@ -376,10 +408,11 @@ export class GameScene extends Phaser.Scene {
   private drawArenaForRoom(room: RoomNode): void {
     const g = this.arenaGraphics;
     g.clear();
-    g.fillStyle(0x151d25).fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    dungeonFloor(g, ARENA_BOUNDS.left, ARENA_BOUNDS.top, ARENA_BOUNDS.width, ARENA_BOUNDS.height);
+    const palette = this.progression.current.palette;
+    g.fillStyle(palette.background).fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    dungeonFloor(g, ARENA_BOUNDS.left, ARENA_BOUNDS.top, ARENA_BOUNDS.width, ARENA_BOUNDS.height, palette);
     // Thick stone walls and corner braziers frame the playable dungeon floor.
-    g.lineStyle(12, 0x47514b).strokeRect(ARENA_BOUNDS.left - 6, ARENA_BOUNDS.top - 6, ARENA_BOUNDS.width + 12, ARENA_BOUNDS.height + 12);
+    g.lineStyle(12, palette.wall).strokeRect(ARENA_BOUNDS.left - 6, ARENA_BOUNDS.top - 6, ARENA_BOUNDS.width + 12, ARENA_BOUNDS.height + 12);
     g.lineStyle(3, 0x829077).strokeRect(ARENA_BOUNDS.left - 12, ARENA_BOUNDS.top - 12, ARENA_BOUNDS.width + 24, ARENA_BOUNDS.height + 24);
     for (const x of [ARENA_BOUNDS.left - 25, ARENA_BOUNDS.right + 13]) {
       for (const y of [ARENA_BOUNDS.top + 28, ARENA_BOUNDS.bottom - 48]) {
@@ -400,15 +433,8 @@ export class GameScene extends Phaser.Scene {
     this.enteringTimerMs = 450;
     this.doorCooldownMs = 900;
 
-    // 잔여 투사체 및 적 비활성화
-    const activeBullets = this.bullets.getChildren();
-    for (let i = 0; i < activeBullets.length; i++) {
-      (activeBullets[i] as Bullet).deactivate();
-    }
-    const activeEnemies = this.enemies.getChildren();
-    for (let i = 0; i < activeEnemies.length; i++) {
-      (activeEnemies[i] as Enemy).deactivate();
-    }
+    this.clearEncounter();
+    this.squad.reviveFallen();
 
     this.drawArenaForRoom(room);
 
@@ -431,6 +457,35 @@ export class GameScene extends Phaser.Scene {
 
     this.updateDoorsVisual(room, false);
     this.refreshHud();
+  }
+
+  private clearEncounter(): void {
+    this.pendingSpawns.length = 0;
+    this.spawnTimerMs = 0;
+    this.currentWave = 0;
+    this.totalWavesInRoom = 0;
+    this.nextWaveTimerMs = 0;
+    this.nextBossPatternAt = 0;
+    this.bossPatternNumber = 0;
+    this.hazards.clear();
+    this.lightningGraphics.clear();
+    this.unitOverlayGraphics.clear();
+    this.lightningClearAt = 0;
+    this.chainHitLives.clear();
+    for (const group of [this.damageTexts, this.particles]) {
+      for (const child of group.getChildren()) {
+        (child as Phaser.GameObjects.Sprite).setActive(false).setVisible(false);
+      }
+    }
+    const activeBullets = this.bullets.getChildren();
+    for (let i = 0; i < activeBullets.length; i++) {
+      (activeBullets[i] as Bullet).deactivate();
+    }
+    const activeEnemies = this.enemies.getChildren();
+    for (let i = 0; i < activeEnemies.length; i++) {
+      (activeEnemies[i] as Enemy).deactivate();
+    }
+
   }
 
   private startRoomLogic(room: RoomNode): void {
@@ -475,20 +530,15 @@ export class GameScene extends Phaser.Scene {
 
   private spawnNextWave(room: RoomNode): void {
     this.currentWave += 1;
-    const depthScale = 1 + this.stats.roomsCleared * 0.14;
-
+    const stage = this.progression.current;
     if (room.type === 'BOSS') {
-      this.showBanner('황혼의 마왕이 깨어납니다!');
-      this.enemies.spawnEnemy(
-        'BOSS_CORE',
-        ARENA_BOUNDS.centerX,
-        ARENA_BOUNDS.top + 110,
-        depthScale
-      );
+      this.showBanner(`${stage.bossName}\n강한 공격은 원형 예고 후 발동합니다`);
+      this.queueEnemy('BOSS_CORE', ARENA_BOUNDS.centerX, ARENA_BOUNDS.top + 110);
       for (let i = 0; i < 4; i++) {
         const pos = this.getPerimeterSpawnPoint(i);
-        this.enemies.spawnEnemy('SWARMER', pos.x, pos.y, depthScale);
+        this.queueEnemy(stage.enemyPoolIds[i % stage.enemyPoolIds.length], pos.x, pos.y);
       }
+      this.nextBossPatternAt = this.time.now + 2400;
       this.refreshHud();
       return;
     }
@@ -496,19 +546,85 @@ export class GameScene extends Phaser.Scene {
     const baseCount = room.type === 'ELITE' ? 6 + this.currentWave * 2 : 5 + this.currentWave * 2;
     for (let i = 0; i < baseCount; i++) {
       const pos = this.getPerimeterSpawnPoint(i);
-      let arch: EnemyArchetype = 'SWARMER';
-      if (i % 4 === 0) arch = 'CHASER';
-      if (i % 6 === 5) arch = 'TANK';
-      this.enemies.spawnEnemy(arch, pos.x, pos.y, depthScale);
+      this.queueEnemy(stage.enemyPoolIds[i % stage.enemyPoolIds.length], pos.x, pos.y);
     }
 
     if (room.type === 'ELITE' && this.currentWave === this.totalWavesInRoom) {
       const pos = this.getPerimeterSpawnPoint(99);
-      this.enemies.spawnEnemy('ELITE_BRUTE', pos.x, pos.y, depthScale);
+      this.queueEnemy('ELITE_BRUTE', pos.x, pos.y);
     }
 
-    this.enemies.updateTargetForAll(this.squad.leader.x, this.squad.leader.y);
     this.refreshHud();
+  }
+
+  private queueEnemy(archetype: EnemyArchetype, x: number, y: number): void {
+    const scaling = getStageScaling(this.progression.index);
+    const room = this.gridManager.getCurrentRoom();
+    const local = (1 + 0.4 * this.gridManager.getDepth(room)) * (1 + 0.05 * Math.max(0, this.currentWave - 1));
+    const boss = archetype === 'BOSS_CORE';
+    this.pendingSpawns.push({ archetype, x, y,
+      hp: (boss ? scaling.bossHpMult : scaling.enemyHpMult) * local,
+      damage: boss ? scaling.bossDamageMult : scaling.enemyDamageMult,
+      speed: scaling.enemySpeedMult });
+  }
+
+  private processSpawns(delta: number): void {
+    this.spawnTimerMs -= delta;
+    if (!this.pendingSpawns.length || this.spawnTimerMs > 0) return;
+    const scaling = getStageScaling(this.progression.index);
+    if (this.enemies.countActive(true) >= scaling.maxActiveEnemies) return;
+    const spawn = this.pendingSpawns[0];
+    const enemy = this.enemies.spawnEnemy(spawn.archetype, spawn.x, spawn.y, spawn.hp, spawn.damage, spawn.speed);
+    if (!enemy) return; // Required spawns remain queued when the pool is exhausted.
+    enemy.onSpecial = (source, kind) => this.onEnemySpecial(source, kind);
+    this.pendingSpawns.shift();
+    this.spawnTimerMs = SPAWN_INTERVAL_MS * scaling.spawnIntervalMult;
+  }
+
+  private onEnemySpecial(enemy: Enemy, kind: 'SHOT' | 'EXPLODE' | 'SUMMON'): void {
+    if (this.runEnded || this.rewardModalOpen || this.progression.state !== 'PLAYING') return;
+    const target = this.squad.drones.find(drone => drone.id === enemy.targetUnitId);
+    this.hazards.add(kind, kind === 'EXPLODE' || kind === 'SUMMON' ? enemy.x : target?.x ?? this.squad.leader.x,
+      kind === 'EXPLODE' || kind === 'SUMMON' ? enemy.y : target?.y ?? this.squad.leader.y,
+      enemy.spec.contactDamage, enemy.lifeId);
+  }
+
+  private resolveHazard(kind: HazardKind, x: number, y: number, radius: number, damage: number, sourceLife: number): void {
+    if (this.runEnded || this.rewardModalOpen || this.progression.state !== 'PLAYING') return;
+    if (kind === 'CHARGE') {
+      const boss = (this.enemies.getChildren() as Enemy[]).find(enemy => enemy.active && enemy.lifeId === sourceLife);
+      boss?.beginCharge(x, y, this.time.now);
+      return;
+    }
+    if (kind === 'SUMMON') {
+      const source = (this.enemies.getChildren() as Enemy[]).find(enemy => enemy.active && enemy.lifeId === sourceLife);
+      if (!source || this.pendingSpawns.length >= 12) return;
+      this.queueEnemy('SWARMER', x - 30, y);
+      this.queueEnemy('SWARMER', x + 30, y);
+      return;
+    }
+    if ((this.squad.leader.x - x) ** 2 + (this.squad.leader.y - y) ** 2 < radius ** 2) {
+      this.squad.receiveContactDamage(damage, this.time.now);
+      if (this.runEnded) return;
+      if (kind === 'FROST') this.squad.movement.applySlow(0.65, 800, this.time.now);
+    }
+    for (const drone of this.squad.drones) {
+      if (!drone.health.isDead && (drone.x - x) ** 2 + (drone.y - y) ** 2 < radius ** 2)
+        drone.health.takeDamage(damage, this.time.now, 650);
+    }
+  }
+
+  private updateBossPatterns(time: number): void {
+    const boss = (this.enemies.getChildren() as Enemy[]).find(enemy => enemy.active && enemy.spec.archetype === 'BOSS_CORE');
+    if (!boss || time < this.nextBossPatternAt) return;
+    const stage = this.progression.current;
+    const phase = Math.min(stage.bossPhases, 1 + Math.floor((1 - boss.health.ratio) * stage.bossPhases));
+    const pattern = stage.bossPatterns[this.bossPatternNumber++ % stage.bossPatterns.length];
+    this.nextBossPatternAt = time + (boss.health.ratio <= 0.5 ? 2100 : 3000) / (1 + 0.2 * (phase - 1));
+    this.hazards.add(pattern, this.squad.leader.x, this.squad.leader.y, boss.spec.contactDamage, boss.lifeId);
+    if (phase > 1) this.hazards.add('METEOR', Math.max(140, this.squad.leader.x - 140),
+      Math.min(ARENA_BOUNDS.bottom - 90, this.squad.leader.y + 100), boss.spec.contactDamage, boss.lifeId);
+    this.hudWaveText.setText(`${stage.bossName} · PHASE ${phase}/${stage.bossPhases}`);
   }
 
   private getPerimeterSpawnPoint(seedIndex: number): { x: number; y: number } {
@@ -625,6 +741,7 @@ export class GameScene extends Phaser.Scene {
 
     if (killed) {
       this.handleEnemyKilled(enemy);
+      if (this.runEnded || this.progression.state !== 'PLAYING') return;
     }
 
     // 2. 범위 폭발(AoE) 처리 (로켓 봇 / 블랙홀 유도탄)
@@ -650,6 +767,7 @@ export class GameScene extends Phaser.Scene {
           this.damageTexts.spawnText(other.x, other.y - 14, splashDmg, '#fdba74');
           if (splashKilled) {
             this.handleEnemyKilled(other);
+            if (this.runEnded || this.progression.state !== 'PLAYING') return;
           }
         }
       }
@@ -720,17 +838,21 @@ export class GameScene extends Phaser.Scene {
       this.damageTexts.spawnText(nearest.x, nearest.y - 16, chainDamage, '#67e8f9');
       if (killed) {
         this.handleEnemyKilled(nearest);
+        if (this.runEnded || this.progression.state !== 'PLAYING') return;
       }
     }
   }
 
   private handleEnemyKilled(enemy: Enemy): void {
+    if (this.runEnded || this.rewardModalOpen || this.progression.state !== 'PLAYING') return;
     this.stats.enemiesDefeated += 1;
-    this.squad.roster.minerals += enemy.spec.mineralValue;
+    this.squad.roster.minerals += Math.round(enemy.spec.mineralValue * getStageScaling(this.progression.index).rewardMult);
     this.particles.emitBurst(enemy.x, enemy.y, enemy.spec.color, 8, 190);
     soundManager.playExplosion();
-
-
+    if (enemy.spec.archetype === 'BOSS_CORE') {
+      this.finishRoom(this.gridManager.getCurrentRoom());
+      return;
+    }
     this.refreshHud();
   }
 
@@ -748,6 +870,10 @@ export class GameScene extends Phaser.Scene {
   private handlePlayerDeath(): void {
     if (this.runEnded) return;
     this.runEnded = true;
+    this.joystick.reset();
+    (this.squad.leader.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
+    this.pendingSpawns.length = 0;
+    this.hazards.clear();
     this.refreshHud();
     soundManager.playExplosion();
     this.particles.emitShockwave(this.squad.leader.x, this.squad.leader.y, 140, 0xef4444);
@@ -767,7 +893,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private openCombatRewardModal(room: RoomNode): void {
-    const reward = room.type === 'ELITE' ? ROOM_REWARD.elite : ROOM_REWARD.combat;
+    const reward = Math.round((room.type === 'ELITE' ? ROOM_REWARD.elite : ROOM_REWARD.combat)
+      * getStageScaling(this.progression.index).rewardMult);
     this.squad.roster.minerals += reward;
     this.openSquadModal(`정화 보상 +${reward} ◆ · 소환과 조합으로 분대를 구성하세요`);
   }
@@ -776,7 +903,7 @@ export class GameScene extends Phaser.Scene {
     this.openSquadModal('여행자의 야영지 · 지정 소환 / 조합 / 출전 관리');
   }
 
-  private openSquadModal(message = '소환 · 조합 · 출전 관리'): void {
+  private openSquadModal(message = '소환 · 조합 · 출전 관리', stageClear = false): void {
     if (this.rewardModalOpen || this.runEnded) return;
     this.rewardModalOpen = true;
     this.joystick.reset();
@@ -785,8 +912,12 @@ export class GameScene extends Phaser.Scene {
     this.scene.launch('SquadScene', {
       roster: this.squad.roster,
       message,
+      closeLabel: stageClear ? `다음 스테이지로 · ${this.progression.next?.name}` : undefined,
+      stageSummary: stageClear ? `STAGE ${this.progression.index + 1} CLEAR → ${this.progression.next?.name}` : undefined,
       onClose: () => {
+        if (this.runEnded || !this.rewardModalOpen) return;
         this.squad.syncRoster();
+        if (stageClear) this.advanceStage();
         this.rewardModalOpen = false;
         this.input.enabled = !this.backgroundPaused;
         this.refreshHud();
@@ -794,6 +925,53 @@ export class GameScene extends Phaser.Scene {
       }
     });
     this.scene.pause();
+  }
+
+  private finishRoom(room: RoomNode): void {
+    if (room.cleared || this.runEnded || this.progression.state !== 'PLAYING') return;
+    room.cleared = true;
+    this.stats.roomsCleared++;
+    soundManager.playPowerup();
+    if (room.type !== 'BOSS') {
+      this.setRoomClearedState(room, true);
+      return;
+    }
+    const result = this.progression.clearBoss();
+    if (!result) return;
+    this.clearEncounter();
+    this.roomState = 'CLEARED';
+    this.updateDoorsVisual(room, true);
+    this.stats.bossesDefeated = this.progression.bossesDefeated;
+    this.squad.roster.minerals += result.minerals;
+    this.squad.roster.freeSummons += result.freeSummons;
+    if (result.victory) {
+      this.runEnded = true;
+      this.stats.bossDefeated = true;
+      this.refreshHud();
+      this.scene.start('GameOverScene', { victory: true, stats: this.stats, droneSummary: this.getDroneSummaryList() });
+      return;
+    }
+    this.openSquadModal(`보상 +${result.minerals} ◆ · T1 무료 소환권 +1 · 다음 진입 시 HP 40% 회복`, true);
+  }
+
+  private advanceStage(): void {
+    if (this.runEnded || !this.progression.beginTransition()) return;
+    this.clearEncounter();
+    this.joystick.reset();
+    this.squad.movement.clearModifiers();
+    this.squad.health.heal(Math.round(this.squad.health.maxHp * STAGE_RECOVERY_RATIO));
+    this.stats.stageIndex = this.progression.index;
+    this.squad.roster.stageIndex = this.progression.index;
+    this.gridManager = new RoomGridManager(this.progression.current);
+    this.progression.finishTransition();
+    this.enterRoom(this.gridManager.getCurrentRoom(), null);
+    this.showStageBanner();
+  }
+
+  private showStageBanner(): void {
+    const stage = this.progression.current;
+    const newEnemies = stage.newEnemyIds.map(id => ENEMY_SPECS[id].name).join(' · ');
+    this.showBanner(`STAGE ${stage.index + 1} — ${stage.name}${newEnemies ? `\n새로운 적: ${newEnemies}` : ''}`);
   }
 
   private showBanner(text: string): void {
@@ -814,7 +992,7 @@ export class GameScene extends Phaser.Scene {
     const meta = ROOM_TYPE_META[room.type];
 
     this.hudRoomText.setText(
-      `회랑 (${room.gridX + 1},${room.gridY + 1}) • ${meta.label}`
+      `S${this.progression.index + 1}/${STAGES.length} ${this.progression.current.name} · ${meta.badgeText}`
     );
 
     if (this.roomState === 'LOCKED_WAVES') {
@@ -859,8 +1037,8 @@ export class GameScene extends Phaser.Scene {
     const startX = GAME_WIDTH - 130;
     const startY = 14;
 
-    for (let y = 0; y < GRID_SIZE; y++) {
-      for (let x = 0; x < GRID_SIZE; x++) {
+    for (let y = 0; y < this.progression.current.gridHeight; y++) {
+      for (let x = 0; x < this.progression.current.gridWidth; x++) {
         const node = this.gridManager.grid[y][x];
         if (!node) continue;
         const rx = startX + x * (cellSize + gap);
@@ -888,7 +1066,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   public override update(time: number, delta: number): void {
-    if (this.rewardModalOpen || this.runEnded) return;
+    if (this.rewardModalOpen || this.runEnded || this.backgroundPaused || this.progression.state !== 'PLAYING') return;
 
     this.hudFpsText.setText(`FPS: ${Math.round(this.game.loop.actualFps)}`);
 
@@ -915,7 +1093,15 @@ export class GameScene extends Phaser.Scene {
     );
 
     // 적군 추적 타겟 좌표를 플레이어 리더 위치로 동기화
-    this.enemies.updateTargetForAll(this.squad.leader.x, this.squad.leader.y);
+    for (const child of this.enemies.getChildren()) {
+      const enemy = child as Enemy;
+      if (!enemy.active) continue;
+      const target = this.squad.findEnemyTarget(enemy.x, enemy.y);
+      enemy.targetUnitId = target?.id ?? null;
+      enemy.setTargetPosition(target?.x ?? this.squad.leader.x, target?.y ?? this.squad.leader.y);
+    }
+    this.hazards.update(delta);
+    if (this.runEnded) return;
 
     // 적군 체력바 오버레이 렌더링
     this.drawUnitOverlays();
@@ -929,31 +1115,20 @@ export class GameScene extends Phaser.Scene {
         this.startRoomLogic(room);
       }
     } else if (this.roomState === 'LOCKED_WAVES') {
+      this.processSpawns(delta);
+      this.updateBossPatterns(time);
       const activeEnemies = this.enemies.countActive(true);
 
       if (this.currentWave < this.totalWavesInRoom) {
-        if (activeEnemies === 0) {
+        if (activeEnemies === 0 && this.pendingSpawns.length === 0) {
           this.nextWaveTimerMs -= delta;
           if (this.nextWaveTimerMs <= 0) {
             this.spawnNextWave(room);
             this.nextWaveTimerMs = 1100;
           }
         }
-      } else if (activeEnemies === 0 && !room.cleared) {
-        // 모든 웨이브 적 처치 완료 -> 룸 클리어!
-        room.cleared = true;
-        this.stats.roomsCleared += 1;
-        soundManager.playPowerup();
-        if (room.type === 'BOSS') {
-          this.runEnded = true;
-          this.stats.bossDefeated = true;
-          this.refreshHud();
-          this.scene.start('GameOverScene', {
-            victory: true, stats: this.stats, droneSummary: this.getDroneSummaryList()
-          });
-          return;
-        }
-        this.setRoomClearedState(room, true);
+      } else if (activeEnemies === 0 && this.pendingSpawns.length === 0 && !room.cleared) {
+        this.finishRoom(room);
       }
     } else if (this.roomState === 'CLEARED' && this.doorCooldownMs <= 0) {
       this.checkDoorTransition();
@@ -962,6 +1137,11 @@ export class GameScene extends Phaser.Scene {
 
   private drawUnitOverlays(): void {
     this.unitOverlayGraphics.clear();
+    for (const drone of this.squad.drones) {
+      if (drone.health.isDead) continue;
+      this.unitOverlayGraphics.fillStyle(0x17252b).fillRect(drone.x - 18, drone.y - 30, 36, 4);
+      this.unitOverlayGraphics.fillStyle(0x8cbd78).fillRect(drone.x - 18, drone.y - 30, 36 * drone.health.ratio, 4);
+    }
 
     // 적군 머리 위 체력바 (피격된 적 또는 정예/보스 상시 표시)
     const enemyChildren = this.enemies.getChildren();
@@ -992,6 +1172,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private checkDoorTransition(): void {
+    if (this.progression.state !== 'PLAYING' || this.runEnded || this.rewardModalOpen) return;
     const px = this.squad.leader.x;
     const py = this.squad.leader.y;
 

@@ -4,8 +4,10 @@ import { ARENA_BOUNDS, ENEMY_SPECS } from '../config/gameData';
 import { HealthComponent } from '../components/HealthComponent';
 import { MovementComponent } from '../components/MovementComponent';
 import { EnemyArchetype, EnemySpec } from '../types/game';
+import { ENEMY_POOL_SIZE } from '../config/stageData';
 
 export type EnemyAttackCallback = (enemy: Enemy, damage: number) => void;
+export type EnemySpecialCallback = (enemy: Enemy, kind: 'SHOT' | 'EXPLODE' | 'SUMMON') => void;
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private static nextLifeId = 0;
@@ -23,6 +25,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private dashUntil = 0;
   private nextDashAt = 0;
   private onAttackPlayer?: EnemyAttackCallback;
+  public onSpecial?: EnemySpecialCallback;
+  public targetUnitId: string | null = null;
+  private nextSpecialAt = 0;
+  private chargeAngle = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, enemyTexture('SWARMER'), 0);
@@ -35,10 +41,13 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     x: number,
     y: number,
     hpMultiplier = 1,
-    onAttackPlayer?: EnemyAttackCallback
+    onAttackPlayer?: EnemyAttackCallback,
+    damageMultiplier = 1,
+    speedMultiplier = 1
   ): void {
     this.lifeId = ++Enemy.nextLifeId;
-    this.spec = ENEMY_SPECS[archetype];
+    const base = ENEMY_SPECS[archetype];
+    this.spec = { ...base, speed: base.speed * speedMultiplier, contactDamage: Math.round(base.contactDamage * damageMultiplier) };
     this.onAttackPlayer = onAttackPlayer;
     this.enableBody(true, x, y, true, true);
     this.setPosition(x, y);
@@ -83,11 +92,20 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.attackAnimUntil = 0;
     this.dashUntil = 0;
     this.nextDashAt = this.scene.time.now + Phaser.Math.Between(1800, 3200);
+    this.nextSpecialAt = this.scene.time.now + 1600;
+    this.targetUnitId = null;
+    this.chargeAngle = 0;
+    arcadeBody.setVelocity(0, 0);
   }
 
   public setTargetPosition(x: number, y: number): void {
     this.targetX = x;
     this.targetY = y;
+  }
+
+  public beginCharge(x: number, y: number, time: number): void {
+    this.chargeAngle = Math.atan2(y - this.y, x - this.x);
+    this.dashUntil = time + 600;
   }
 
   public receiveDamage(
@@ -158,18 +176,33 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     // 러셔/정예/보스 돌진 가속 패턴
     const canDash =
       this.spec.archetype === 'CHASER' ||
-      this.spec.archetype === 'ELITE_BRUTE' ||
-      this.spec.archetype === 'BOSS_CORE';
+      this.spec.archetype === 'ELITE_BRUTE';
     if (canDash && time >= this.nextDashAt && dist < 340) {
       this.dashUntil = time + 380;
       this.nextDashAt = time + Phaser.Math.Between(2400, 3800);
     }
 
+    const chargingBoss = this.spec.archetype === 'BOSS_CORE' && time < this.dashUntil;
     const speedMultiplier = time < this.dashUntil ? 1.75 : 1.0;
     this.movement.baseSpeed = this.spec.speed * speedMultiplier;
-    this.movement.moveAlongAngle(angle, time);
+    const ranged = this.spec.archetype === 'SPORE_SHOOTER' || this.spec.archetype === 'SUMMONER';
+    if (ranged && dist < 240) this.movement.stop();
+    else this.movement.moveAlongAngle(chargingBoss ? this.chargeAngle : angle, time);
     this.movement.update(time, delta);
     this.setFlipX(dx < 0);
+
+    if (time >= this.nextSpecialAt && this.onSpecial) {
+      if (this.spec.archetype === 'SPORE_SHOOTER' && dist < 450) {
+        this.nextSpecialAt = time + 2200;
+        this.onSpecial(this, 'SHOT');
+      } else if (this.spec.archetype === 'EXPLODER' && dist < 140) {
+        this.nextSpecialAt = Number.POSITIVE_INFINITY;
+        this.onSpecial(this, 'EXPLODE');
+      } else if (this.spec.archetype === 'SUMMONER') {
+        this.nextSpecialAt = time + 6000;
+        this.onSpecial(this, 'SUMMON');
+      }
+    }
 
     // 근접 공격 사거리 진입 시 능동 공격 판정 및 물어뜯기 모션
     const attackRange = this.spec.radius + 28;
@@ -189,7 +222,7 @@ export class EnemyGroup extends Phaser.Physics.Arcade.Group {
   constructor(scene: Phaser.Scene, onAttackPlayer?: EnemyAttackCallback) {
     super(scene.physics.world, scene, {
       classType: Enemy,
-      maxSize: 80,
+      maxSize: ENEMY_POOL_SIZE,
       runChildUpdate: true
     });
     this.onAttackPlayer = onAttackPlayer;
@@ -200,11 +233,13 @@ export class EnemyGroup extends Phaser.Physics.Arcade.Group {
     archetype: EnemyArchetype,
     x: number,
     y: number,
-    hpMultiplier = 1
+    hpMultiplier = 1,
+    damageMultiplier = 1,
+    speedMultiplier = 1
   ): Enemy | null {
     const enemy = this.get(x, y, enemyTexture('SWARMER')) as Enemy | null;
     if (!enemy) return null;
-    enemy.spawn(archetype, x, y, hpMultiplier, this.onAttackPlayer);
+    enemy.spawn(archetype, x, y, hpMultiplier, this.onAttackPlayer, damageMultiplier, speedMultiplier);
     return enemy;
   }
 

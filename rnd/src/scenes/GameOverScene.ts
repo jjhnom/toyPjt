@@ -25,8 +25,8 @@ export class GameOverScene extends Phaser.Scene {
     const accentColor = data.victory ? 0xb8ab6c : 0xa46957;
     const headerTitle = data.victory ? '회랑에 빛이 돌아왔다' : '아직 끝나지 않은 이야기';
     const subTitle = data.victory
-      ? '황혼의 마왕를 파괴하고 성소을 완전히 제압했습니다!'
-      : '소환사의 생명력를 모두 소진하여 작전이 종료되었습니다.';
+      ? '최종 보스를 물리치고 모든 스테이지를 정화했습니다!'
+      : '소환사의 생명력이 모두 소진되어 원정이 종료되었습니다.';
 
     this.add
       .text(cx, 200, headerTitle, {
@@ -55,8 +55,8 @@ export class GameOverScene extends Phaser.Scene {
       ['정화한 회랑', `${s.roomsCleared} 개`],
       ['물리친 몬스터', `${s.enemiesDefeated} 기`],
       ['남은 마력석', `${s.mineralsCollected} ◆`],
-      ['최종 화력 증폭률', `${Math.round(s.damageMultiplier * 100)}%`],
-      ['최종 연사 속도 배율', `${Math.round(s.attackSpeedMultiplier * 100)}%`],
+      ['도달 스테이지', `${s.stageIndex + 1}`],
+      ['토벌한 보스', `${s.bossesDefeated} 기`],
       ['마왕 토벌 여부', s.bossDefeated ? '성공 (CLEAR)' : '미달성']
     ];
 

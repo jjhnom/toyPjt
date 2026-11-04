@@ -12,7 +12,7 @@
 - **Scene Flow:**
   - `BootScene`: 에셋 사전 로딩 및 텍스처 아틀라스 생성.
   - `MenuScene`: 타이틀, 사운드 설정, 시작 버튼.
-  - `GameScene`: 격자 룸 인스턴스, 본체/소환 유닛 분대, 적 웨이브, 전투 루프 관리.
+  - `GameScene`: `StageProgression` 기반 스테이지 전환, 격자 룸 인스턴스, 본체/소환 유닛 분대, 적 웨이브, 전투 루프 관리.
   - `SquadScene`: 클리어 후 지정 소환, 레시피 조합, 보유/출전 관리 UI. `RewardScene`은 기존 보상 UI이며 현재 전투 보상 흐름에서는 사용하지 않는다.
   - `GameOverScene`: 통계, 획득 재화, 재도전 화면.
 - **Entity Component Structure:**
@@ -39,11 +39,13 @@
 - 공통 개발 규칙은 이 문서, 게임 메커니즘은 [smash_roguelike_skill.md](skills/smash_roguelike_skill.md)에 작성한다. 같은 규칙을 양쪽에 복제하지 않는다.
 - 실제 구현 위치: `src/types/game.ts`(계약), `src/config/gameData.ts`(밸런스), `src/systems/RoomGridManager.ts`(격자), `src/scenes/`(화면 흐름), `src/entities/`(전투 객체), `src/components/`(공통 기능), `src/ui/VirtualJoystick.ts`(입력).
 - 무기 사양은 `gameData.ts`, 소환 비용·조합표·보유/출전 한도·역할별 이동은 `src/config/squadData.ts`에서 관리한다. 변경 요청과 무관한 리팩터링·패키지 업그레이드·플랫폼 추가를 함께 수행하지 않는다.
+- 유닛 도감·속성·역할은 `src/config/unitData.ts`, 스테이지 구성·난이도·전환 보상은 `src/config/stageData.ts`에서 관리한다.
 - 문서의 목표 동작과 현재 구현이 다르면 이를 구분해 보고한다. 문서 수정만으로 해당 기능을 구현했다고 기록하지 않는다.
 - 문서는 UTF-8로 저장한다. PowerShell에서 한글이 깨지면 `Get-Content -Encoding utf8`로 원문을 확인한 뒤 수정한다.
 
 ## 6. Scene Lifecycle & Run State
 - 룸 이동에는 체력·보유 유닛·배치·강화·재화를 유지하고 새 게임에는 런 상태를 초기화한다. 설정 같은 영구 데이터와 런 데이터를 분리한다.
+- 런 상태는 스테이지 번호·보스 토벌 수·무료 소환권을 포함한다. 스테이지 전환 시 런 상태를 유지하고 격자·룸 방문/보상 기록·적·탄환·공격 예고/장판·예약 스폰·전투 효과를 정리한다.
 - 씬 종료/재시작 시 직접 등록한 외부 이벤트, DOM 리스너, 사운드 및 참조를 해제한다. 지연 콜백이 이전 방이나 종료된 런을 변경하지 못하게 한다.
 - 보상 UI, 백그라운드 전환, 게임 오버 중에는 전투·스폰·피해·입력이 진행되지 않아야 한다. 물리 일시정지만으로 타이머와 다른 씬의 업데이트까지 멈춘다고 가정하지 않는다.
 - 입력 취소·포커스 상실·모달 진입 시 조이스틱과 이동 속도를 초기화한다. 여러 일시정지 원인이 겹치면 하나가 해제되어도 나머지 원인이 있는 동안 전투를 재개하지 않는다.

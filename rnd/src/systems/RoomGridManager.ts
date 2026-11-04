@@ -1,96 +1,80 @@
-import { GRID_SIZE } from '../config/gameData';
-import { DoorDirection, RoomNode } from '../types/game';
+import { STAGES, getStageScaling } from '../config/stageData';
+import type { DoorDirection, RoomNode, StageDef } from '../types/game';
+
+const OFFSETS: Record<DoorDirection, [number, number]> = { top: [0, -1], bottom: [0, 1], left: [-1, 0], right: [1, 0] };
 
 export class RoomGridManager {
   public grid: (RoomNode | null)[][] = [];
-  public currentX = Math.floor(GRID_SIZE / 2);
-  public currentY = Math.floor(GRID_SIZE / 2);
+  public currentX = 0;
+  public currentY = 0;
+  private distances = new Map<string, number>();
+  private maxDistance = 1;
 
-  constructor() {
-    this.generateGrid();
-  }
+  constructor(public stage: StageDef = STAGES[0]) { this.generateGrid(); }
 
   public generateGrid(): void {
-    this.grid = [];
-    for (let y = 0; y < GRID_SIZE; y++) {
-      const row: (RoomNode | null)[] = [];
-      for (let x = 0; x < GRID_SIZE; x++) {
-        row.push({
-          id: `room_${x}_${y}`,
-          gridX: x,
-          gridY: y,
-          type: 'COMBAT',
-          doors: {
-            top: y > 0,
-            bottom: y < GRID_SIZE - 1,
-            left: x > 0,
-            right: x < GRID_SIZE - 1
-          },
-          cleared: false,
-          visited: false,
-          waveCount: 2
-        });
+    const { gridWidth: width, gridHeight: height, roomCount } = this.stage;
+    if (roomCount < 4 || roomCount > width * height) throw new Error('Invalid stage grid dimensions');
+    this.grid = Array.from({ length: height }, () => Array<RoomNode | null>(width).fill(null));
+    this.currentX = Math.floor(width / 2);
+    this.currentY = Math.floor(height / 2);
+    const nodes: RoomNode[] = [];
+    const add = (x: number, y: number) => {
+      const node: RoomNode = { id: `stage_${this.stage.index}_room_${x}_${y}`, gridX: x, gridY: y, type: 'COMBAT',
+        doors: { top: false, bottom: false, left: false, right: false }, cleared: false, visited: false, waveCount: 2 };
+      this.grid[y][x] = node;
+      nodes.push(node);
+    };
+    add(this.currentX, this.currentY);
+    while (nodes.length < roomCount) {
+      const frontier: [number, number][] = [];
+      for (const node of nodes) for (const [dx, dy] of Object.values(OFFSETS)) {
+        const x = node.gridX + dx, y = node.gridY + dy;
+        if (x >= 0 && x < width && y >= 0 && y < height && !this.grid[y][x]) frontier.push([x, y]);
       }
-      this.grid.push(row);
+      const [x, y] = frontier[Math.floor(Math.random() * frontier.length)];
+      add(x, y);
     }
-
-    const startX = Math.floor(GRID_SIZE / 2);
-    const startY = Math.floor(GRID_SIZE / 2);
-    this.currentX = startX;
-    this.currentY = startY;
-
-    // 특수 방 배치 (정예, 상점, 회복, 보스)
-    for (let y = 0; y < GRID_SIZE; y++) {
-      for (let x = 0; x < GRID_SIZE; x++) {
-        const node = this.grid[y][x]!;
-        const manhattan = Math.abs(x - startX) + Math.abs(y - startY);
-
-        if (x === startX && y === startY) {
-          node.type = 'COMBAT';
-          node.waveCount = 1;
-          node.visited = true;
-        } else if (x === GRID_SIZE - 1 && y === 0) {
-          node.type = 'BOSS';
-          node.waveCount = 1;
-        } else if (x === 0 && y === GRID_SIZE - 1) {
-          node.type = 'BOSS';
-          node.waveCount = 1;
-        } else if ((x === startX && y === startY - 1) || (x === 1 && y === 3)) {
-          node.type = 'ELITE';
-          node.waveCount = 2;
-        } else if ((x === startX + 1 && y === startY) || (x === 1 && y === 1)) {
-          node.type = 'SHOP';
-          node.waveCount = 0;
-        } else if ((x === startX - 1 && y === startY) || (x === 3 && y === 3)) {
-          node.type = 'RECOVERY';
-          node.waveCount = 0;
-        } else if (manhattan >= 3) {
-          node.type = (x + y) % 2 === 0 ? 'ELITE' : 'COMBAT';
-          node.waveCount = node.type === 'ELITE' ? 3 : 2;
-        } else {
-          node.type = 'COMBAT';
-          node.waveCount = 2;
-        }
+    for (const node of nodes) for (const [direction, [dx, dy]] of Object.entries(OFFSETS)) {
+      node.doors[direction as DoorDirection] = !!this.grid[node.gridY + dy]?.[node.gridX + dx];
+    }
+    this.distances.clear();
+    const start = nodes[0];
+    start.visited = true;
+    this.distances.set(start.id, 0);
+    const queue = [start];
+    for (let i = 0; i < queue.length; i++) {
+      const node = queue[i];
+      for (const [dx, dy] of Object.values(OFFSETS)) {
+        const neighbor = this.grid[node.gridY + dy]?.[node.gridX + dx];
+        if (!neighbor || this.distances.has(neighbor.id)) continue;
+        this.distances.set(neighbor.id, this.distances.get(node.id)! + 1);
+        queue.push(neighbor);
       }
     }
+    const boss = queue[queue.length - 1];
+    this.maxDistance = Math.max(1, this.distances.get(boss.id)!);
+    boss.type = 'BOSS';
+    const special = nodes.filter(node => node !== start && node !== boss);
+    for (let i = special.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [special[i], special[j]] = [special[j], special[i]];
+    }
+    special[0].type = 'SHOP';
+    special[1].type = 'RECOVERY';
+    special.slice(2, 2 + this.stage.eliteCount).forEach(node => { node.type = 'ELITE'; });
+    const bonus = getStageScaling(this.stage.index).waveCountBonus;
+    for (const node of nodes) node.waveCount = node.type === 'SHOP' || node.type === 'RECOVERY' ? 0
+      : node.type === 'BOSS' ? 1 : (node === start ? 1 : 2) + bonus;
   }
 
-  public getCurrentRoom(): RoomNode {
-    return this.grid[this.currentY][this.currentX]!;
-  }
+  public getCurrentRoom(): RoomNode { return this.grid[this.currentY][this.currentX]!; }
+  public getDepth(room: RoomNode): number { return (this.distances.get(room.id) ?? 0) / this.maxDistance; }
 
   public getAdjacentRoom(dir: DoorDirection): RoomNode | null {
-    let nx = this.currentX;
-    let ny = this.currentY;
-    if (dir === 'top') ny -= 1;
-    if (dir === 'bottom') ny += 1;
-    if (dir === 'left') nx -= 1;
-    if (dir === 'right') nx += 1;
-
-    if (nx < 0 || nx >= GRID_SIZE || ny < 0 || ny >= GRID_SIZE) {
-      return null;
-    }
-    return this.grid[ny][nx];
+    if (!this.getCurrentRoom().doors[dir]) return null;
+    const [dx, dy] = OFFSETS[dir];
+    return this.grid[this.currentY + dy]?.[this.currentX + dx] ?? null;
   }
 
   public moveTo(dir: DoorDirection): RoomNode | null {

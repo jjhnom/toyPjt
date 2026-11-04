@@ -70,6 +70,7 @@ test('mixed-type combination consumes exactly the matching ingredients', () => {
 
 test('paid recipe failure preserves ingredients; success deducts exact cost', () => {
   const roster = new SquadRoster(80);
+  roster.stageIndex = 2;
   roster.summon('ROCKET_BOT');
   roster.summon('STUN_BOT');
   const before = snapshot(roster);
@@ -109,7 +110,10 @@ test('every configured recipe is attainable, consumes distinct IDs, and produces
     const roster = new SquadRoster(10000);
     roster.units = [];
     for (const item of recipe.ingredients) {
-      for (let i = 0; i < item.count; i++) assert.equal(roster.summon(item.unitTypeId), true);
+      const type = Object.values(UNIT_TYPES).find(type => matchesIngredient({ archetype: type.id }, item));
+      assert.ok(type, `ingredient exists for ${recipe.id}`);
+      for (let i = 0; i < item.count; i++) roster.units.push({ id: `fixture_${roster.units.length}`, archetype: type.id,
+        tier: type.tier, star: recipe.ingredientStar ?? 1, deployed: true });
     }
     const selected = roster.ingredientsFor(recipe.id);
     assert.equal(new Set(selected.map(u => u.id)).size, selected.length);
@@ -120,4 +124,93 @@ test('every configured recipe is attainable, consumes distinct IDs, and produces
     assert.equal(roster.units[0].archetype, recipe.resultUnitTypeId);
     assert.ok(UNIT_MOVEMENT[recipe.resultUnitTypeId].preferredRange <= DRONE_SPECS[recipe.resultUnitTypeId].range);
   }
+});
+
+const { UNIT_TYPES } = load(resolve('src/config/unitData.ts'));
+const { matchesIngredient } = load(resolve('src/systems/SquadRoster.ts'));
+
+test('all units and recipes form an acyclic graph reachable from summonable T1 units', () => {
+  const recipes = COMBINATION_RECIPES.filter(recipe => recipe.kind !== 'promotion');
+  const reachable = new Set(Object.values(UNIT_TYPES).filter(unit => unit.summonable && unit.tier === 1).map(unit => unit.id));
+  for (let pass = 0; pass < recipes.length; pass++) for (const recipe of recipes) {
+    if (recipe.ingredients.every(item => [...reachable].some(id => matchesIngredient({ archetype: id }, item))))
+      reachable.add(recipe.resultUnitTypeId);
+  }
+  assert.deepEqual([...reachable].sort(), Object.keys(UNIT_TYPES).sort());
+  const dependencies = new Map();
+  const signatures = new Set();
+  for (const recipe of recipes) {
+    assert.ok(UNIT_TYPES[recipe.resultUnitTypeId]);
+    const deps = [];
+    for (const ingredient of recipe.ingredients) {
+      const candidates = Object.values(UNIT_TYPES).filter(unit => matchesIngredient({ archetype: unit.id }, ingredient));
+      assert.ok(candidates.length > 0);
+      for (const unit of candidates) {
+        assert.ok(UNIT_TYPES[recipe.resultUnitTypeId].tier >= unit.tier, recipe.id);
+        deps.push(unit.id);
+      }
+    }
+    dependencies.set(recipe.resultUnitTypeId, [...(dependencies.get(recipe.resultUnitTypeId) ?? []), ...deps]);
+    const signature = `${recipe.priority}:${JSON.stringify([...recipe.ingredients].sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))))}`;
+    assert.equal(signatures.has(signature), false, recipe.id);
+    signatures.add(signature);
+  }
+  function visit(id, path = new Set()) {
+    assert.equal(path.has(id), false, `cycle at ${id}`);
+    for (const dependency of dependencies.get(id) ?? []) visit(dependency, new Set([...path, id]));
+  }
+  for (const unit of Object.values(UNIT_TYPES)) {
+    assert.ok(DRONE_SPECS[unit.weaponId], unit.id);
+    assert.equal(unit.tier, DRONE_SPECS[unit.id].tier);
+    visit(unit.id);
+  }
+});
+
+test('manual ingredients reject duplicates, missing IDs, wrong types, and wrong quantities without mutation', () => {
+  const roster = new SquadRoster(100);
+  const [first, second] = roster.units;
+  for (const ids of [[first.id, first.id], [first.id, 'missing'], [first.id], [first.id, second.id, 'missing']]) {
+    const before = snapshot(roster);
+    assert.equal(roster.combine('gatling', ids), false);
+    assert.equal(snapshot(roster), before);
+  }
+  assert.equal(roster.combine('gatling', [first.id, second.id]), true);
+});
+
+test('queries prefer reserves and promotion consumes three equal stars and raises instance stats', () => {
+  const roster = new SquadRoster(1000);
+  roster.units = [
+    { id: 'a', archetype: 'STORM_ARCHER', tier: 2, star: 2, deployed: true },
+    { id: 'b', archetype: 'STORM_ARCHER', tier: 2, star: 1, deployed: false },
+    { id: 'c', archetype: 'STORM_ARCHER', tier: 2, star: 1, deployed: false }
+  ];
+  assert.deepEqual(roster.ingredientsFor('thunder').map(unit => unit.id), ['b', 'c']);
+  assert.equal(roster.combine('thunder'), true);
+  assert.ok(roster.units.some(unit => unit.id === 'a'));
+  const basic = new SquadRoster(100);
+  basic.summon('BASIC_LASER');
+  assert.equal(basic.combine('promote_BASIC_LASER_1'), true);
+  assert.equal(basic.units.length, 1);
+  assert.equal(basic.units[0].star, 2);
+  assert.equal(basic.combine('promote_BASIC_LASER_1'), false);
+});
+
+test('high-tier offers unlock in stage 3, sale preserves one deployed unit, and full inventory retains vouchers', () => {
+  const roster = new SquadRoster(10000);
+  assert.equal(roster.summon('STUN_BOT'), false);
+  roster.stageIndex = 2;
+  assert.equal(roster.summon('STUN_BOT'), true);
+  while (roster.units.length < SQUAD_LIMITS.owned) roster.summon('BASIC_LASER');
+  roster.freeSummons = 1;
+  const minerals = roster.minerals;
+  assert.equal(roster.summon('BASIC_LASER'), false);
+  assert.equal(roster.freeSummons, 1);
+  assert.equal(roster.minerals, minerals);
+  const reserve = roster.units.find(unit => !unit.deployed);
+  assert.equal(roster.sell(reserve.id), true);
+  assert.equal(roster.summon('BASIC_LASER'), true);
+  assert.equal(roster.freeSummons, 0);
+  assert.equal(roster.minerals, minerals + 10);
+  for (const unit of [...roster.units]) roster.sell(unit.id);
+  assert.equal(roster.units.filter(unit => unit.deployed).length, 1);
 });

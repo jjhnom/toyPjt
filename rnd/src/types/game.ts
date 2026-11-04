@@ -24,7 +24,7 @@ export interface RoomNode {
   waveCount: number;
 }
 
-export type DroneTier = 1 | 2 | 3;
+export type DroneTier = 1 | 2 | 3 | 4;
 
 export type DroneArchetype =
   | 'BASIC_LASER'       // Tier 1: 단일 타겟 레이저 펄스
@@ -33,7 +33,31 @@ export type DroneArchetype =
   | 'STUN_BOT'          // Tier 2: 이동 속도 저하 디버프
   | 'PIERCE_BEAM'       // Tier 3 (GATLING 합성): 관통 레이저 빔
   | 'BLACKHOLE_MISSILE' // Tier 3 (ROCKET 합성): 중력장 광역 폭발탄
-  | 'CHAIN_LIGHTNING';  // Tier 3 (STUN 합성): 연쇄 번개 + 스턴
+  | 'CHAIN_LIGHTNING'
+  | 'STONE_GUARD' | 'HERBAL_PRIEST' | 'SPARK_SPIRIT' | 'SHADOW_DAGGER'
+  | 'LAVA_GOLEM' | 'THORN_GUARD' | 'STORM_ARCHER' | 'MOON_PRIEST'
+  | 'PALADIN' | 'THUNDER_MAGE' | 'SHADOW_ASSASSIN' | 'WORLD_DRUID'
+  | 'PHOENIX_LORD' | 'STORM_GENERAL' | 'EARTH_DEITY';
+
+export type Element = 'FOREST' | 'WIND' | 'FIRE' | 'FROST' | 'LIGHTNING' | 'EARTH' | 'SHADOW' | 'LIGHT';
+export type UnitRole = 'VANGUARD' | 'MELEE' | 'RANGED' | 'MAGIC' | 'SUPPORT';
+export interface UnitTypeDef {
+  id: DroneArchetype;
+  name: string;
+  tier: DroneTier;
+  elements: Element[];
+  role: UnitRole;
+  tags: string[];
+  summonable: boolean;
+  summonCost?: number;
+  weaponId: DroneArchetype;
+  maxHp: number;
+  healAmount: number;
+}
+
+export type IngredientSpec =
+  | { kind?: 'unit'; unitTypeId: DroneArchetype; count: number }
+  | { kind: 'query'; element?: Element; role?: UnitRole; minTier?: number; maxTier?: number; count: number };
 
 export interface DroneSpec {
   archetype: DroneArchetype;
@@ -57,14 +81,20 @@ export interface DroneInstanceData {
   archetype: DroneArchetype;
   tier: DroneTier;
   deployed: boolean;
+  star: 1 | 2 | 3;
 }
 
 export interface CombinationRecipe {
   id: string;
-  ingredients: { unitTypeId: DroneArchetype; count: number }[];
+  ingredients: IngredientSpec[];
   resultUnitTypeId: DroneArchetype;
   resultCount: number;
   cost: number;
+  priority: number;
+  kind?: 'fixed' | 'query' | 'promotion';
+  resultStar?: 1 | 2 | 3;
+  ingredientStar?: 1 | 2 | 3;
+  hidden?: boolean;
 }
 
 export interface SummonOffer {
@@ -72,7 +102,7 @@ export interface SummonOffer {
   cost: number;
 }
 
-export type EnemyArchetype = 'SWARMER' | 'CHASER' | 'TANK' | 'ELITE_BRUTE' | 'BOSS_CORE';
+export type EnemyArchetype = 'SWARMER' | 'CHASER' | 'TANK' | 'ELITE_BRUTE' | 'BOSS_CORE' | 'SPORE_SHOOTER' | 'EXPLODER' | 'SUMMONER';
 
 export interface EnemySpec {
   archetype: EnemyArchetype;
@@ -111,6 +141,8 @@ export interface RewardOption {
 }
 
 export interface RunStats {
+  stageIndex: number;
+  bossesDefeated: number;
   roomsCleared: number;
   enemiesDefeated: number;
   mineralsCollected: number;
@@ -118,6 +150,37 @@ export interface RunStats {
   damageMultiplier: number;
   attackSpeedMultiplier: number;
   moveSpeedBonus: number;
+}
+
+export type StageState = 'PLAYING' | 'STAGE_CLEARED' | 'STAGE_TRANSITION';
+export type BossPattern = 'CHARGE' | 'POISON' | 'METEOR' | 'FROST' | 'SUMMON';
+export interface StageDef {
+  index: number;
+  name: string;
+  themeId: string;
+  palette: { background: number; floor: number; moss: number; wall: number };
+  gridWidth: number;
+  gridHeight: number;
+  roomCount: number;
+  eliteCount: number;
+  enemyPoolIds: EnemyArchetype[];
+  newEnemyIds: EnemyArchetype[];
+  bossId: string;
+  bossName: string;
+  bossPatterns: BossPattern[];
+  bossPhases: number;
+  isFinal: boolean;
+}
+export interface StageScaling {
+  enemyHpMult: number;
+  enemyDamageMult: number;
+  enemySpeedMult: number;
+  waveCountBonus: number;
+  spawnIntervalMult: number;
+  rewardMult: number;
+  bossHpMult: number;
+  bossDamageMult: number;
+  maxActiveEnemies: number;
 }
 
 export interface IComponent {

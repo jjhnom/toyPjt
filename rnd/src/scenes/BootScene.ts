@@ -45,7 +45,7 @@ export class BootScene extends Phaser.Scene {
 
   private createAnimatedSpriteSheets(): void {
     this.createSheet('spr_player_leader', 64, 64, 4,
-      (ctx, f, w, h) => drawCharacter(ctx, 'SUMMONER', f, w, h));
+      (ctx, f, w, h) => drawCharacter(ctx, 'LEADER', f, w, h));
     for (const type of Object.keys(DRONE_SPECS) as DroneArchetype[]) {
       this.createSheet(unitTexture(type), 48, 48, 4,
         (ctx, f, w, h) => drawCharacter(ctx, type, f, w, h));

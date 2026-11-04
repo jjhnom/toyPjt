@@ -44,8 +44,11 @@ jobs:
       - name: Test summoning and combination
         run: npm test
 
-      - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          cmdline-tools-version: '11076708'
+          packages: 'platform-tools platforms;android-34 build-tools;34.0.0'
 
       - name: Build Web Bundle (Vite + TypeScript)
         run: npm run build

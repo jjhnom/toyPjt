@@ -1,0 +1,25 @@
+{
+  "name": "coloring-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "check": "node --check app.js && node --check server.mjs && node --check pwa.js && node --check sw.js && node --check native.js && node --check scripts/build-mobile.mjs",
+    "test": "node --test",
+    "build:mobile": "node scripts/build-mobile.mjs",
+    "sync:mobile": "npm run build:mobile && cap sync",
+    "open:android": "cap open android",
+    "open:ios": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/ios": "^8.6.0",
+    "@capacitor/share": "^8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0"
+  }
+}

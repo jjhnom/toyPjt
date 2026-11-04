@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#faf7f2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="컬러링 데이"><meta name="description" content="좋아하는 티니핑 도안을 골라 나만의 색으로 칠해보세요."><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/png" href="/icons/icon-192.png"><title>컬러링 데이 — 나만의 색칠 놀이터</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><a class="brand" href="/">✿ <span>컬러링 데이<small>COLOR YOUR LITTLE WORLD</small></span></a><span class="header-note">작은 상상에, 나만의 색을 더해요</span><button class="button dark" id="save">↓ 그림 저장</button></header>
+<main>
+<details class="install-guide" id="install-guide"><summary>휴대폰에 앱으로 설치하기 <button type="button" id="install-app" hidden>앱 설치</button></summary><p>아이폰: Safari의 공유 메뉴 → 홈 화면에 추가<br>안드로이드: Chrome 메뉴 → 앱 설치 또는 홈 화면에 추가</p><p id="install-status" role="status">설치하면 홈 화면 아이콘으로 실행할 수 있어요.</p></details>
+<div class="studio">
+<aside class="panel">
+<section class="library"><div class="section-label"><h2>시즌별 도안</h2><button id="refresh-library" type="button">새로고침</button></div><label class="season-label" for="season">시즌 선택</label><select id="season" disabled><option>도안 불러오는 중…</option></select><p id="library-status" class="hint" role="status"></p><div id="templates" class="templates"></div></section>
+<!-- section><div class="section-label"><h2>나의 도안</h2><span>01</span></div><label class="upload" id="drop"><input id="upload" type="file" accept="image/png,image/jpeg,image/webp"><span class="upload-icon">＋</span><strong>도안 불러오기</strong><small>클릭하거나 이미지를 끌어다 놓으세요</small><small>PNG, JPG, WEBP · 최대 15MB</small></label><p class="hint">흰 배경에 선이 또렷한 도안이 좋아요.</p></section -->
+<section><div class="section-label"><h2>색칠 도구</h2><span>02</span></div><div class="tools"><button data-tool="fill" class="tool active" aria-pressed="true">▨<span>색칠통</span></button><button data-tool="brush" class="tool" aria-pressed="false">✎<span>붓</span></button><button data-tool="eraser" class="tool" aria-pressed="false">▱<span>지우개</span></button></div><label class="size-label" for="size">붓 크기 <output id="size-value">24px</output></label><input id="size" type="range" min="4" max="100" value="24"></section>
+<section><div class="section-label"><h2>오늘의 팔레트</h2><span>03</span></div><div id="palette" class="palette"></div><label class="custom-color"><input type="color" id="custom" value="#f58fa6"><span>내가 고르는 색</span><strong id="hex">#F58FA6</strong></label></section>
+</aside>
+<section class="workspace"><div class="canvas-toolbar"><div><span class="live-dot"></span><strong id="filename">꽃 요정의 하루</strong><span class="sample-tag" id="sample-tag">연습 도안</span></div><div class="history"><button id="undo" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소" disabled>↶</button><button id="redo" title="다시 실행 (Ctrl+Shift+Z)" aria-label="다시 실행" disabled>↷</button><span></span><button id="reset" title="색칠 초기화">초기화</button></div></div><div class="paper-area"><canvas id="canvas" width="800" height="900" aria-label="색칠할 도안. 마우스 또는 터치로 색칠하세요."></canvas></div><div class="canvas-footer"><span id="status" role="status">색을 고르고, 빈 공간을 눌러보세요.</span><span>✧ 나만의 작은 작품</span></div></section>
+</div><footer>완벽하지 않아도 괜찮아요. 당신의 색이 정답이니까요. <span>✿</span></footer>
+</main><script src="app.js"></script><script src="pwa.js"></script>
+</body></html>

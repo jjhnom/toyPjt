@@ -1,0 +1,8 @@
+{
+  "appId": "com.yourstudio.smashroguelike",
+  "appName": "소환사의 원정",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

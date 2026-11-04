@@ -1,0 +1,14 @@
+node_modules/
+artifacts/
+*.apk
+*.jks
+*.keystore
+dist/
+*.log
+.DS_Store
+vite.config.ts.timestamp-*
+android/.gradle/
+android/app/build/
+android/build/
+android/capacitor-cordova-android-plugins/build/
+android/local.properties

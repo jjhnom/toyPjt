@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">소환사의 원정</string>
+    <string name="title_activity_main">소환사의 원정</string>
+    <string name="package_name">com.yourstudio.smashroguelike</string>
+    <string name="custom_url_scheme">com.yourstudio.smashroguelike</string>
+</resources>

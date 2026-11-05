@@ -1,68 +1,79 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameData';
 import { soundManager } from '../systems/SoundManager';
-import { dungeonFloor, FANTASY, pixelPanel } from '../ui/fantasyTheme';
-import { unitAnimation, unitTexture } from '../ui/pixelCharacters';
-import type { DroneArchetype } from '../types/game';
+import { FANTASY, pixelPanel, fantasyButton } from '../ui/fantasyTheme';
+import { runSaveManager } from '../systems/RunSaveManager';
+import { STAGES } from '../config/stageData';
 
 export class MenuScene extends Phaser.Scene {
   private soundBtnText!: Phaser.GameObjects.Text;
+  private starting = false;
   constructor() { super('MenuScene'); }
 
-  public create(): void {
+  public create(data: { message?: string } = {}): void {
+    this.starting = false;
+    this.input.enabled = true;
+    const saved = runSaveManager.load();
     const cx = GAME_WIDTH / 2;
-    const bg = this.add.graphics();
-    bg.fillStyle(0x151d25).fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    for (let i = 0; i < 42; i++) {
-      bg.fillStyle(i % 3 === 0 ? 0xb6bca1 : 0x526466).fillRect(28 + i * 137 % 660, 40 + i * 73 % 500, 3, 3);
+    this.add.image(cx, GAME_HEIGHT / 2, 'art_title').setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setName('title-art');
+    const shade = this.add.graphics();
+    shade.fillStyle(0x07091d, 0.17).fillRect(0, 0, GAME_WIDTH, 360);
+    for (let row = 0; row < 16; row++) shade.fillStyle(0x080b1d, row / 25).fillRect(0, 820 + row * 29, GAME_WIDTH, 29);
+    shade.lineStyle(1, 0xc3a068, 0.6).strokeRect(18, 18, GAME_WIDTH - 36, GAME_HEIGHT - 36);
+    shade.lineStyle(3, 0xead4a2, 0.8);
+    for (const x of [24, GAME_WIDTH - 24]) {
+      const sign = x < cx ? 1 : -1;
+      shade.lineBetween(x, 26, x + sign * 42, 26).lineBetween(x, 26, x, 68);
     }
-    bg.fillStyle(0xd7d6ac).fillRect(557, 76, 40, 48).fillRect(549, 84, 56, 32);
-    bg.fillStyle(0x151d25).fillRect(545, 72, 34, 34);
-    for (let i = 0; i < 11; i++) {
-      const height = 80 + i * 37 % 130;
-      bg.fillStyle(0x1d2b30).fillRect(i * 70, 590 - height, 54, height);
-      bg.fillRect(i * 70 - 5, 590 - height - 12, 64, 12);
-      bg.fillStyle(0x30403c).fillRect(i * 70 + 22, 590 - height + 24, 8, 12);
-    }
-    dungeonFloor(bg, 32, 566, GAME_WIDTH - 64, 230);
-    bg.fillStyle(0x35483f).fillRect(32, 560, GAME_WIDTH - 64, 6);
-    pixelPanel(this, 24, 24, GAME_WIDTH - 48, GAME_HEIGHT - 48, 0x000000, 0x58644f).setAlpha(0.3);
-    this.label(cx, 101, 'A PIXEL FANTASY ADVENTURE', 16, '#a9b79a').setLetterSpacing(3);
-    this.label(cx, 207, 'SMASH', 88, '#e8cf8d').setStroke('#172029', 8);
-    this.label(cx, 291, '소환사의 원정', 35, '#efe4c4');
-    this.label(cx, 348, '잊힌 회랑에서, 당신의 원정대가 깨어납니다.', 18, '#a9b79a');
-    const portal = this.add.graphics();
-    portal.fillStyle(0x3d4946).fillRect(282, 405, 156, 172);
-    portal.fillStyle(0x626b56).fillRect(290, 397, 140, 12);
-    portal.fillStyle(0x121e26).fillRect(306, 417, 108, 160);
-    portal.fillStyle(0x484160).fillRect(318, 429, 84, 145);
-    portal.fillStyle(0x76638d).fillRect(330, 441, 60, 130);
-    for (let i = 0; i < 6; i++) portal.fillStyle(0xd5bb75).fillRect(290, 427 + i * 23, 6, 8).fillRect(424, 427 + i * 23, 6, 8);
-    const hero = this.add.sprite(cx, 538, 'spr_player_leader').play('anim_player_leader').setScale(2);
-    this.tweens.add({ targets: hero, y: 532, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    const companions: DroneArchetype[] = ['BASIC_LASER', 'ROCKET_BOT', 'STUN_BOT', 'PIERCE_BEAM'];
-    companions.forEach((type, i) => {
-      this.add.sprite(154 + i * 136, 654, unitTexture(type)).play(unitAnimation(type)).setScale(1.9);
-    });
-    this.label(cx, 723, '소환하고, 조합하고, 함께 나아가세요.', 21, '#e7d8b1');
-    pixelPanel(this, 66, 771, 588, 82);
-    this.label(cx, 796, '동료 소환   /   조합의 제단   /   던전 탐험', 19, '#d9bd7f');
-    this.label(cx, 828, '마력석을 모아 원정대를 이끌고 황혼의 마왕에 도전하세요.', 15, '#aab39b');
-    pixelPanel(this, 164, 872, 392, 76, 0x3d5343, 0xc3a76d);
-    const start = this.add.rectangle(cx, 910, 392, 76, 0, 0).setInteractive({ useHandCursor: true });
-    this.label(cx, 910, '모험 시작', 29, '#f3e6c1');
-    start.on('pointerover', () => start.setFillStyle(0xf2d68c, 0.08));
-    start.on('pointerout', () => start.setFillStyle(0, 0));
-    start.once('pointerdown', () => { soundManager.playPowerup(); this.scene.start('GameScene'); });
-    pixelPanel(this, 215, 992, 290, 56);
-    const sound = this.add.rectangle(cx, 1020, 290, 56, 0, 0).setInteractive({ useHandCursor: true });
-    this.soundBtnText = this.label(cx, 1020, this.getSoundLabel(), 18, '#b9c3a6');
-    sound.on('pointerdown', () => {
+    this.label(cx, 108, 'SUMMON  ·  COMBINE  ·  CONQUER', 14, '#d5c7a3').setLetterSpacing(3);
+    this.label(cx, 205, 'SMASH', 92, '#5e3d30').setFontFamily('Georgia, serif').setLetterSpacing(5).setStroke('#0d101f', 10);
+    this.label(cx, 200, 'SMASH', 92, '#f2d49a').setFontFamily('Georgia, serif').setLetterSpacing(5);
+    this.label(cx, 282, '소환사의 원정', 34, '#fff1cc').setStroke('#151427', 4);
+    this.label(cx, 337, '잊힌 회랑의 봉인을 깨우세요', 17, '#bac6d2').setStroke('#0d1425', 3);
+    this.label(cx, 846, '동료를 모으고, 운명을 조합하세요.', 18, '#e4d2ac').setStroke('#0c1224', 3);
+    fantasyButton(this, cx, 910, 392, 76, saved.status === 'ready' ? '새 모험' : '모험 시작', () => {
+      if (this.starting) return;
+      if (saved.status === 'ready') this.confirmNewRun();
+      else this.startRun(false);
+    }, { primary: true, fontSize: 28 });
+    fantasyButton(this, cx, 998, 392, 64, saved.status === 'ready' ? `이어하기 · STAGE ${saved.checkpoint.stats.stageIndex + 1}` : '이어하기 · 저장 없음',
+      () => this.startRun(true), { enabled: saved.status === 'ready', fontSize: 23 });
+    const caption = saved.status === 'ready'
+      ? `${STAGES[saved.checkpoint.stats.stageIndex].name} · 스테이지 시작 상태로 재개`
+      : saved.status === 'invalid' ? '저장 데이터가 손상되었거나 지원하지 않는 버전입니다.'
+      : saved.status === 'unavailable' ? '저장소를 사용할 수 없습니다. 자동 저장이 제한됩니다.' : '스테이지 진입 시 자동 저장됩니다.';
+    this.label(cx, 1050, data.message ?? caption, 15, '#d9b969').setWordWrapWidth(620);
+    const sound = fantasyButton(this, cx, 1110, 290, 56, this.getSoundLabel(), () => {
       soundManager.enabled = !soundManager.enabled;
       this.soundBtnText.setText(this.getSoundLabel());
-    });
+    }, { fontSize: 18 });
+    this.soundBtnText = sound.getByName('label') as Phaser.GameObjects.Text;
     this.label(cx, 1168, 'CHAPTER I  ·  THE FORGOTTEN HALLS', 14, '#8d9d86');
     this.label(cx, 1200, '작은 동료들이 모여, 위대한 모험이 됩니다.', 15, '#8d9d86');
+  }
+
+  private startRun(resume: boolean): void {
+    if (this.starting) return;
+    this.starting = true;
+    this.input.enabled = false;
+    soundManager.playPowerup();
+    this.scene.start('GameScene', { resume });
+  }
+
+  private confirmNewRun(): void {
+    // A confirmation inside the game prevents an accidental overwrite of a saved run.
+    if (this.children.getByName('new-run-confirmation')) return;
+    const modal = this.add.container(0, 0).setName('new-run-confirmation').setDepth(100);
+    const block = this.add.rectangle(360, 640, 720, 1280, 0x0c1218, 0.9).setInteractive();
+    const panel = pixelPanel(this, 50, 480, 620, 300);
+    const title = this.label(360, 540, '저장된 모험을 지우고\n새로 시작할까요?', 26, '#efe4c4');
+    const cancel = this.add.rectangle(210, 700, 240, 64, 0x34434a).setInteractive({ useHandCursor: true });
+    const cancelLabel = this.label(210, 700, '취소', 23, '#efe4c4');
+    const confirm = this.add.rectangle(510, 700, 240, 64, 0x66513b).setInteractive({ useHandCursor: true });
+    const confirmLabel = this.label(510, 700, '새 모험 시작', 23, '#efe4c4');
+    modal.add([block, panel, title, cancel, cancelLabel, confirm, confirmLabel]);
+    cancel.on('pointerdown', () => modal.destroy());
+    confirm.on('pointerdown', () => this.startRun(false));
   }
 
   private label(x: number, y: number, text: string, size: number, color: string): Phaser.GameObjects.Text {

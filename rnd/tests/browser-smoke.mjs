@@ -82,13 +82,34 @@ try {
   assert.equal(await evaluate("document.querySelectorAll('canvas').length"), 1);
   await waitFor("smash.scene.isActive('MenuScene')");
   await sleep(500); // Allow Phaser's first input/scale frame after scene creation.
+  assert.equal(await evaluate("smash.scene.getScene('MenuScene').children.getByName('title-art').texture.key"), 'art_title');
   await capture('title');
+  await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 640, deviceScaleFactor: 1, mobile: true });
+  await sleep(500);
+  await capture('title-mobile360');
+  await send('Emulation.setDeviceMetricsOverride', { width: 720, height: 1280, deviceScaleFactor: 1, mobile: true });
+  await sleep(500);
+  await tap(360, 998); // No save: the Continue button is disabled.
+  assert.equal(await evaluate("smash.scene.isActive('MenuScene')"), true);
   await tap(360, 910);
   await waitFor("smash.scene.isActive('GameScene')");
   await evaluate("window.gs = smash.scene.getScene('GameScene'); undefined;");
+  assert.equal(await evaluate("gs.children.getByName('dungeon-art').texture.key"), 'art_dungeon');
   assert.equal(await evaluate('gs.squad.roster.units.length'), 2);
+  assert.equal(await evaluate("JSON.parse(localStorage.getItem('smash.run-checkpoint.v1')).stats.stageIndex"), 0);
   await sleep(800);
   await capture('battle');
+  const hudLayout = await evaluate(`(() => {
+    const hp = gs.hudHpText.getBounds(), room = gs.hudRoomText.getBounds(), wave = gs.hudWaveText.getBounds();
+    const currency = gs.hudMineralText.getBounds(), squad = gs.hudSquadText.getBounds();
+    return { hpFits: hp.left >= 111 && hp.right <= 351 && hp.top >= 26 && hp.bottom <= 56,
+      roomFits: room.left >= 112 && room.right <= 546 && room.bottom <= wave.top,
+      waveFits: wave.right <= 546 && wave.bottom <= 115,
+      currencyFits: currency.left >= 410 && currency.right <= 532 && currency.bottom <= 70,
+      partyFits: squad.right <= 246, portraits: gs.hudUnitPortraits.length,
+      fpsHidden: !gs.hudFpsText.visible };
+  })()`);
+  assert.deepEqual(hudLayout, { hpFits: true, roomFits: true, waveFits: true, currencyFits: true, partyFits: true, portraits: 6, fpsHidden: true });
   await evaluate('gs.squad.health.maxHp = 100000; gs.squad.health.heal(100000)');
 
   // Finish the first room through the actual wave-completion branch.
@@ -131,8 +152,16 @@ try {
   await sleep(600);
   const mobileBounds = await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()");
   assert.ok(mobileBounds.width <= 360 && mobileBounds.height <= 640 && mobileBounds.x >= 0);
-  await tap(540, 1178);
+  await capture('battle-mobile360');
+  const point = (x, y, id) => ({ x: mobileBounds.x + x * mobileBounds.width / 720, y: mobileBounds.y + y * mobileBounds.height / 1280, id });
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point(160, 1160, 11)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [point(215, 1160, 11)] });
+  await sleep(100);
+  assert.ok(await evaluate('gs.joystick.dirX > 0.5'), 'joystick must still respond to dragging');
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point(215, 1160, 11), point(540, 1178, 12)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await waitFor("smash.scene.isActive('SquadScene')");
+  assert.equal(await evaluate('gs.joystick.dirX === 0 && gs.joystick.dirY === 0'), true, 'opening the book with a second touch clears movement');
   assert.equal(await evaluate("smash.scene.getScene('SquadScene').input.enabled"), true);
   await capture('mobile360');
   const screenshot = await send('Page.captureScreenshot', { format: 'png' });
@@ -143,6 +172,13 @@ try {
 
   await send('Emulation.setDeviceMetricsOverride', { width: 720, height: 1280, deviceScaleFactor: 1, mobile: true });
   await sleep(600);
+  const fullBounds = await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()");
+  const fullPoint = (x, y) => ({ x: fullBounds.x + x * fullBounds.width / 720, y: fullBounds.y + y * fullBounds.height / 1280, id: 21 });
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [fullPoint(160, 1160)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [fullPoint(220, 1160)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+  await sleep(100);
+  assert.equal(await evaluate('gs.joystick.dirX === 0 && gs.joystick.dirY === 0'), true, 'touch cancellation clears movement');
 
   // Hiding and returning to the app must not resume combat underneath the modal.
   await evaluate("gs.openSquadModal();");
@@ -335,7 +371,10 @@ try {
       { stage: stage + 1, hp: 70, multiplier: 1.7, units: [await evaluate('survivorId')], fresh: true,
         width: [3, 4, 4, 5][stage], height: [4, 4, 5, 5][stage] });
       if (stage === 3) await capture('stage5-battle');
-    } else await waitFor("smash.scene.isActive('GameOverScene')");
+    } else {
+      await waitFor("smash.scene.isActive('GameOverScene')");
+      assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), null, 'victory clears the checkpoint');
+    }
   }
   assert.deepEqual(await evaluate('({ rooms: gs.stats.roomsCleared, boss: gs.stats.bossDefeated, bosses: gs.stats.bossesDefeated })'), { rooms: 5, boss: true, bosses: 5 });
   // A death during a later stage also resets the stage gate and all run state.
@@ -348,15 +387,126 @@ try {
     gs.handlePlayerDeath();
   })()`);
   await waitFor("smash.scene.isActive('GameOverScene')");
+  assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), null, 'defeat clears the checkpoint');
   await evaluate("smash.scene.getScene('GameOverScene').scene.start('GameScene'); undefined;");
   await waitFor("smash.scene.isActive('GameScene')");
   assert.deepEqual(await evaluate(`(() => { const scene = smash.scene.getScene('GameScene');
     return { stage: scene.progression.index, bosses: scene.stats.bossesDefeated, units: scene.squad.roster.units.length,
       minerals: scene.squad.roster.minerals, vouchers: scene.squad.roster.freeSummons }; })()`),
     { stage: 0, bosses: 0, units: 2, minerals: 30, vouchers: 0 });
+
+  // Capture a real stage-2 boundary after boss reward and management transactions.
+  await evaluate(`(() => {
+    window.gs = smash.scene.getScene('GameScene'); gs.clearEncounter();
+    const room = gs.gridManager.getCurrentRoom(); room.type = 'BOSS'; room.cleared = false;
+    gs.startRoomLogic(room); gs.spawnNextWave(room); gs.processSpawns(1000);
+    const boss = gs.enemies.getChildren().find(e => e.active && e.spec.archetype === 'BOSS_CORE');
+    boss.receiveDamage(boss.health.maxHp, gs.time.now); gs.handleEnemyKilled(boss);
+  })()`);
+  await waitFor("smash.scene.isActive('SquadScene')");
+  await evaluate(`(() => {
+    const roster = gs.squad.roster; roster.minerals = 400;
+    roster.combine('gatling');
+    for (let i = 0; i < 3; i++) roster.summon('SPARK_SPIRIT');
+    roster.combine('promote_SPARK_SPIRIT_1');
+    roster.summon('HERBAL_PRIEST'); roster.toggleDeployment(roster.units.at(-1).id);
+    roster.summon('SHADOW_DAGGER'); roster.sell(roster.units.at(-1).id);
+    roster.freeSummons = 2; gs.squad.syncRoster();
+    gs.squad.drones[0].health.currentHp = 45;
+    gs.squad.health.currentHp = 30;
+    gs.stats.damageMultiplier = 1.6; gs.stats.attackSpeedMultiplier = 1.2; gs.stats.moveSpeedBonus = 10;
+  })()`);
+  await tap(360, 1150);
+  await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
+  const savedText = await evaluate("localStorage.getItem('smash.run-checkpoint.v1')");
+  const savedCheckpoint = JSON.parse(savedText);
+  assert.equal(savedCheckpoint.stats.stageIndex, 1);
+  assert.equal(savedCheckpoint.stats.bossesDefeated, 1);
+  assert.equal(savedCheckpoint.leaderHealth.currentHp, 70);
+  assert.equal(savedCheckpoint.roster.units.some(unit => unit.id === 'unit_1' || unit.id === 'unit_2'), false);
+  assert.equal(savedCheckpoint.roster.units.some(unit => unit.star === 2), true);
+  await tap(510, 1120); // Stop through the new in-game title button.
+  await waitFor("smash.scene.isActive('MenuScene')");
+  assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), savedText);
+  await tap(360, 910);
+  assert.equal(await evaluate("!!smash.scene.getScene('MenuScene').children.getByName('new-run-confirmation')"), true);
+  await tap(210, 700); // Cancel overwriting the saved run.
+  assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), savedText);
+  await capture('continue-menu');
+
+  // A full browser reload proves that restoration is not using in-memory scene data.
+  await send('Page.reload');
+  await sleep(600);
+  await waitFor("document.querySelector('canvas') !== null");
+  await evaluate(`(async () => {
+    const entry = document.querySelector('script[type="module"][src*="/src/main.ts"]');
+    window.smash = (await import(entry.src)).game;
+  })()`);
+  await waitFor("smash.scene.isActive('MenuScene')");
+  await sleep(300);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await tap(360, 998);
+    await waitFor("smash.scene.isActive('GameScene')");
+    const restored = await evaluate(`(() => {
+      window.gs = smash.scene.getScene('GameScene'); gs.scene.pause();
+      return { stats: gs.stats, roster: gs.squad.roster.snapshot(),
+        leaderHealth: { currentHp: gs.squad.health.currentHp, maxHp: gs.squad.health.maxHp },
+        unitHealth: gs.squad.drones.map(d => ({ id: d.id, currentHp: d.health.currentHp })), grid: gs.gridManager.grid,
+        clean: gs.enemies.countActive(true) === 0 && gs.bullets.countActive(true) === 0 && gs.pendingSpawns.length === 0,
+        bosses: gs.progression.bossesDefeated, state: gs.progression.state };
+    })()`);
+    assert.deepEqual(restored, { stats: savedCheckpoint.stats, roster: savedCheckpoint.roster,
+      leaderHealth: savedCheckpoint.leaderHealth, unitHealth: savedCheckpoint.unitHealth, grid: savedCheckpoint.grid,
+      clean: true, bosses: 1, state: 'PLAYING' });
+    assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), savedText, 'Continue never rewrites the boundary');
+    if (attempt === 0) await capture('restored-stage');
+    if (attempt < 2) {
+      await evaluate('gs.returnToTitle()');
+      await waitFor("smash.scene.isActive('MenuScene')");
+    }
+  }
+  const newId = await evaluate(`(() => { gs.squad.roster.summon('STONE_GUARD'); return gs.squad.roster.units.at(-1).id; })()`);
+  assert.equal(newId, `unit_${savedCheckpoint.roster.nextId + 1}`);
+  await evaluate('gs.returnToTitle()');
+  await waitFor("smash.scene.isActive('MenuScene')");
+  await tap(360, 910); await tap(510, 700); // Explicitly replace the old checkpoint.
+  await waitFor("smash.scene.isActive('GameScene')");
+  assert.deepEqual(await evaluate(`(() => { window.gs = smash.scene.getScene('GameScene');
+    return { stage: gs.stats.stageIndex, count: gs.squad.roster.units.length, minerals: gs.squad.roster.minerals }; })()`),
+    { stage: 0, count: 2, minerals: 30 });
+  await evaluate(`gs.returnToTitle(); localStorage.setItem('smash.run-checkpoint.v1', '{broken');`);
+  await waitFor("smash.scene.isActive('MenuScene')");
+  await capture('invalid-save-menu');
+  await tap(360, 998);
+  assert.equal(await evaluate("smash.scene.isActive('MenuScene')"), true);
+  await tap(360, 910);
+  await waitFor("smash.scene.isActive('GameScene')");
+  assert.equal(await evaluate("JSON.parse(localStorage.getItem('smash.run-checkpoint.v1')).version"), 1);
+  // A valid saved ID must hydrate its saved type/star rather than reuse default starter sprites.
+  await evaluate(`(() => {
+    window.gs = smash.scene.getScene('GameScene');
+    const data = JSON.parse(localStorage.getItem('smash.run-checkpoint.v1'));
+    data.roster.units[0].archetype = 'STONE_GUARD'; data.roster.units[0].star = 2;
+    data.unitHealth[0].currentHp = 120;
+    localStorage.setItem('smash.run-checkpoint.v1', JSON.stringify(data));
+    gs.returnToTitle();
+  })()`);
+  await waitFor("smash.scene.isActive('MenuScene')");
+  await tap(360, 998);
+  await waitFor("smash.scene.isActive('GameScene')");
+  assert.deepEqual(await evaluate(`(() => {
+    window.gs = smash.scene.getScene('GameScene');
+    const d = gs.squad.drones[0];
+    return { type: d.archetype, star: d.star, maxHp: d.health.maxHp, hp: d.health.currentHp };
+  })()`), { type: 'STONE_GUARD', star: 2, maxHp: 270, hp: 120 });
+  await evaluate('gs.returnToTitle()');
+  await waitFor("smash.scene.isActive('MenuScene')");
+  await evaluate("localStorage.removeItem('smash.run-checkpoint.v1')");
+  await tap(360, 998); // The save disappeared after the menu was rendered.
+  await waitFor("smash.scene.isActive('MenuScene') && !smash.scene.isActive('GameScene')");
   assert.equal(errors.length, 0, JSON.stringify(errors));
   console.log(JSON.stringify({ status: 'passed', viewport: '720x1280 touch', screenshotPath, screenshots, performance,
-    checks: ['room reward', 'combat pause', 'summon', 'same/mixed recipes', 'failed recipe rollback', 'deployment sync', 'modal reopen', 'visibility pause', 'independent movement', 'piercing and recycled targets', 'chain hit uniqueness', 'unit health and revival', 'vanguard aggro', 'support healing', 'required spawn retry', 'spawn stat reset', '800ms hazard warning', 'run restart', 'five stage transitions', 'state preservation', 'boss rewards counted once', 'final boss victory only', 'no runtime exceptions'] }, null, 2));
+    checks: ['room reward', 'combat pause', 'summon', 'same/mixed recipes', 'failed recipe rollback', 'deployment sync', 'modal reopen', 'visibility pause', 'independent movement', 'piercing and recycled targets', 'chain hit uniqueness', 'unit health and revival', 'vanguard aggro', 'support healing', 'required spawn retry', 'spawn stat reset', '800ms hazard warning', 'run restart', 'five stage transitions', 'state preservation', 'boss rewards counted once', 'final boss victory only', 'stage checkpoint autosave', 'continue after browser reload', 'three resumes without bonus rewards or healing', 'sold and consumed IDs preserved', 'save overwrite confirmation and cancel', 'invalid save recovery', 'victory and defeat clear save', 'no runtime exceptions'] }, null, 2));
 } finally {
   socket?.close();
   browser.kill();

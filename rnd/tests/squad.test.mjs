@@ -22,7 +22,25 @@ function load(file) {
 const { SquadRoster } = load(resolve('src/systems/SquadRoster.ts'));
 const { SQUAD_LIMITS, COMBINATION_RECIPES, UNIT_MOVEMENT } = load(resolve('src/config/squadData.ts'));
 const { DRONE_SPECS } = load(resolve('src/config/gameData.ts'));
+const { UNIT_ART_FRAMES, UNIT_ART_CELL, UNIT_ART_COLUMNS } = load(resolve('src/ui/unitArt.ts'));
+const { recipeIngredientLines } = load(resolve('src/ui/recipePresentation.ts'));
 const snapshot = roster => JSON.stringify({ minerals: roster.minerals, units: roster.units });
+
+test('every summon and recipe unit has distinct art within the shipped atlas', () => {
+  assert.deepEqual(Object.keys(UNIT_ART_FRAMES).sort(), Object.keys(DRONE_SPECS).sort());
+  const frames = Object.values(UNIT_ART_FRAMES);
+  assert.equal(new Set(frames).size, frames.length);
+  const png = readFileSync(resolve('src/assets/units-v3/units-atlas.png'));
+  assert.equal(png.subarray(1, 4).toString(), 'PNG');
+  assert.equal(png.readUInt32BE(16), UNIT_ART_COLUMNS * UNIT_ART_CELL);
+  assert.equal(png.readUInt32BE(20), Math.ceil(frames.length / UNIT_ART_COLUMNS) * UNIT_ART_CELL);
+  const manifest = JSON.parse(readFileSync(resolve('src/assets/units-v3/sources/manifest.json'), 'utf8'));
+  assert.deepEqual(manifest.map(unit => unit.id).sort(), Object.keys(DRONE_SPECS).sort());
+  for (const unit of manifest) {
+    assert.equal(manifest.indexOf(unit), UNIT_ART_FRAMES[unit.id], unit.id);
+    assert.ok(readFileSync(resolve('src/assets/units-v3/sources', unit.file)).length > 0, unit.id);
+  }
+});
 
 test('summon charges once, assigns a unique ID, and rejects insufficient funds', () => {
   const roster = new SquadRoster(15);
@@ -128,6 +146,40 @@ test('every configured recipe is attainable, consumes distinct IDs, and produces
 
 const { UNIT_TYPES } = load(resolve('src/config/unitData.ts'));
 const { matchesIngredient } = load(resolve('src/systems/SquadRoster.ts'));
+
+test('conditional recipe descriptions identify every real material and count only eligible units', () => {
+  const roster = new SquadRoster(1000);
+  const fixture = ids => ids.map((id, i) => ({ id: `fixture_${i}`, archetype: id, tier: UNIT_TYPES[id].tier, star: 1, deployed: true }));
+  const recipe = id => COMBINATION_RECIPES.find(item => item.id === id);
+  const cases = [
+    ['phoenix', ['LAVA_GOLEM', 'LAVA_GOLEM', 'MOON_PRIEST'],
+      ['용암 골렘 · 보유 2 / 필요 2', '달빛 사제 · 보유 1 / 필요 1']],
+    ['thunder', ['STORM_ARCHER', 'STORM_ARCHER'], ['폭풍 궁수 · 보유 2 / 필요 2']],
+    ['druid', ['GATLING_BOT', 'THORN_GUARD', 'MOON_PRIEST'],
+      ['바람 순찰자 또는 가시 수호자 · 보유 2 / 필요 1', '달빛 사제 · 보유 1 / 필요 1']]
+  ];
+  for (const [id, types, lines] of cases) {
+    roster.units = fixture(types);
+    assert.deepEqual(recipeIngredientLines(recipe(id), roster.units), lines);
+    assert.equal(roster.canCombine(id), true);
+  }
+  roster.units = fixture(['ROCKET_BOT', 'PHOENIX_LORD', 'BLACKHOLE_MISSILE', 'MOON_PRIEST']);
+  assert.equal(recipeIngredientLines(recipe('phoenix'), roster.units)[0], '용암 골렘 · 보유 0 / 필요 2');
+  assert.equal(roster.canCombine('phoenix'), false, 'T1 and T4 fire units cannot replace T2 lava golems');
+  for (const forest of ['GATLING_BOT', 'THORN_GUARD']) {
+    roster.units = fixture([forest, 'MOON_PRIEST']);
+    assert.equal(roster.canCombine('druid'), true, `${forest} remains a valid alternative`);
+  }
+  for (const item of COMBINATION_RECIPES) {
+    assert.equal(recipeIngredientLines(item, []).some(line => line.includes('해당 유닛 없음')), false, item.id);
+  }
+});
+
+test('promotion descriptions show required stars and exclude other stars from owned counts', () => {
+  const recipe = COMBINATION_RECIPES.find(item => item.id === 'promote_BASIC_LASER_1');
+  const units = [1, 1, 2, 3].map((star, i) => ({ id: `fixture_${i}`, archetype: 'BASIC_LASER', tier: 1, star, deployed: false }));
+  assert.deepEqual(recipeIngredientLines(recipe, units), ['숲의 사수 ★1 · 보유 2 / 필요 3']);
+});
 
 test('all units and recipes form an acyclic graph reachable from summonable T1 units', () => {
   const recipes = COMBINATION_RECIPES.filter(recipe => recipe.kind !== 'promotion');

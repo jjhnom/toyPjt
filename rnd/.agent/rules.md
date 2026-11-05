@@ -20,7 +20,7 @@
   - 본체와 독립 전투하는 소환 유닛 분대를 분리한다. `SquadRoster`는 보유 데이터·재화·거래, `PlayerSquad`/`DroneUnit`은 전투 개체, `squadData.ts`는 소환·조합 설정을 담당한다.
 
 ## 3. Mobile Performance & WebGL Constraints
-- **Visual Theme:** 픽셀 판타지. `src/ui/fantasyTheme.ts`의 석재·이끼·금색 패널과 `src/ui/pixelCharacters.ts`의 코드 기반 도트 캐릭터를 사용한다. 캐릭터는 회전 대신 좌우 반전으로 방향을 표현하고 픽셀 렌더링을 유지한다.
+- **Visual Theme:** 픽셀 판타지. `src/ui/fantasyTheme.ts`의 공통 패널과 `src/ui/artAssets.ts`의 프로젝트 아트를 사용한다. 소환 유닛 아틀라스 프레임은 `src/ui/unitArt.ts`, 텍스처/애니메이션 키와 적의 코드 기반 도트는 `src/ui/pixelCharacters.ts`가 담당한다. 캐릭터는 회전 대신 좌우 반전으로 방향을 표현하고 전투 프레임 크기와 픽셀 렌더링을 유지한다.
 - **Object Pooling:**
   - 총알, 적 유닛, 대미지 텍스트, 이펙트 파티클은 기존 풀을 재사용한다. 물리 객체는 Arcade Group, 시각 효과는 기존 전용 풀 등 객체 특성에 맞게 구현한다.
   - `runChildUpdate`는 자식 `update` 호출이 필요한 그룹에만 설정한다. 수동 순회와 그룹 자동 업데이트로 같은 객체를 두 번 갱신하지 않는다.

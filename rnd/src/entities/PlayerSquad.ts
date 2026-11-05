@@ -7,6 +7,9 @@ import { SquadRoster } from '../systems/SquadRoster';
 import { DroneUnit } from './DroneUnit';
 import { UNIT_TYPES } from '../config/unitData';
 import { SUPPORT_HEAL_INTERVAL_MS, UNIT_REVIVE_RATIO } from '../config/squadData';
+import { UNIQUE_SKILLS } from '../config/skillData';
+import type { DroneArchetype, SkillEffectFn } from '../types/game';
+import type { Enemy } from './Enemy';
 
 export class PlayerSquad {
   public scene: Phaser.Scene;
@@ -25,7 +28,8 @@ export class PlayerSquad {
     startY: number,
     fireCallback: FireBulletFn,
     onDeath: () => void,
-    onDamaged: (amount: number, current: number, max: number) => void
+    onDamaged: (amount: number, current: number, max: number) => void,
+    private readonly effect?: SkillEffectFn
   ) {
     this.scene = scene;
     this.fireCallback = fireCallback;
@@ -60,6 +64,7 @@ export class PlayerSquad {
         Phaser.Math.Clamp(this.leader.x + (index % 3 - 1) * 44, ARENA_BOUNDS.left + 20, ARENA_BOUNDS.right - 20),
         Phaser.Math.Clamp(this.leader.y + 45 + Math.floor(index / 3) * 40, ARENA_BOUNDS.top + 20, ARENA_BOUNDS.bottom - 20)
       );
+      this.effect?.('summon', drone.x, drone.y, drone.archetype);
       return drone;
     });
   }
@@ -82,7 +87,10 @@ export class PlayerSquad {
       (drone.archetype === 'PALADIN' || drone.archetype === 'EARTH_DEITY'));
     if (protector) {
       const absorbed = Math.round(amount * (protector.archetype === 'EARTH_DEITY' ? 0.4 : 0.3));
-      protector.health.takeDamage(absorbed, time, 0);
+      if (absorbed > 0) {
+        protector.health.takeDamage(absorbed, time, 0);
+        this.effect?.('hit', protector.x, protector.y, protector.archetype);
+      }
       amount -= absorbed;
     }
     const damaged = this.health.takeDamage(amount, time, 650);
@@ -100,6 +108,73 @@ export class PlayerSquad {
       drone.health.invulnerableUntil = 0;
       drone.reviveAt = 0;
       drone.setActive(true).setVisible(true);
+      this.effect?.('revive', drone.x, drone.y, drone.archetype);
+    }
+  }
+
+  public clearCombatEffects(): void {
+    this.health.clearShield();
+    for (const drone of this.drones) {
+      drone.health.clearShield();
+      drone.attackBuffMultiplier = 1;
+      drone.hadAttackBuff = false;
+      drone.lastSkillAt = this.scene.time.now;
+    }
+  }
+
+  public onKill(sourceUnitId?: string): void {
+    const source = this.drones.find(drone => drone.id === sourceUnitId && !drone.health.isDead);
+    if (source?.archetype !== 'SHADOW_ASSASSIN') return;
+    source.weapon.reduceCooldown(UNIQUE_SKILLS.assassin.cooldownReductionMs);
+    this.effect?.('buff', source.x, source.y, source.archetype);
+  }
+
+  private heal(target: HealthComponent, x: number, y: number, amount: number, source: DroneArchetype): void {
+    if (!target.isDead && target.heal(amount) > 0) this.effect?.('heal', x, y, source);
+  }
+
+  private updateSkills(time: number, enemies: Phaser.GameObjects.Group, damageMultiplier: number): void {
+    for (const drone of this.drones) {
+      if (drone.health.isDead) continue;
+      if (drone.archetype === 'WORLD_DRUID') {
+        const radiusSq = UNIQUE_SKILLS.druid.radius ** 2;
+        for (const ally of this.drones) {
+          if (ally === drone || ally.health.isDead || (ally.x - drone.x) ** 2 + (ally.y - drone.y) ** 2 > radiusSq) continue;
+          ally.attackBuffMultiplier = Math.max(ally.attackBuffMultiplier, UNIQUE_SKILLS.druid.damageMultiplier);
+        }
+      } else if (drone.archetype === 'LAVA_GOLEM' && time - drone.lastSkillAt >= UNIQUE_SKILLS.lava.intervalMs) {
+        drone.lastSkillAt = time;
+        let applied = false;
+        for (const child of enemies.getChildren()) {
+          const enemy = child as Enemy;
+          if (!enemy.active || (enemy.x - drone.x) ** 2 + (enemy.y - drone.y) ** 2 > UNIQUE_SKILLS.lava.radius ** 2) continue;
+          enemy.burn.apply(Math.round(UNIQUE_SKILLS.lava.burnDamage * drone.star * damageMultiplier), time, drone.id);
+          applied = true;
+        }
+        if (applied) this.effect?.('burn', drone.x, drone.y, drone.archetype);
+      } else if (drone.archetype === 'PHOENIX_LORD' && time - drone.lastSkillAt >= UNIQUE_SKILLS.phoenix.cooldownMs) {
+        const fallen = this.drones.find(ally => ally !== drone && ally.health.isDead);
+        if (!fallen) continue;
+        drone.lastSkillAt = time;
+        fallen.health.heal(Math.round(fallen.health.maxHp * UNIQUE_SKILLS.phoenix.reviveRatio));
+        fallen.health.invulnerableUntil = time + 650;
+        fallen.reviveAt = 0;
+        fallen.setActive(true).setVisible(true);
+        this.effect?.('revive', fallen.x, fallen.y, drone.archetype);
+      } else if (drone.archetype === 'EARTH_DEITY' && time - drone.lastSkillAt >= UNIQUE_SKILLS.deity.cooldownMs) {
+        drone.lastSkillAt = time;
+        const radiusSq = UNIQUE_SKILLS.deity.radius ** 2;
+        const amount = UNIQUE_SKILLS.deity.shieldHp * drone.star;
+        if ((this.leader.x - drone.x) ** 2 + (this.leader.y - drone.y) ** 2 <= radiusSq) {
+          this.health.applyShield(amount, time + UNIQUE_SKILLS.deity.durationMs);
+          this.effect?.('shield', this.leader.x, this.leader.y, drone.archetype);
+        }
+        for (const ally of this.drones) {
+          if (ally.health.isDead || (ally.x - drone.x) ** 2 + (ally.y - drone.y) ** 2 > radiusSq) continue;
+          ally.health.applyShield(amount, time + UNIQUE_SKILLS.deity.durationMs);
+          this.effect?.('shield', ally.x, ally.y, drone.archetype);
+        }
+      }
     }
   }
 
@@ -128,7 +203,8 @@ export class PlayerSquad {
     enemies: Phaser.GameObjects.Group,
     damageMultiplier: number,
     attackSpeedMultiplier: number,
-    moveSpeedBonus: number
+    moveSpeedBonus: number,
+    combatActive = true
   ): void {
     // 본체 피격 점멸 해제 및 무적 시간 투명도 연출
     if (this.flashUntil > 0 && time >= this.flashUntil) {
@@ -136,6 +212,23 @@ export class PlayerSquad {
       this.leader.clearTint();
     }
     this.leader.setAlpha(time < this.health.invulnerableUntil ? 0.6 : 1.0);
+    this.health.update(time, delta);
+    for (const drone of this.drones) {
+      drone.health.update(time, delta);
+      drone.attackBuffMultiplier = 1;
+      if (drone.health.isDead && time >= drone.reviveAt) {
+        drone.health.heal(Math.round(drone.health.maxHp * UNIT_REVIVE_RATIO));
+        drone.health.invulnerableUntil = time + 650;
+        drone.setActive(true).setVisible(true);
+        this.effect?.('revive', drone.x, drone.y, drone.archetype);
+      }
+    }
+    if (combatActive) this.updateSkills(time, enemies, damageMultiplier);
+    for (const drone of this.drones) {
+      if (drone.attackBuffMultiplier > 1 && !drone.hadAttackBuff)
+        this.effect?.('buff', drone.x, drone.y, 'WORLD_DRUID');
+      drone.hadAttackBuff = drone.attackBuffMultiplier > 1;
+    }
 
     // 본체 이동 및 조향
     this.movement.moveInDirection(inputDirX, inputDirY, time, moveSpeedBonus);
@@ -149,21 +242,16 @@ export class PlayerSquad {
 
     for (let i = 0; i < this.drones.length; i++) {
       const drone = this.drones[i];
-      if (drone.health.isDead && time >= drone.reviveAt) {
-        drone.health.heal(Math.round(drone.health.maxHp * UNIT_REVIVE_RATIO));
-        drone.health.invulnerableUntil = time + 650;
-        drone.setActive(true).setVisible(true);
-      }
       const type = UNIT_TYPES[drone.archetype];
       if (!drone.health.isDead && type.healAmount > 0 && time - drone.lastHealAt >= SUPPORT_HEAL_INTERVAL_MS) {
         drone.lastHealAt = time;
-        this.health.heal(type.healAmount * drone.star);
-        for (const ally of this.drones) if (!ally.health.isDead) ally.health.heal(type.healAmount * drone.star);
+        this.heal(this.health, this.leader.x, this.leader.y, type.healAmount * drone.star, drone.archetype);
+        for (const ally of this.drones) this.heal(ally.health, ally.x, ally.y, type.healAmount * drone.star, drone.archetype);
       }
       drone.updateDrone(time, delta,
         this.leader.x + (i % 3 - 1) * 44,
         this.leader.y + 45 + Math.floor(i / 3) * 40,
-        enemies, damageMultiplier, attackSpeedMultiplier);
+        enemies, damageMultiplier, attackSpeedMultiplier, combatActive);
     }
   }
 }

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { FANTASY, dungeonFloor, pixelPanel } from '../ui/fantasyTheme';
+import { FANTASY, fantasyButton, pixelPanel } from '../ui/fantasyTheme';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameData';
 import { soundManager } from '../systems/SoundManager';
 import { RunStats } from '../types/game';
@@ -8,6 +8,7 @@ export interface GameOverSceneData {
   victory: boolean;
   stats: RunStats;
   droneSummary: string[];
+  saveWarning?: string;
 }
 
 export class GameOverScene extends Phaser.Scene {
@@ -18,8 +19,7 @@ export class GameOverScene extends Phaser.Scene {
   public create(data: GameOverSceneData): void {
     const cx = GAME_WIDTH / 2;
 
-    const bg = this.add.graphics();
-    dungeonFloor(bg, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+    this.add.image(cx, GAME_HEIGHT / 2, 'art_title').setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
     this.add.rectangle(cx, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x111a20, 0.75);
 
     const accentColor = data.victory ? 0xb8ab6c : 0xa46957;
@@ -104,41 +104,17 @@ export class GameOverScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     // 재도전 버튼
-    const retryBtn = this.add
-      .rectangle(cx, 945, 340, 74, 0x3d5343, 1)
-      .setStrokeStyle(3, 0xc3a76d)
-      .setInteractive({ useHandCursor: true });
-
-    this.add
-      .text(cx, 945, '다시 모험하기', {
-        fontFamily: FANTASY.font,
-        fontSize: '25px',
-        fontStyle: 'bold',
-        color: '#ffffff'
-      })
-      .setOrigin(0.5);
-
-    retryBtn.on('pointerdown', () => {
+    fantasyButton(this, cx, 945, 340, 74, '다시 모험하기', () => {
       soundManager.playPowerup();
-      this.scene.start('GameScene');
-    });
+      this.scene.start('GameScene', { resume: false });
+    }, { primary: true, fontSize: 25 });
 
     // 메인 메뉴 버튼
-    const menuBtn = this.add
-      .rectangle(cx, 1045, 260, 56, 0x243039, 1)
-      .setStrokeStyle(2, 0x657167)
-      .setInteractive({ useHandCursor: true });
-
-    this.add
-      .text(cx, 1045, '타이틀 화면으로', {
-        fontFamily: FANTASY.font,
-        fontSize: '20px',
-        color: '#bbc5ac'
-      })
-      .setOrigin(0.5);
-
-    menuBtn.on('pointerdown', () => {
+    fantasyButton(this, cx, 1045, 260, 56, '타이틀 화면으로', () => {
       this.scene.start('MenuScene');
-    });
+    }, { fontSize: 20 });
+    if (data.saveWarning) this.add.text(cx, 1120, data.saveWarning, {
+      fontFamily: FANTASY.font, fontSize: '17px', color: '#f87171'
+    }).setOrigin(0.5);
   }
 }

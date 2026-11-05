@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 
-export type RoomType = 'COMBAT' | 'ELITE' | 'SHOP' | 'RECOVERY' | 'BOSS';
+export type RoomType = 'COMBAT' | 'ELITE' | 'EVENT' | 'RECOVERY' | 'BOSS';
+export type CircleChoice = 'SAFE' | 'CHALLENGE' | 'SKIP';
 
 export type RoomState = 'ENTERING' | 'LOCKED_WAVES' | 'CLEARED' | 'TRANSITION';
 
@@ -22,6 +23,7 @@ export interface RoomNode {
   cleared: boolean;
   visited: boolean;
   waveCount: number;
+  circleChoice?: CircleChoice;
 }
 
 export type DroneTier = 1 | 2 | 3 | 4;
@@ -41,6 +43,16 @@ export type DroneArchetype =
 
 export type Element = 'FOREST' | 'WIND' | 'FIRE' | 'FROST' | 'LIGHTNING' | 'EARTH' | 'SHADOW' | 'LIGHT';
 export type UnitRole = 'VANGUARD' | 'MELEE' | 'RANGED' | 'MAGIC' | 'SUPPORT';
+export type SkillShape = 'arrow' | 'streak' | 'fire' | 'frost' | 'star' | 'void' | 'bolt'
+  | 'stone' | 'leaf' | 'slash' | 'thorn' | 'holy' | 'feather' | 'poison';
+export type SkillEffectKind = 'cast' | 'hit' | 'heal' | 'shield' | 'buff' | 'revive' | 'reflect' | 'burn' | 'summon' | 'poison' | 'split';
+export type SkillEffectFn = (kind: SkillEffectKind, x: number, y: number, unit: DroneArchetype) => void;
+export interface CombatStyle {
+  shape: SkillShape;
+  color: number;
+  accent: number;
+  intensity: 'S' | 'M' | 'L';
+}
 export interface UnitTypeDef {
   id: DroneArchetype;
   name: string;
@@ -102,6 +114,15 @@ export interface SummonOffer {
   cost: number;
 }
 
+export interface QuickCraftPlan {
+  unitTypeId: DroneArchetype;
+  totalCost: number;
+  summonCost: number;
+  combinationCost: number;
+  summons: { unitTypeId: DroneArchetype; count: number; unitCost: number }[];
+  combinations: { recipeId: string; count: number; unitCost: number }[];
+}
+
 export type EnemyArchetype = 'SWARMER' | 'CHASER' | 'TANK' | 'ELITE_BRUTE' | 'BOSS_CORE' | 'SPORE_SHOOTER' | 'EXPLODER' | 'SUMMONER';
 
 export interface EnemySpec {
@@ -116,7 +137,26 @@ export interface EnemySpec {
   mineralValue: number;
 }
 
+/** A life ID distinguishes a live target from a recycled sprite in the enemy pool. */
+export interface ProjectileTarget {
+  x: number;
+  y: number;
+  active: boolean;
+  lifeId: number;
+}
+
+export interface ProjectileSkill {
+  poison?: { damageRatio: number; durationMs: number; tickMs: number };
+  split?: { count: 1 | 2; damageRatio: number; radius: number; lifespanMs: number };
+  homing?: { turnRate: number };
+}
+
 export interface BulletFireConfig {
+  sourceUnitId?: string;
+  unitTypeId?: DroneArchetype;
+  target?: ProjectileTarget;
+  isFragment?: boolean;
+  ignoredEnemyLifeId?: number;
   x: number;
   y: number;
   angle: number;
@@ -150,6 +190,24 @@ export interface RunStats {
   damageMultiplier: number;
   attackSpeedMultiplier: number;
   moveSpeedBonus: number;
+}
+
+export interface RosterSnapshot {
+  units: DroneInstanceData[];
+  minerals: number;
+  freeSummons: number;
+  nextId: number;
+}
+
+/** Only captured after entering a fresh stage, before its first combat update. */
+export interface RunCheckpoint {
+  version: 1;
+  savedAt: number;
+  stats: RunStats;
+  roster: RosterSnapshot;
+  leaderHealth: { currentHp: number; maxHp: number };
+  unitHealth: { id: string; currentHp: number }[];
+  grid: (RoomNode | null)[][];
 }
 
 export type StageState = 'PLAYING' | 'STAGE_CLEARED' | 'STAGE_TRANSITION';

@@ -29,11 +29,11 @@ export class VirtualJoystick {
     this.baseSprite = scene.add
       .image(this.anchorX, this.anchorY, 'tex_joy_base')
       .setDepth(60)
-      .setAlpha(0.45);
+      .setAlpha(0.82);
     this.thumbSprite = scene.add
       .image(this.anchorX, this.anchorY, 'tex_joy_thumb')
       .setDepth(61)
-      .setAlpha(0.65);
+      .setAlpha(0.92);
 
     this.hintText = scene.add
       .text(GAME_WIDTH / 2, GAME_HEIGHT - 44, '좌측 하단 터치 드래그 (또는 WASD)로 이동 / 자동 사격', {
@@ -112,8 +112,8 @@ export class VirtualJoystick {
     // 기본 좌측 하단 대기 위치로 복귀
     this.anchorX = 160;
     this.anchorY = GAME_HEIGHT - 115;
-    this.baseSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.42);
-    this.thumbSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.6);
+    this.baseSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.82);
+    this.thumbSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.92);
   }
 
   public update(): void {

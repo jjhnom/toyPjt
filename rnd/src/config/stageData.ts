@@ -5,6 +5,7 @@ export const ENEMY_POOL_SIZE = 80;
 export const STAGE_RECOVERY_RATIO = 0.4;
 export const SPAWN_INTERVAL_MS = 140;
 export const STAGE_REWARD_RATIO = 0.6;
+export const SUMMONING_CIRCLE = { guardian: 'ELITE_BRUTE', escortCount: 2, vouchers: 1 } as const;
 
 export const STAGES: StageDef[] = [
   { index: 0, name: '이끼 숲', themeId: 'forest', gridWidth: 3, gridHeight: 3, roomCount: 7, eliteCount: 1,

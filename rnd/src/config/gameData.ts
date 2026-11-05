@@ -22,7 +22,7 @@ export const ROOM_TYPE_META: Record<
 > = {
   COMBAT: { label: '잊힌 회랑', badgeText: '전투', color: 0x3b82f6, hex: '#3b82f6' },
   ELITE: { label: '수호자의 방', badgeText: '정예', color: 0xa855f7, hex: '#a855f7' },
-  SHOP: { label: '여행자의 야영지', badgeText: '상점', color: 0xf59e0b, hex: '#f59e0b' },
+  EVENT: { label: '봉인된 소환진', badgeText: '소환진', color: 0xb78cff, hex: '#b78cff' },
   RECOVERY: { label: '치유의 샘', badgeText: '회복', color: 0x10b981, hex: '#10b981' },
   BOSS: { label: '마왕의 성소', badgeText: '보스', color: 0xef4444, hex: '#ef4444' }
 };

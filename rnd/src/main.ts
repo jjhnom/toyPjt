@@ -6,6 +6,7 @@ import { GameScene } from './scenes/GameScene';
 import { MenuScene } from './scenes/MenuScene';
 import { SquadScene } from './scenes/SquadScene';
 import { RewardScene } from './scenes/RewardScene';
+import { SummoningCircleScene } from './scenes/SummoningCircleScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -29,7 +30,7 @@ const config: Phaser.Types.Core.GameConfig = {
   input: {
     activePointers: 2
   },
-  scene: [BootScene, MenuScene, GameScene, SquadScene, RewardScene, GameOverScene]
+  scene: [BootScene, MenuScene, GameScene, SquadScene, SummoningCircleScene, RewardScene, GameOverScene]
 };
 
 export const game = new Phaser.Game(config);

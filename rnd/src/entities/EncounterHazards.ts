@@ -39,7 +39,7 @@ export class EncounterHazards {
       if (!slot.active) continue;
       slot.age += delta;
       const warning = slot.age < 800;
-      const color = slot.kind === 'FROST' ? 0x8adce8 : slot.kind === 'POISON' ? 0xa3cc67 : 0xf4a275;
+      const color = slot.kind === 'FROST' ? 0xeea07b : slot.kind === 'POISON' ? 0xeeb765 : 0xf17b53;
       this.graphics.lineStyle(warning ? 3 : 2, color, 0.9).strokeCircle(slot.x, slot.y, slot.radius);
       this.graphics.fillStyle(color, warning ? 0.12 : 0.35).fillCircle(slot.x, slot.y, slot.radius);
       if (warning) {

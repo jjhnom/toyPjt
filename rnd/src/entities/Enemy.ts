@@ -5,9 +5,12 @@ import { HealthComponent } from '../components/HealthComponent';
 import { MovementComponent } from '../components/MovementComponent';
 import { EnemyArchetype, EnemySpec } from '../types/game';
 import { ENEMY_POOL_SIZE } from '../config/stageData';
+import { BurnComponent } from '../components/BurnComponent';
+import { PoisonComponent } from '../components/PoisonComponent';
 
 export type EnemyAttackCallback = (enemy: Enemy, damage: number) => void;
 export type EnemySpecialCallback = (enemy: Enemy, kind: 'SHOT' | 'EXPLODE' | 'SUMMON') => void;
+export type BurnTickCallback = (enemy: Enemy, damage: number, sourceUnitId?: string) => void;
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private static nextLifeId = 0;
@@ -15,6 +18,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   public spec: EnemySpec = ENEMY_SPECS.SWARMER;
   public health!: HealthComponent;
   public movement!: MovementComponent;
+  public readonly burn = new BurnComponent();
+  public readonly poison = new PoisonComponent();
+  public onBurnTick?: BurnTickCallback;
+  public onPoisonTick?: BurnTickCallback;
 
   private targetX = ARENA_BOUNDS.centerX;
   private targetY = ARENA_BOUNDS.centerY;
@@ -46,6 +53,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     speedMultiplier = 1
   ): void {
     this.lifeId = ++Enemy.nextLifeId;
+    this.burn.clear();
+    this.poison.clear();
+    this.onSpecial = undefined;
     const base = ENEMY_SPECS[archetype];
     this.spec = { ...base, speed: base.speed * speedMultiplier, contactDamage: Math.round(base.contactDamage * damageMultiplier) };
     this.onAttackPlayer = onAttackPlayer;
@@ -132,6 +142,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   public deactivate(): void {
+    this.burn.clear();
+    this.poison.clear();
     if (this.movement) {
       this.movement.stop();
     }
@@ -141,6 +153,14 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   public override update(time: number, delta: number): void {
     if (!this.active || !this.movement) return;
+    while (this.onBurnTick && this.burn.consumeTick(time)) {
+      this.onBurnTick(this, this.burn.damage, this.burn.sourceUnitId);
+      if (!this.active) return;
+    }
+    while (this.onPoisonTick && this.poison.consumeTick(time)) {
+      this.onPoisonTick(this, this.poison.damage, this.poison.sourceUnitId);
+      if (!this.active) return;
+    }
 
     // 피격 점멸 및 슬로우 색상 복원
     if (this.flashUntil > 0 && time >= this.flashUntil) {
@@ -219,7 +239,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 export class EnemyGroup extends Phaser.Physics.Arcade.Group {
   public onAttackPlayer?: EnemyAttackCallback;
 
-  constructor(scene: Phaser.Scene, onAttackPlayer?: EnemyAttackCallback) {
+  constructor(scene: Phaser.Scene, onAttackPlayer?: EnemyAttackCallback, private readonly onBurnTick?: BurnTickCallback,
+    private readonly onPoisonTick?: BurnTickCallback) {
     super(scene.physics.world, scene, {
       classType: Enemy,
       maxSize: ENEMY_POOL_SIZE,
@@ -240,6 +261,8 @@ export class EnemyGroup extends Phaser.Physics.Arcade.Group {
     const enemy = this.get(x, y, enemyTexture('SWARMER')) as Enemy | null;
     if (!enemy) return null;
     enemy.spawn(archetype, x, y, hpMultiplier, this.onAttackPlayer, damageMultiplier, speedMultiplier);
+    enemy.onBurnTick = this.onBurnTick;
+    enemy.onPoisonTick = this.onPoisonTick;
     return enemy;
   }
 

@@ -2,6 +2,7 @@ import type { DroneArchetype, EnemyArchetype } from '../types/game';
 import { ELEMENT_COLORS, UNIT_TYPES } from '../config/unitData';
 
 export const unitTexture = (type: DroneArchetype): string => `unit_${type}`;
+export const unitPortrait = (type: DroneArchetype): string => `portrait_${type}`;
 export const unitAnimation = (type: DroneArchetype): string => `walk_${type}`;
 export const enemyTexture = (type: EnemyArchetype): string => `enemy_${type}`;
 export const enemyAnimation = (type: EnemyArchetype): string => `walk_${type}`;
@@ -19,7 +20,17 @@ export function drawCharacter(ctx: CanvasRenderingContext2D, kind: string, frame
   };
   const bob = frame % 2;
   const dark = '#172029', light = '#efe0b7', skin = '#e6b887', wood = '#98734d';
-  rect(3, 14, 10, 1, '#111a21');
+  rect(2, 14, 12, 1, '#070d15aa'); rect(4, 13, 8, 2, '#070d1577');
+  if (kind === 'LEADER') {
+    rect(4, 7 + bob, 8, 6 - bob, '#352b56'); rect(5, 7 + bob, 6, 5 - bob, '#8662ad');
+    rect(5, 8 + bob, 2, 4 - bob, '#ad8fce'); rect(7, 11, 4, 1, '#e2c47c');
+    rect(6, 4 + bob, 5, 4, skin); rect(8, 6 + bob, 1, 1, dark); rect(10, 6 + bob, 1, 1, dark);
+    rect(4, 3 + bob, 9, 2, '#c9a65f'); rect(5, 1 + bob, 7, 2, '#76559d'); rect(7, bob, 4, 2, '#9d7cc1');
+    rect(5, 12, 2, 2 + bob, wood); rect(9, 12, 2, 3 - bob, wood);
+    rect(13, 4, 1, 10, '#b39160'); rect(12, 2, 3, 3, '#a3edff'); rect(13, 2, 1, 2, '#e8ffff');
+    rect(3, 8 + bob, 2, 3, skin);
+    return;
+  }
   const unit = UNIT_TYPES[kind as DroneArchetype];
   const legacy = ['BASIC_LASER', 'GATLING_BOT', 'ROCKET_BOT', 'STUN_BOT', 'PIERCE_BEAM', 'BLACKHOLE_MISSILE', 'CHAIN_LIGHTNING'];
   if (unit && !legacy.includes(kind)) {
@@ -55,7 +66,8 @@ export function drawCharacter(ctx: CanvasRenderingContext2D, kind: string, frame
   if (kind === 'SWARMER') {
     rect(4, 7 - bob, 8, 1, '#1e3030'); rect(2, 9 - bob, 12, 5 + bob, '#3e755b');
     rect(3, 8 - bob, 10, 5, '#77af69'); rect(4, 8 - bob, 4, 2, '#b2d885');
-    rect(5, 11 - bob, 1, 2, dark); rect(10, 11 - bob, 1, 2, dark);
+    rect(5, 11 - bob, 2, 2, dark); rect(10, 11 - bob, 2, 2, dark);
+    rect(5, 11 - bob, 1, 1, '#ffeeb0'); rect(10, 11 - bob, 1, 1, '#ffeeb0');
     return;
   }
   if (kind === 'TANK' || kind === 'ELITE_BRUTE' || kind === 'BOSS_CORE') {

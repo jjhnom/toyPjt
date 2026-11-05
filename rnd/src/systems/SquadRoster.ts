@@ -1,12 +1,68 @@
 import { COMBINATION_RECIPES, SELL_REFUND_PER_TIER, SQUAD_LIMITS, SUMMON_OFFERS } from '../config/squadData';
 import { UNIT_TYPES } from '../config/unitData';
-import type { CombinationRecipe, DroneArchetype, DroneInstanceData, IngredientSpec } from '../types/game';
+import type { CombinationRecipe, DroneArchetype, DroneInstanceData, IngredientSpec, QuickCraftPlan, RosterSnapshot } from '../types/game';
 
-export function matchesIngredient(unit: DroneInstanceData, item: IngredientSpec): boolean {
+export function matchesIngredient(unit: Pick<DroneInstanceData, 'archetype'>, item: IngredientSpec): boolean {
   if (item.kind !== 'query') return unit.archetype === item.unitTypeId;
   const type = UNIT_TYPES[unit.archetype];
   return (!item.element || type.elements.includes(item.element)) && (!item.role || type.role === item.role)
     && type.tier >= (item.minTier ?? 1) && type.tier <= (item.maxTier ?? 4);
+}
+
+/** Quote fresh materials only: never consume owned units, stars or free summon vouchers. */
+export function quickCraftPlans(stageIndex: number): Map<DroneArchetype, QuickCraftPlan> {
+  const plans = new Map<DroneArchetype, QuickCraftPlan>();
+  const visiting = new Set<DroneArchetype>();
+  const types = Object.values(UNIT_TYPES);
+  const build = (id: DroneArchetype): QuickCraftPlan | null => {
+    const cached = plans.get(id);
+    if (cached) return cached;
+    if (visiting.has(id)) return null;
+    visiting.add(id);
+    let best: QuickCraftPlan | null = null;
+    const offer = SUMMON_OFFERS.find(item => item.unitTypeId === id);
+    if (offer && (UNIT_TYPES[id].tier < 3 || stageIndex >= 2)) {
+      best = { unitTypeId: id, totalCost: offer.cost, summonCost: offer.cost, combinationCost: 0,
+        summons: [{ unitTypeId: id, count: 1, unitCost: offer.cost }], combinations: [] };
+    }
+    for (const recipe of COMBINATION_RECIPES) {
+      if (recipe.resultUnitTypeId !== id || recipe.kind === 'promotion' || recipe.resultCount !== 1 ||
+          (recipe.resultStar !== undefined && recipe.resultStar !== 1) ||
+          (recipe.ingredientStar !== undefined && recipe.ingredientStar !== 1)) continue;
+      const candidate: QuickCraftPlan = { unitTypeId: id, totalCost: recipe.cost,
+        summonCost: 0, combinationCost: recipe.cost, summons: [], combinations: [] };
+      let possible = true;
+      for (const ingredient of recipe.ingredients) {
+        let material: QuickCraftPlan | null = null;
+        for (const type of types) {
+          if (!matchesIngredient({ archetype: type.id }, ingredient)) continue;
+          const option = build(type.id);
+          if (option && (!material || option.totalCost < material.totalCost)) material = option;
+        }
+        if (!material) { possible = false; break; }
+        candidate.totalCost += material.totalCost * ingredient.count;
+        candidate.summonCost += material.summonCost * ingredient.count;
+        candidate.combinationCost += material.combinationCost * ingredient.count;
+        for (const entry of material.summons) {
+          const existing = candidate.summons.find(item => item.unitTypeId === entry.unitTypeId);
+          if (existing) existing.count += entry.count * ingredient.count;
+          else candidate.summons.push({ ...entry, count: entry.count * ingredient.count });
+        }
+        for (const entry of material.combinations) {
+          const existing = candidate.combinations.find(item => item.recipeId === entry.recipeId);
+          if (existing) existing.count += entry.count * ingredient.count;
+          else candidate.combinations.push({ ...entry, count: entry.count * ingredient.count });
+        }
+      }
+      candidate.combinations.push({ recipeId: recipe.id, count: 1, unitCost: recipe.cost });
+      if (possible && (!best || candidate.totalCost < best.totalCost)) best = candidate;
+    }
+    visiting.delete(id);
+    if (best) plans.set(id, best);
+    return best;
+  };
+  for (const type of types) build(type.id);
+  return plans;
 }
 
 /** Transactions validate before committing; scene sprites only project this state. */
@@ -19,6 +75,20 @@ export class SquadRoster {
   constructor(public minerals = 30) {
     this.createUnit('BASIC_LASER', true);
     this.createUnit('BASIC_LASER', true);
+  }
+
+  public snapshot(): RosterSnapshot {
+    return { units: this.units.map(unit => ({ ...unit })), minerals: this.minerals,
+      freeSummons: this.freeSummons, nextId: this.nextId };
+  }
+
+  /** Input has already passed checkpoint validation; preserve the ID high-water mark. */
+  public restore(snapshot: RosterSnapshot, stageIndex: number): void {
+    this.units = snapshot.units.map(unit => ({ ...unit }));
+    this.minerals = snapshot.minerals;
+    this.freeSummons = snapshot.freeSummons;
+    this.nextId = snapshot.nextId;
+    this.stageIndex = stageIndex;
   }
 
   private createUnit(archetype: DroneArchetype, deployed: boolean, star: 1 | 2 | 3 = 1): void {
@@ -38,6 +108,16 @@ export class SquadRoster {
     const offer = SUMMON_OFFERS.find(item => item.unitTypeId === archetype)!;
     if (this.freeSummons > 0 && UNIT_TYPES[archetype].tier === 1) this.freeSummons--;
     else this.minerals -= offer.cost;
+    this.createUnit(archetype, this.units.filter(unit => unit.deployed).length < SQUAD_LIMITS.deployed);
+    return true;
+  }
+
+  public quickCraft(archetype: DroneArchetype, expectedCost: number): boolean {
+    const plan = quickCraftPlans(this.stageIndex).get(archetype);
+    if (!plan || !Number.isSafeInteger(expectedCost) || expectedCost < 0 || expectedCost !== plan.totalCost ||
+        this.units.length >= SQUAD_LIMITS.owned || this.minerals < plan.totalCost) return false;
+    // Materials are purchased and combined in this transaction; only its final unit occupies the roster.
+    this.minerals -= plan.totalCost;
     this.createUnit(archetype, this.units.filter(unit => unit.deployed).length < SQUAD_LIMITS.deployed);
     return true;
   }

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BulletFireConfig, DroneSpec, IComponent } from '../types/game';
+import { BulletFireConfig, DroneSpec, IComponent, ProjectileTarget } from '../types/game';
 import { soundManager } from '../systems/SoundManager';
 
 export type FireBulletFn = (config: BulletFireConfig) => void;
@@ -24,27 +24,32 @@ export class WeaponComponent implements IComponent {
     chainCount: 0
   };
 
-  constructor(spec: DroneSpec, fireCallback: FireBulletFn) {
+  constructor(spec: DroneSpec, fireCallback: FireBulletFn, ownerId?: string) {
     this.spec = spec;
     this.fireCallback = fireCallback;
+    this.reusableFireConfig.sourceUnitId = ownerId;
   }
 
   public setSpec(spec: DroneSpec): void {
     this.spec = spec;
   }
 
+  public reduceCooldown(ms: number): void {
+    this.lastFiredAt -= ms;
+  }
+
   public findNearestTarget(
     originX: number,
     originY: number,
     enemies: Phaser.GameObjects.Group
-  ): Phaser.GameObjects.Sprite | null {
+  ): (Phaser.GameObjects.Sprite & ProjectileTarget) | null {
     const children = enemies.getChildren();
     const maxRangeSq = this.spec.range * this.spec.range;
-    let nearest: Phaser.GameObjects.Sprite | null = null;
+    let nearest: (Phaser.GameObjects.Sprite & ProjectileTarget) | null = null;
     let minDistSq = maxRangeSq;
 
     for (let i = 0; i < children.length; i++) {
-      const child = children[i] as Phaser.GameObjects.Sprite;
+      const child = children[i] as Phaser.GameObjects.Sprite & ProjectileTarget;
       if (!child.active) continue;
 
       const dx = child.x - originX;
@@ -82,6 +87,8 @@ export class WeaponComponent implements IComponent {
     const angle = Phaser.Math.Angle.Between(originX, originY, target.x, target.y);
 
     this.reusableFireConfig.x = originX;
+    this.reusableFireConfig.target = target;
+    this.reusableFireConfig.unitTypeId = this.spec.archetype;
     this.reusableFireConfig.y = originY;
     this.reusableFireConfig.angle = angle;
     this.reusableFireConfig.speed = this.spec.bulletSpeed;

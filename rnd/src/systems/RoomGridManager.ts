@@ -10,7 +10,13 @@ export class RoomGridManager {
   private distances = new Map<string, number>();
   private maxDistance = 1;
 
-  constructor(public stage: StageDef = STAGES[0]) { this.generateGrid(); }
+  constructor(public stage: StageDef = STAGES[0], savedGrid?: (RoomNode | null)[][]) {
+    if (!savedGrid) { this.generateGrid(); return; }
+    this.grid = savedGrid.map(row => row.map(room => room ? { ...room, doors: { ...room.doors } } : null));
+    this.currentX = Math.floor(stage.gridWidth / 2);
+    this.currentY = Math.floor(stage.gridHeight / 2);
+    this.measureDistances();
+  }
 
   public generateGrid(): void {
     const { gridWidth: width, gridHeight: height, roomCount } = this.stage;
@@ -38,9 +44,27 @@ export class RoomGridManager {
     for (const node of nodes) for (const [direction, [dx, dy]] of Object.entries(OFFSETS)) {
       node.doors[direction as DoorDirection] = !!this.grid[node.gridY + dy]?.[node.gridX + dx];
     }
-    this.distances.clear();
     const start = nodes[0];
     start.visited = true;
+    const queue = this.measureDistances();
+    const boss = queue[queue.length - 1];
+    boss.type = 'BOSS';
+    const special = nodes.filter(node => node !== start && node !== boss);
+    for (let i = special.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [special[i], special[j]] = [special[j], special[i]];
+    }
+    special[0].type = 'EVENT';
+    special[1].type = 'RECOVERY';
+    special.slice(2, 2 + this.stage.eliteCount).forEach(node => { node.type = 'ELITE'; });
+    const bonus = getStageScaling(this.stage.index).waveCountBonus;
+    for (const node of nodes) node.waveCount = node.type === 'EVENT' || node.type === 'RECOVERY' ? 0
+      : node.type === 'BOSS' ? 1 : (node === start ? 1 : 2) + bonus;
+  }
+
+  private measureDistances(): RoomNode[] {
+    this.distances.clear();
+    const start = this.getCurrentRoom();
     this.distances.set(start.id, 0);
     const queue = [start];
     for (let i = 0; i < queue.length; i++) {
@@ -54,18 +78,7 @@ export class RoomGridManager {
     }
     const boss = queue[queue.length - 1];
     this.maxDistance = Math.max(1, this.distances.get(boss.id)!);
-    boss.type = 'BOSS';
-    const special = nodes.filter(node => node !== start && node !== boss);
-    for (let i = special.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [special[i], special[j]] = [special[j], special[i]];
-    }
-    special[0].type = 'SHOP';
-    special[1].type = 'RECOVERY';
-    special.slice(2, 2 + this.stage.eliteCount).forEach(node => { node.type = 'ELITE'; });
-    const bonus = getStageScaling(this.stage.index).waveCountBonus;
-    for (const node of nodes) node.waveCount = node.type === 'SHOP' || node.type === 'RECOVERY' ? 0
-      : node.type === 'BOSS' ? 1 : (node === start ? 1 : 2) + bonus;
+    return queue;
   }
 
   public getCurrentRoom(): RoomNode { return this.grid[this.currentY][this.currentX]!; }

@@ -29,7 +29,8 @@ test('all five stage grids have exact counts, symmetric doors, and reachable uni
     assert.ok(manager.grid.every(row => row.length === stage.gridWidth));
     const rooms = manager.grid.flat().filter(Boolean);
     assert.equal(rooms.length, stage.roomCount);
-    for (const type of ['SHOP', 'RECOVERY', 'BOSS']) assert.equal(rooms.filter(room => room.type === type).length, 1);
+    for (const type of ['EVENT', 'RECOVERY', 'BOSS']) assert.equal(rooms.filter(room => room.type === type).length, 1);
+    assert.equal(rooms.some(room => room.type === 'SHOP'), false);
     assert.equal(rooms.filter(room => room.type === 'ELITE').length, stage.eliteCount);
     assert.equal(manager.getDepth(manager.getCurrentRoom()), 0);
     const visited = new Set();

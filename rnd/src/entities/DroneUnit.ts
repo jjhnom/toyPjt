@@ -16,6 +16,9 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
   public lastHealAt = 0;
   public star: 1 | 2 | 3;
   public reviveAt = 0;
+  public lastSkillAt: number;
+  public attackBuffMultiplier = 1;
+  public hadAttackBuff = false;
   private recoilTimerMs = 0;
   private readonly fallbackAngle: number;
 
@@ -32,6 +35,7 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     super(scene, 0, 0, texKey, 0);
     this.id = id;
     this.star = star;
+    this.lastSkillAt = scene.time.now;
     this.health = new HealthComponent(Math.round(UNIT_TYPES[archetype].maxHp * (1 + 0.5 * (star - 1))),
       () => { this.reviveAt = this.scene.time.now + UNIT_REVIVE_DELAY_MS; this.setActive(false).setVisible(false); });
     this.fallbackAngle = Number(id.split('_')[1]) * 2.4;
@@ -40,7 +44,7 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
 
     this.setDepth(24);
 
-    this.weapon = new WeaponComponent(spec, fireCallback);
+    this.weapon = new WeaponComponent(spec, fireCallback, id);
     scene.add.existing(this);
     this.playTierAnimation();
   }
@@ -73,7 +77,8 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     targetY: number,
     enemies: Phaser.GameObjects.Group,
     damageMultiplier: number,
-    attackSpeedMultiplier: number
+    attackSpeedMultiplier: number,
+    combatActive = true
   ): void {
     if (this.health.isDead) return;
     const movement = UNIT_MOVEMENT[this.archetype];
@@ -108,14 +113,14 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     this.x = Phaser.Math.Clamp(this.x, ARENA_BOUNDS.left + 20, ARENA_BOUNDS.right - 20);
     this.y = Phaser.Math.Clamp(this.y, ARENA_BOUNDS.top + 20, ARENA_BOUNDS.bottom - 20);
 
-    const target = this.weapon.tryFire(
+    const target = combatActive ? this.weapon.tryFire(
       time,
       this.x,
       this.y,
       enemies,
-      damageMultiplier * (1 + 0.5 * (this.star - 1)),
+      damageMultiplier * this.attackBuffMultiplier * (1 + 0.5 * (this.star - 1)),
       attackSpeedMultiplier
-    );
+    ) : null;
 
     if (target) {
       this.setFlipX(target.x < this.x);

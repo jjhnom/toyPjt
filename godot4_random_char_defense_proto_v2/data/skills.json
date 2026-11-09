@@ -1,8 +1,0 @@
-{
-  "global_slow": {
-    "cost": 35,
-    "cooldown": 25,
-    "duration": 5,
-    "factor": 0.6
-  }
-}

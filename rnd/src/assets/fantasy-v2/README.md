@@ -6,7 +6,7 @@
 | --- | --- |
 | title.png | 타이틀·결과 화면 배경 |
 | dungeon.png | 전투·정비 화면의 석재/이끼/횃불 던전 |
-| frame.png | 버튼 프레임, BootScene에서 별도 9-slice 패널 생성 |
+| frame.png | 이전 프레임 원본 보존. BootScene에서 텍스처를 준비하지만 현재 공통 UI는 fantasyTheme.ts의 도형 프레임을 사용 |
 | mage.png | 소환사 런타임 스프라이트 원본 |
 | archer.png | 기본/바람/관통 궁수 런타임 스프라이트 원본 |
 

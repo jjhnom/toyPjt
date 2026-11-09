@@ -62,27 +62,31 @@ test('stage 1, 3, and 5 scaling uses the designed curve and enforces caps', () =
     assert.ok(stageClearReward(STAGES[n]) > 0);
   }
   const far = getStageScaling(100);
-  assert.equal(far.enemySpeedMult, 1.3);
+  assert.equal(far.enemySpeedMult, 1.45);
   assert.equal(far.spawnIntervalMult, 0.6);
   assert.equal(far.maxActiveEnemies, Math.floor(ENEMY_POOL_SIZE * 0.8));
 });
 
-test('intermediate bosses grant one reward and one transition; only the final boss wins', () => {
+test('story bosses grant one reward; stage five waits for an explicit exit or continue decision', () => {
   const run = new StageProgression();
   for (let i = 0; i < STAGES.length; i++) {
     assert.equal(run.index, i);
     assert.equal(run.beginTransition(), false);
     const reward = run.clearBoss();
-    assert.equal(reward.victory, i === STAGES.length - 1);
+    assert.equal(reward.victory, false);
     assert.equal(reward.minerals, stageClearReward(STAGES[i]));
     assert.equal(reward.freeSummons, i === STAGES.length - 1 ? 0 : 1);
     assert.equal(run.clearBoss(), null);
-    if (!reward.victory) {
+    if (i < STAGES.length - 1) {
       assert.equal(run.beginTransition(), true);
       assert.equal(run.beginTransition(), false);
       assert.equal(run.clearBoss(), null);
       run.finishTransition();
-    } else assert.equal(run.beginTransition(), false);
+    } else {
+      assert.equal(reward.choiceRequired, true); assert.equal(run.endlessChoice, 'pending');
+      assert.equal(run.beginTransition(), false); assert.equal(run.selectEndless('exit'), true);
+      assert.equal(run.beginTransition(), false);
+    }
   }
   assert.equal(run.bossesDefeated, 5);
   const fresh = new StageProgression();

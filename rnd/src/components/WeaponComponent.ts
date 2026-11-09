@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BulletFireConfig, DroneSpec, IComponent, ProjectileTarget } from '../types/game';
+import { BulletFireConfig, DroneSpec, IComponent, ProjectileTarget, DamageSourceKind } from '../types/game';
 import { soundManager } from '../systems/SoundManager';
 
 export type FireBulletFn = (config: BulletFireConfig) => void;
@@ -24,10 +24,19 @@ export class WeaponComponent implements IComponent {
     chainCount: 0
   };
 
-  constructor(spec: DroneSpec, fireCallback: FireBulletFn, ownerId?: string) {
+  constructor(spec: DroneSpec, fireCallback: FireBulletFn, ownerId?: string, sourceKind: DamageSourceKind = 'unit') {
     this.spec = spec;
     this.fireCallback = fireCallback;
     this.reusableFireConfig.sourceUnitId = ownerId;
+    this.reusableFireConfig.sourceKind = sourceKind;
+  }
+
+  public cooldownRemaining(time: number): number {
+    return Math.min(this.spec.fireRateMs, Math.max(0, this.spec.fireRateMs - (time - this.lastFiredAt)));
+  }
+
+  public restoreCooldown(time: number, remaining: number): void {
+    this.lastFiredAt = time - this.spec.fireRateMs + remaining;
   }
 
   public setSpec(spec: DroneSpec): void {

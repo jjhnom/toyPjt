@@ -10,6 +10,7 @@ const profile = await mkdtemp(join(tmpdir(), 'smash-browser-'));
 const browserPath = process.env.SMASH_BROWSER_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browser = spawn(browserPath, [
   '--headless=new', '--no-first-run', '--no-default-browser-check', '--enable-unsafe-swiftshader',
+  ...(process.env.SMASH_BROWSER_NO_SANDBOX==='1'?['--no-sandbox','--disable-gpu']:[]),
   '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
 ], { windowsHide: true, stdio: 'ignore' });
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -115,7 +116,7 @@ try {
     choice: gs.gridManager.getCurrentRoom().circleChoice, cleared: gs.gridManager.getCurrentRoom().cleared })`),
   { vouchers: 1, units: 16, minerals, clears: 1, choice: 'SAFE', cleared: true });
   await capture('safe-reward');
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
   await evaluate('gs.startRoomLogic(gs.gridManager.getCurrentRoom()); undefined;');
   await sleep(100);
@@ -166,13 +167,14 @@ try {
     voucherGain: 1, clearGain: 1, completionReward: 25, choice: 'CHALLENGE', cleared: true, clean: true });
   await waitFor("smash.scene.isActive('SquadScene')");
   await capture('challenge-reward');
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
   // A real old-version checkpoint must retain the same roster, resources and health on Continue.
-  await evaluate(`startCheckpoint.grid.flat().find(r => r?.type === 'EVENT').type = 'SHOP';
+  await evaluate(`startCheckpoint.version = 1;
+    startCheckpoint.grid.flat().find(r => r?.type === 'EVENT').type = 'SHOP';
     localStorage.setItem('smash.run-checkpoint.v1', JSON.stringify(startCheckpoint)); gs.returnToTitle();`);
   await waitFor("smash.scene.isActive('MenuScene')");
-  await tap(360, 998);
+  await tap(360, 910);
   await waitFor("smash.scene.isActive('GameScene')");
   assert.deepEqual(await evaluate(`(() => {
     window.gs = smash.scene.getScene('GameScene');

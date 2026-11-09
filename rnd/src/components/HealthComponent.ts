@@ -1,4 +1,6 @@
 import { IComponent } from '../types/game';
+import type { DamageObserver } from '../systems/CombatMeasurements';
+import { MAX_DAMAGE_REDUCTION } from '../config/upgradeData';
 
 export class HealthComponent implements IComponent {
   public maxHp: number;
@@ -6,6 +8,8 @@ export class HealthComponent implements IComponent {
   public invulnerableUntil = 0;
   public shieldHp = 0;
   public shieldUntil = 0;
+  public damageReduction = 0;
+  public damageObserver?: DamageObserver;
   private onDeathCallback?: () => void;
   private onDamagedCallback?: (amount: number, current: number, max: number) => void;
 
@@ -33,11 +37,13 @@ export class HealthComponent implements IComponent {
 
     if (amount <= 0) return false;
     this.update(currentTime, 0);
-    const incoming = Math.max(1, Math.round(amount));
+    const incoming = Math.max(1, Math.round(amount * (1 - Math.min(MAX_DAMAGE_REDUCTION, Math.max(0, this.damageReduction)))));
     const absorbed = Math.min(incoming, this.shieldHp);
     this.shieldHp -= absorbed;
     const finalDamage = incoming - absorbed;
+    const before = this.currentHp;
     this.currentHp = Math.max(0, this.currentHp - finalDamage);
+    this.damageObserver?.(incoming, before - this.currentHp, absorbed, this.currentHp <= 0);
 
     if (iFrameMs > 0 && currentTime > 0) {
       this.invulnerableUntil = currentTime + iFrameMs;
@@ -86,5 +92,6 @@ export class HealthComponent implements IComponent {
   public destroy(): void {
     this.onDeathCallback = undefined;
     this.onDamagedCallback = undefined;
+    this.damageObserver = undefined;
   }
 }

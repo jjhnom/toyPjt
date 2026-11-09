@@ -124,8 +124,8 @@ test('support shows healing only when HP actually increases and never heals fall
   f.squad.drones[1].health.currentHp -= 10;
   f.squad.drones[2].health.takeDamage(140, 1);
   f.update(3000);
-  assert.equal(f.squad.health.currentHp, 92);
-  assert.equal(f.squad.drones[1].health.currentHp, 62);
+  assert.equal(f.squad.health.currentHp, 93);
+  assert.equal(f.squad.drones[1].health.currentHp, 63);
   assert.equal(f.squad.drones[2].health.currentHp, 0);
   assert.equal(f.events.filter(e => e[0] === 'heal').length, 2);
 });

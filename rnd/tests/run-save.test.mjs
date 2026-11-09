@@ -26,10 +26,12 @@ const { STAGES } = load(resolve('src/config/stageData.ts'));
 const { UNIT_TYPES } = load(resolve('src/config/unitData.ts'));
 
 class MemoryStorage {
-  value = null;
-  getItem() { return this.value; }
-  setItem(key, value) { this.value = value; }
-  removeItem() { this.value = null; }
+  values = new Map();
+  get value() { return this.getItem('smash.run-checkpoint.v1'); }
+  set value(value) { value === null ? this.removeItem('smash.run-checkpoint.v1') : this.setItem('smash.run-checkpoint.v1', value); }
+  getItem(key) { return this.values.get(key) ?? null; }
+  setItem(key, value) { this.values.set(key, value); }
+  removeItem(key) { this.values.delete(key); }
 }
 
 function checkpoint(index = 2) {
@@ -189,7 +191,7 @@ test('malformed, unsupported, and mid-stage data is rejected without partially r
   }
 });
 
-test('blocked storage and quota failures are handled and obsolete checkpoints are not offered', () => {
+test('blocked storage and quota failures preserve the last complete save; clear suppresses ended runs', () => {
   assert.equal(new RunSaveManager(null).load().status, 'unavailable');
   assert.equal(new RunSaveManager(null).save(checkpoint()), false);
   const storage = new MemoryStorage();
@@ -197,13 +199,11 @@ test('blocked storage and quota failures are handled and obsolete checkpoints ar
   manager.save(checkpoint());
   const invalid = checkpoint(3); invalid.version = 99;
   assert.equal(manager.save(invalid), false);
-  assert.equal(manager.load().status, 'empty', 'invalid new checkpoints must not expose an older stage');
+  assert.equal(manager.load().status, 'ready', 'invalid new data must not destroy the last complete checkpoint');
   manager.save(checkpoint());
   storage.setItem = () => { throw new Error('quota'); };
   assert.equal(manager.save(checkpoint(3)), false);
-  assert.equal(storage.value, null);
-  assert.equal(manager.load().status, 'empty');
-  storage.value = JSON.stringify(checkpoint());
+  assert.equal(manager.load().status, 'ready');
   storage.removeItem = () => { throw new Error('blocked'); };
   assert.equal(manager.clear(), false);
   assert.equal(manager.load().status, 'unavailable', 'do not resume a defeated run in this session if deletion fails');

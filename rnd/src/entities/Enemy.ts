@@ -7,6 +7,9 @@ import { EnemyArchetype, EnemySpec } from '../types/game';
 import { ENEMY_POOL_SIZE } from '../config/stageData';
 import { BurnComponent } from '../components/BurnComponent';
 import { PoisonComponent } from '../components/PoisonComponent';
+import type { DamageObserver } from '../systems/CombatMeasurements';
+import { BOSS_PROFILES } from '../config/bossData';
+import type { BossId } from '../types/game';
 
 export type EnemyAttackCallback = (enemy: Enemy, damage: number) => void;
 export type EnemySpecialCallback = (enemy: Enemy, kind: 'SHOT' | 'EXPLODE' | 'SUMMON') => void;
@@ -15,6 +18,7 @@ export type BurnTickCallback = (enemy: Enemy, damage: number, sourceUnitId?: str
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private static nextLifeId = 0;
   public lifeId = 0;
+  public rewardsClaimed = false;
   public spec: EnemySpec = ENEMY_SPECS.SWARMER;
   public health!: HealthComponent;
   public movement!: MovementComponent;
@@ -36,6 +40,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   public targetUnitId: string | null = null;
   private nextSpecialAt = 0;
   private chargeAngle = 0;
+  public bossId: BossId | null = null;
+  private chargeWindupMs = 0;
+  private bossChargeMs = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, enemyTexture('SWARMER'), 0);
@@ -53,9 +60,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     speedMultiplier = 1
   ): void {
     this.lifeId = ++Enemy.nextLifeId;
+    this.rewardsClaimed = false;
     this.burn.clear();
     this.poison.clear();
     this.onSpecial = undefined;
+    this.bossId = null; this.chargeWindupMs = this.bossChargeMs = 0;
     const base = ENEMY_SPECS[archetype];
     this.spec = { ...base, speed: base.speed * speedMultiplier, contactDamage: Math.round(base.contactDamage * damageMultiplier) };
     this.onAttackPlayer = onAttackPlayer;
@@ -113,9 +122,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.targetY = y;
   }
 
-  public beginCharge(x: number, y: number, time: number): void {
+  public applyBossProfile(id: BossId): void { this.bossId = id; this.setTint(BOSS_PROFILES[id].color); }
+  public windUpCharge(warningMs: number): void { this.chargeWindupMs = warningMs; this.movement.stop(); }
+
+  public beginCharge(x: number, y: number, _time: number): void {
     this.chargeAngle = Math.atan2(y - this.y, x - this.x);
-    this.dashUntil = time + 600;
+    this.chargeWindupMs = 0; this.bossChargeMs = 600;
   }
 
   public receiveDamage(
@@ -168,13 +180,13 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       if (this.movement.slowFactor < 1.0) {
         this.setTint(0x67e8f9);
       } else {
-        this.clearTint();
+        if (this.bossId) this.setTint(BOSS_PROFILES[this.bossId].color); else this.clearTint();
       }
     } else if (this.flashUntil === 0) {
       if (this.movement.slowFactor < 1.0) {
         this.setTint(0x67e8f9);
       } else {
-        this.clearTint();
+        if (this.bossId) this.setTint(BOSS_PROFILES[this.bossId].color); else this.clearTint();
       }
     }
 
@@ -202,12 +214,14 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.nextDashAt = time + Phaser.Math.Between(2400, 3800);
     }
 
-    const chargingBoss = this.spec.archetype === 'BOSS_CORE' && time < this.dashUntil;
-    const speedMultiplier = time < this.dashUntil ? 1.75 : 1.0;
+    const chargingBoss = this.spec.archetype === 'BOSS_CORE' && this.bossChargeMs > 0;
+    const speedMultiplier = (this.spec.archetype === 'BOSS_CORE' ? chargingBoss : time < this.dashUntil) ? 1.75 : 1.0;
+    this.bossChargeMs = Math.max(0,this.bossChargeMs-delta);
     this.movement.baseSpeed = this.spec.speed * speedMultiplier;
     const ranged = this.spec.archetype === 'SPORE_SHOOTER' || this.spec.archetype === 'SUMMONER';
-    if (ranged && dist < 240) this.movement.stop();
+    if (this.chargeWindupMs > 0 || (ranged && dist < 240)) this.movement.stop();
     else this.movement.moveAlongAngle(chargingBoss ? this.chargeAngle : angle, time);
+    this.chargeWindupMs = Math.max(0,this.chargeWindupMs-delta);
     this.movement.update(time, delta);
     this.setFlipX(dx < 0);
 
@@ -238,6 +252,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
 export class EnemyGroup extends Phaser.Physics.Arcade.Group {
   public onAttackPlayer?: EnemyAttackCallback;
+  public damageObserver?: DamageObserver;
 
   constructor(scene: Phaser.Scene, onAttackPlayer?: EnemyAttackCallback, private readonly onBurnTick?: BurnTickCallback,
     private readonly onPoisonTick?: BurnTickCallback) {
@@ -261,6 +276,7 @@ export class EnemyGroup extends Phaser.Physics.Arcade.Group {
     const enemy = this.get(x, y, enemyTexture('SWARMER')) as Enemy | null;
     if (!enemy) return null;
     enemy.spawn(archetype, x, y, hpMultiplier, this.onAttackPlayer, damageMultiplier, speedMultiplier);
+    enemy.health.damageObserver = this.damageObserver;
     enemy.onBurnTick = this.onBurnTick;
     enemy.onPoisonTick = this.onPoisonTick;
     return enemy;

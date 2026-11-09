@@ -11,8 +11,8 @@ export class VirtualJoystick {
   private hintText: Phaser.GameObjects.Text;
 
   private activePointerId: number | null = null;
-  private anchorX = 160;
-  private anchorY = GAME_HEIGHT - 120;
+  private anchorX = 130;
+  private anchorY = GAME_HEIGHT - 50;
   private maxRadius = 64;
 
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -28,17 +28,19 @@ export class VirtualJoystick {
 
     this.baseSprite = scene.add
       .image(this.anchorX, this.anchorY, 'tex_joy_base')
+      .setDisplaySize(100,100)
       .setDepth(60)
       .setAlpha(0.82);
     this.thumbSprite = scene.add
       .image(this.anchorX, this.anchorY, 'tex_joy_thumb')
+      .setDisplaySize(42,42)
       .setDepth(61)
       .setAlpha(0.92);
 
     this.hintText = scene.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT - 44, '좌측 하단 터치 드래그 (또는 WASD)로 이동 / 자동 사격', {
+      .text(130,1184,'드래그 이동 / WASD',{
         fontFamily: 'sans-serif',
-        fontSize: '15px',
+        fontSize:'13px',
         color: '#94a3b8'
       })
       .setOrigin(0.5, 0.5)
@@ -68,7 +70,7 @@ export class VirtualJoystick {
 
     this.activePointerId = pointer.id;
     this.anchorX = Phaser.Math.Clamp(pointer.x, 85, GAME_WIDTH - 85);
-    this.anchorY = Phaser.Math.Clamp(pointer.y, 240, GAME_HEIGHT - 85);
+    this.anchorY = Phaser.Math.Clamp(pointer.y,240,GAME_HEIGHT-55);
 
     this.baseSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.85);
     this.thumbSprite.setPosition(this.anchorX, this.anchorY).setAlpha(1.0);
@@ -110,8 +112,8 @@ export class VirtualJoystick {
     this.dirY = 0;
 
     // 기본 좌측 하단 대기 위치로 복귀
-    this.anchorX = 160;
-    this.anchorY = GAME_HEIGHT - 115;
+    this.anchorX = 130;
+    this.anchorY = GAME_HEIGHT - 50;
     this.baseSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.82);
     this.thumbSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.92);
   }
@@ -153,6 +155,9 @@ export class VirtualJoystick {
     this.activePointerId = null;
     this.dirX = 0;
     this.dirY = 0;
+    this.anchorX = 130;
+    this.anchorY = GAME_HEIGHT - 50;
+    this.baseSprite.setPosition(this.anchorX, this.anchorY);
     this.thumbSprite.setPosition(this.anchorX, this.anchorY);
     this.scene.input.keyboard?.resetKeys();
   }

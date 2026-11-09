@@ -24,6 +24,8 @@ export interface RoomNode {
   visited: boolean;
   waveCount: number;
   circleChoice?: CircleChoice;
+  sideSupply?: true;
+  supplyChoice?: SupplyChoice;
 }
 
 export type DroneTier = 1 | 2 | 3 | 4;
@@ -89,6 +91,7 @@ export interface DroneSpec {
 }
 
 export interface DroneInstanceData {
+  awakening?: number;
   id: string;
   archetype: DroneArchetype;
   tier: DroneTier;
@@ -152,6 +155,7 @@ export interface ProjectileSkill {
 }
 
 export interface BulletFireConfig {
+  sourceKind?: DamageSourceKind;
   sourceUnitId?: string;
   unitTypeId?: DroneArchetype;
   target?: ProjectileTarget;
@@ -168,6 +172,18 @@ export interface BulletFireConfig {
   slowDurationMs: number;
   pierceCount: number;
   chainCount: number;
+}
+
+export type DamageSourceKind = 'hero' | 'unit' | 'environment';
+export interface HeroSnapshot {
+  permanent?: PermanentRanks;
+  talents?: TalentId[];
+  activeRemainingMs?: number;
+  classId: HeroClassId;
+  level: number;
+  xp: number;
+  kills: Record<DamageSourceKind, number>;
+  attackRemainingMs: number;
 }
 
 export interface RewardOption {
@@ -193,25 +209,71 @@ export interface RunStats {
 }
 
 export interface RosterSnapshot {
+  relicRewards?: RelicReward[];
+  /** Missing in older v1/v2 saves means all expedition upgrades are level zero. */
+  upgrades?: UpgradeLevels;
   units: DroneInstanceData[];
   minerals: number;
   freeSummons: number;
   nextId: number;
 }
 
-/** Only captured after entering a fresh stage, before its first combat update. */
-export interface RunCheckpoint {
-  version: 1;
+export type UpgradeId = 'squadAttack' | 'squadSpeed' | 'squadHealth' | 'heroAttack' | 'heroHealth' | 'defense';
+export type UpgradeLevels = Record<UpgradeId, number>;
+export interface UpgradeQuote { id: UpgradeId; level: number; cost: number }
+
+export type RelicId = 'COMMAND_BANNER' | 'SEED_CHALICE' | 'ARTISAN_SEAL';
+/** A bounded reward ledger: null is an unspent elite-room choice; each source and relic is unique. */
+export interface RelicReward { sourceRoomId: string; relicId: RelicId | null }
+
+interface CheckpointData {
+  mutation?: MutationId;
+  nextMutation?: MutationId;
+  mode?: RunMode;
+  endlessChoice?: EndlessChoice;
+  relicHealRemainingMs?: number;
+  /** Missing on pre-hero v1/v2 saves; default to a fresh level-one hero without changing saved HP. */
+  hero?: HeroSnapshot;
   savedAt: number;
   stats: RunStats;
   roster: RosterSnapshot;
   leaderHealth: { currentHp: number; maxHp: number };
-  unitHealth: { id: string; currentHp: number }[];
   grid: (RoomNode | null)[][];
 }
 
+/** Existing stage-start saves remain readable without replaying rewards or healing. */
+export interface LegacyRunCheckpoint extends CheckpointData {
+  version: 1;
+  unitHealth: { id: string; currentHp: number }[];
+}
+
+export type CheckpointPhase = 'stage-start' | 'room-cleared' | 'stage-cleared';
+export interface RoomRunCheckpoint extends CheckpointData {
+  version: 2;
+  runId: string;
+  phase: CheckpointPhase;
+  currentRoomId: string;
+  unitHealth: { id: string; currentHp: number; reviveRemainingMs: number;
+    healRemainingMs: number; skillRemainingMs: number }[];
+}
+export type RunCheckpoint = LegacyRunCheckpoint | RoomRunCheckpoint;
+
 export type StageState = 'PLAYING' | 'STAGE_CLEARED' | 'STAGE_TRANSITION';
+export type RunMode = 'campaign' | 'endless';
+export type EndlessChoice = 'none' | 'pending' | 'continue' | 'exit';
+export type TalentId = 'COMMAND' | 'VITALITY' | 'FOCUS';
+export type MutationId = 'NONE' | 'ARMORED' | 'FIERCE' | 'SWIFT';
+export type SupplyChoice = 'VOUCHERS' | 'MINERALS';
+export type ServiceId = 'HEAL' | 'REVIVE';
+export interface AwakeningQuote { unitId: string; level: number; cost: number }
+export interface ServiceQuote { id: ServiceId; cost: number; stateKey: string }
 export type BossPattern = 'CHARGE' | 'POISON' | 'METEOR' | 'FROST' | 'SUMMON';
+export type BossId = 'forest_guardian' | 'swamp_lord' | 'lava_colossus' | 'frost_queen' | 'twilight_king';
+export type SynergyId = 'FOREST_BOND' | 'RANGED_LINE' | 'VANGUARD_LINE';
+export type HeroClassId = 'APPRENTICE_SUMMONER' | 'KNIGHT' | 'ELEMENTALIST';
+export type PermanentId = 'vitality' | 'power';
+export type PermanentRanks = Record<PermanentId, number>;
+export interface PermanentQuote { id: PermanentId; level: number; cost: number; revision: number }
 export interface StageDef {
   index: number;
   name: string;

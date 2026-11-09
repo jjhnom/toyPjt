@@ -6,6 +6,7 @@ import { UNIT_TYPES } from '../config/unitData';
 import { HealthComponent } from '../components/HealthComponent';
 import { FireBulletFn, WeaponComponent } from '../components/WeaponComponent';
 import { DroneArchetype, DroneSpec } from '../types/game';
+import { awakeningMultiplier } from '../config/expeditionFacilities';
 
 export class DroneUnit extends Phaser.GameObjects.Sprite {
   public id: string;
@@ -27,7 +28,8 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     id: string,
     archetype: DroneArchetype,
     fireCallback: FireBulletFn,
-    star: 1 | 2 | 3 = 1
+    star: 1 | 2 | 3 = 1,
+    public awakening = 0
   ) {
     const spec = DRONE_SPECS[archetype];
     const texKey = unitTexture(archetype);
@@ -118,7 +120,7 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
       this.x,
       this.y,
       enemies,
-      damageMultiplier * this.attackBuffMultiplier * (1 + 0.5 * (this.star - 1)),
+      damageMultiplier * this.attackBuffMultiplier * (1 + 0.5 * (this.star - 1)) * awakeningMultiplier(this.awakening),
       attackSpeedMultiplier
     ) : null;
 

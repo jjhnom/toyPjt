@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>소환사의 원정 · 픽셀 판타지 상세 목업</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="pixel_fantasy_mockup.css">
+  <script defer src="pixel_fantasy_mockup_data.js"></script>
+  <script defer src="pixel_fantasy_mockup.js"></script>
+</head>
+<body>
+  <header class="studio-header">
+    <a class="studio-brand" href="#"><span class="brand-gem" aria-hidden="true"></span><span>SUMMONER’S EXPEDITION <small>DESIGN STUDY / 2026.11</small></span></a>
+    <span class="version">PIXEL FANTASY · v2.3</span>
+  </header>
+  <main>
+    <section class="intro">
+      <div><p class="eyebrow">작은 동료들, 더 큰 모험.</p><h1>소환사의 원정<span>다섯 장으로 만나는 새로운 원정.</span></h1></div>
+      <div class="intro-note"><span class="status-dot"></span> 인터랙티브 디자인 목업<p>지정 소환 · 레시피 조합 · 출전 편성<br>예시 데이터로 동작하며 실제 게임과 저장에 연결되지 않습니다.</p></div>
+    </section>
+    <nav class="view-nav" aria-label="목업 화면 선택">
+      <button data-view="all" aria-pressed="true">전체 비교</button>
+      <button data-view="menu" aria-pressed="false">01 타이틀</button>
+      <button data-view="squad" aria-pressed="false">02 정비</button>
+      <button data-view="battle" aria-pressed="false">03 전투</button>
+      <button data-view="choice" aria-pressed="false">04 성장 선택</button>
+      <button data-view="result" aria-pressed="false">05 결과</button>
+    </nav>
+    <div class="review-tools">
+      <label>기준 화면 <select id="preview-size"><option value="320">320 × 569</option><option value="360" selected>360 × 640</option><option value="412">412 × 732</option></select></label>
+      <span>화면의 버튼을 눌러 흐름을 확인하세요.</span>
+      <button id="reset-preview">예시 초기화</button>
+    </div>
+    <div id="gallery" class="gallery" aria-label="다섯 화면 미리보기"></div>
+    <section class="design-notes">
+      <div><p class="eyebrow">DESIGN LANGUAGE</p><h2>픽셀의 온기, 마법의 선명함.</h2><p>전장의 어두운 바탕은 남기고, 보라색과 금색은 중요한 선택에 집중했습니다. 실제 게임의 유닛 아트를 사용합니다.</p></div>
+      <div class="swatches"><div style="--swatch:#101720"><i></i>잉크<code>#101720</code></div><div style="--swatch:#2a1e3f"><i></i>판타지<code>#2A1E3F</code></div><div style="--swatch:#473872"><i></i>보라<code>#473872</code></div><div style="--swatch:#ffd966"><i></i>주요 행동<code>#FFD966</code></div><div style="--swatch:#5bc8f3"><i></i>보호막<code>#5BC8F3</code></div></div>
+    </section>
+    <footer class="studio-footer"><span>게임 적용 전 · 브라우저 검토용</span><a href="summoners_expedition_pixel_fantasy_design_proposal.md">디자인 기획안 ↗</a><a href="소환사의 원정 픽셀 아트 디자인 가이드.png">원본 참고 시안 ↗</a></footer>
+  </main>
+  <dialog id="review-dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div><button class="btn" id="dialog-close">닫기</button></dialog>
+  <noscript>상세 목업을 보려면 브라우저의 JavaScript를 켜 주세요.</noscript>
+</body>
+</html>

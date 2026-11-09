@@ -40,5 +40,7 @@ export const UNIT_MOVEMENT = Object.fromEntries(Object.values(UNIT_TYPES).map(un
 
 export const SELL_REFUND_PER_TIER = 10;
 export const UNIT_REVIVE_RATIO = 0.5;
+export const ROOM_ENTRY_HP_RATIO = UNIT_REVIVE_RATIO;
+export const RECOVERY_ROOM_HEAL_RATIO = 0.45;
 export const UNIT_REVIVE_DELAY_MS = 12000;
 export const SUPPORT_HEAL_INTERVAL_MS = 3000;

@@ -1,0 +1,101 @@
+import assert from 'node:assert/strict';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {browserSession,sleep} from './helpers/browser-session.mjs';
+import {load} from '../scripts/lib/load-typescript.mjs';
+const {RoomGridManager}=load('src/systems/RoomGridManager.ts');
+const {seededRandom}=load('src/systems/EconomySimulation.ts');
+const {isRunCheckpoint}=load('src/systems/RunSaveManager.ts');
+const b=await browserSession(),{evaluate,tap,send,waitFor,attach}=b,output='artifacts/legacy',report={};
+const profile=()=>evaluate("JSON.parse(localStorage.getItem('smash.legacy-profile.v1'))");
+const save=()=>evaluate("JSON.parse(localStorage.getItem('smash.run-checkpoint.v1'))");
+const ref=()=>evaluate("window.gs=smash.scene.getScene('GameScene');undefined;");
+const click=async(scene,name)=>{const p=await evaluate(`(()=>{const c=smash.scene.getScene('${scene}').children.getByName('${name}');return{x:c.x,y:c.y};})()`);await tap(p.x,p.y);};
+const screens=async name=>{await mkdir(output,{recursive:true});for(const width of[720,360]){
+ await send('Emulation.setDeviceMetricsOverride',{width,height:width*1280/720,deviceScaleFactor:1,mobile:true});await sleep(180);
+ const png=await send('Page.captureScreenshot',{format:'png'});await writeFile(`${output}/${name}-${width}.png`,Buffer.from(png.data,'base64'));}};
+function bossFixture(initial,id){
+ const grid=new RoomGridManager(undefined,undefined,seededRandom(42)),start=grid.getCurrentRoom(),boss=grid.grid.flat().find(r=>r?.type==='BOSS');
+ const queue=[start],prev=new Map([[start.id,null]]);for(const r of queue)for(const[dx,dy]of[[0,-1],[0,1],[-1,0],[1,0]]){
+  const next=grid.grid[r.gridY+dy]?.[r.gridX+dx];if(next&&!prev.has(next.id)){prev.set(next.id,r);queue.push(next);}}
+ const parent=prev.get(boss.id);let count=0;for(let r=parent;r;r=prev.get(r.id)){r.visited=r.cleared=true;if(r.type==='EVENT')r.circleChoice='SKIP';count++;}
+ const d=structuredClone(initial);Object.assign(d,{runId:id,phase:'room-cleared',currentRoomId:parent.id,grid:grid.grid});
+ d.stats.roomsCleared=count;d.leaderHealth.currentHp=23;assert.equal(isRunCheckpoint(d),true);return d;
+}
+const restart=async data=>{
+ await evaluate(`localStorage.setItem('smash.run-checkpoint.v1',${JSON.stringify(JSON.stringify(data))});gs.scene.restart({resume:true});undefined;`);
+ await waitFor(`smash.scene.getScene('GameScene').runId==='${data.runId}'&&smash.scene.isActive('SquadScene')`);await ref();
+ await tap(360, 1210);await waitFor("smash.scene.isActive('GameScene')");
+};
+const killBoss=()=>evaluate(`(()=>{gs.scene.pause();gs.clearEncounter();const current=gs.gridManager.getCurrentRoom(),room=gs.gridManager.grid.flat().find(r=>r?.type==='BOSS');
+ const dir=room.gridX>current.gridX?'right':room.gridX<current.gridX?'left':room.gridY>current.gridY?'bottom':'top';
+ gs.doorCooldownMs=0;const zone=gs.doors[dir].triggerZone;gs.squad.setPositionImmediate(zone.centerX,zone.centerY);gs.checkDoorTransition();
+ gs.startRoomLogic(room);gs.spawnNextWave(room);gs.processSpawns(10000);const boss=gs.enemies.getChildren().find(e=>e.active&&e.spec.archetype==='BOSS_CORE');
+ boss.receiveDamage(boss.health.maxHp,gs.time.now);gs.handleEnemyKilled(boss,gs.squad.drones[0].id);const money=gs.squad.roster.minerals;
+ gs.handleEnemyKilled(boss);return{once:money===gs.squad.roster.minerals,classId:gs.squad.hero.classId};})()`);
+const freeze=()=>evaluate(`window.realUpdate=gs.sys.sceneUpdate;gs.sys.sceneUpdate=()=>{};gs.physics.world.pause();gs.clearEncounter();gs.roomState='LOCKED_WAVES';
+ gs.squad.health.currentHp=23;gs.squad.drones[0].health.currentHp=20;gs.activeSkillButton.update(true,0,18000);undefined;`);
+const reloadMenu=async()=>{await send('Page.reload',{ignoreCache:true});await attach();};
+try{
+ await click('MenuScene','legacy-open');await waitFor("smash.scene.isActive('LegacyScene')");await screens('classes');
+ await click('LegacyScene','class-select-KNIGHT');assert.equal((await profile()).selectedClass,'KNIGHT');await click('LegacyScene','legacy-close');
+ await tap(360,910);await waitFor("smash.scene.isActive('GameScene')");await ref();const knightStart=await save();
+ assert.equal(knightStart.hero.classId,'KNIGHT');assert.equal(knightStart.leaderHealth.maxHp,125);
+ await freeze();await tap(520,1230);assert.equal(await evaluate('gs.squad.health.currentHp'),48);
+ assert.equal(await evaluate('gs.squad.drones[0].health.currentHp'),20);assert.equal(await evaluate('gs.squad.activeRemaining()'),18000);await screens('knight');
+ await evaluate('gs.sys.sceneUpdate=realUpdate;gs.physics.world.resume();undefined;');
+ await restart(bossFixture(knightStart,'knight_first_boss'));assert.equal((await killBoss()).once,true);await waitFor("smash.scene.isActive('SquadScene')");
+ const knightCleared=await save();assert.equal((await profile()).shards,3);assert.equal((await profile()).receipts.length,1);
+ await reloadMenu();await click('MenuScene','legacy-open');await click('LegacyScene','class-select-ELEMENTALIST');await click('LegacyScene','legacy-growth');
+ await evaluate("window.oldGrowth=smash.scene.getScene('LegacyScene').children.getByName('permanent-buy-vitality').list.find(c=>c.input);undefined;");
+ await click('LegacyScene','permanent-buy-vitality');await evaluate("oldGrowth.emit('pointerdown',{},{},{},{stopPropagation(){}});undefined;");
+ assert.equal((await profile()).ranks.vitality,1);assert.equal((await profile()).shards,2);
+ await click('LegacyScene','permanent-buy-power');assert.equal((await profile()).shards,1);await screens('growth');
+ const beforeCancel=await profile(),rect=await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()"),point=(x,y)=>({x:rect.x+x*rect.width/720,y:rect.y+y*rect.height/1280});
+ await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point(80,950),point(640,950)]});await send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});
+ await click('LegacyScene','legacy-codex');await waitFor("smash.scene.isActive('CodexScene')");await click('CodexScene','codex-close');assert.deepEqual(await profile(),beforeCancel);
+ await click('LegacyScene','legacy-close');await tap(360, 910);await waitFor("smash.scene.isActive('SquadScene')");await ref();
+ assert.equal(await evaluate('gs.squad.hero.classId'),'KNIGHT');assert.deepEqual(await evaluate('gs.squad.hero.permanent'),{vitality:0,power:0});
+ assert.equal(await evaluate('gs.squad.health.currentHp'),knightCleared.leaderHealth.currentHp);assert.equal(await evaluate('gs.squad.health.maxHp'),knightCleared.leaderHealth.maxHp);
+ const knightShot=await evaluate(`(()=>{gs.clearEncounter();gs.enemies.spawnEnemy('SWARMER',gs.squad.leader.x+80,gs.squad.leader.y);
+  gs.squad.update(gs.time.now,2000,0,0,gs.enemies,1,1,0,true);const bullet=gs.bullets.getChildren().find(b=>b.active&&b.sourceKind==='hero');
+  const result={damage:bullet.damage,aoe:bullet.aoeRadius,range:gs.squad.heroWeapon.spec.range};gs.clearEncounter();return result;})()`);
+ assert.equal(knightShot.damage,12);assert.equal(knightShot.range,145);assert.equal(knightShot.aoe,0);
+ await evaluate("gs.scene.start('MenuScene');undefined;");await waitFor("smash.scene.isActive('MenuScene')");await click('MenuScene','new-run');await tap(510,700);
+ await waitFor("smash.scene.isActive('GameScene')");await ref();const mageStart=await save();
+ assert.equal(mageStart.hero.classId,'ELEMENTALIST');assert.deepEqual(mageStart.hero.permanent,{vitality:1,power:1});assert.equal(mageStart.leaderHealth.maxHp,95);
+ await freeze();await evaluate('gs.squad.health.currentHp=95;gs.squad.drones.forEach(d=>d.health.currentHp=d.health.maxHp);gs.squad.movement.applySlow(0.65,800,gs.time.now);undefined;');
+ const canvas=await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()");
+ await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:canvas.x+520*canvas.width/720,y:canvas.y+1230*canvas.height/1280}]});
+ await send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});assert.equal(await evaluate('gs.squad.activeRemaining()'),0);assert.equal(await evaluate('gs.squad.movement.slowFactor'),0.65);
+ await tap(520,1230);assert.equal(await evaluate('gs.squad.movement.slowFactor'),1);assert.equal(await evaluate('gs.squad.activeRemaining()'),18000);
+ await evaluate(`gs.squad.restoreHero({...gs.squad.heroSnapshot(),activeRemainingMs:0});gs.squad.health.currentHp=23;gs.squad.drones[0].health.currentHp=20;
+  gs.activeSkillButton.update(true,0,18000);undefined;`);await tap(520,1230);
+ assert.equal(await evaluate('gs.squad.health.currentHp'),29);assert.equal(await evaluate('gs.squad.drones[0].health.currentHp'),26);await screens('elementalist');
+ const splash=await evaluate(`(()=>{gs.squad.setPositionImmediate(360,630);const targets=[460,480,540].map(x=>gs.enemies.spawnEnemy('SWARMER',x,630));
+  targets[0].health.currentHp=10;targets[1].health.currentHp=7;gs.squad.update(gs.time.now,2000,0,0,gs.enemies,1,1,0,true);
+  const bullet=gs.bullets.getChildren().find(b=>b.active&&b.sourceKind==='hero'),damage=bullet.damage,radius=bullet.aoeRadius;
+  gs.onBulletHitEnemy(bullet,targets[0]);return{damage,radius,hp:targets.map(t=>t.health.currentHp),heroKills:gs.squad.heroSnapshot().kills.hero};})()`);
+ assert.equal(splash.damage,10);assert.equal(splash.radius,45);assert.deepEqual(splash.hp,[0,0,36]);assert.equal(splash.heroKills,2);
+ await evaluate('gs.sys.sceneUpdate=realUpdate;gs.physics.world.resume();undefined;');
+ await restart(bossFixture(mageStart,'mage_failed_profile'));
+ await evaluate(`window.realSet=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key==='smash.legacy-profile.v1')throw new Error('controlled quota');return realSet.call(this,key,value);};undefined;`);
+ await killBoss();await waitFor("smash.scene.isActive('SquadScene')");assert.equal((await profile()).shards,1);const mageCleared=await save();
+ await reloadMenu();assert.equal((await profile()).shards,1);await tap(360, 910);await waitFor("smash.scene.isActive('SquadScene')");await ref();
+ assert.equal((await profile()).shards,4);assert.equal((await profile()).receipts.length,2);
+ await reloadMenu();await tap(360, 910);await waitFor("smash.scene.isActive('SquadScene')");await ref();assert.equal((await profile()).shards,4);
+ await evaluate('gs.handlePlayerDeath();undefined;');await waitFor("smash.scene.isActive('GameOverScene')");
+ assert.equal(await save(),null);assert.equal((await profile()).shards,4);await screens('result');
+ await click('GameOverScene','legacy-retry');await click('GameOverScene','legacy-retry');assert.equal((await profile()).shards,4);
+ await click('GameOverScene','result-menu');await waitFor("smash.scene.isActive('MenuScene')");const validProfile=await profile();
+ await evaluate("localStorage.setItem('smash.legacy-profile.v1','{bad');undefined;");await click('MenuScene','legacy-open');
+ assert.equal(await evaluate("smash.scene.getScene('LegacyScene').children.getByName('legacy-status').text.includes('읽기 실패')"),true);
+ await click('LegacyScene','class-select-KNIGHT');assert.equal(await evaluate("localStorage.getItem('smash.legacy-profile.v1')"),'{bad');
+ await click('LegacyScene','legacy-close');await tap(360,910);await waitFor("smash.scene.isActive('GameScene')");await ref();
+ assert.equal(await evaluate('gs.squad.hero.classId'),'APPRENTICE_SUMMONER');assert.equal(await evaluate('gs.squad.health.maxHp'),100);
+ assert.equal(await evaluate("localStorage.getItem('smash.legacy-profile.v1')"),'{bad');
+ report.knight={baseHp:knightStart.leaderHealth.maxHp,selfHeal:25,allyUnchanged:true,shot:knightShot};
+ report.mage={newHp:mageStart.leaderHealth.maxHp,permanent:mageStart.hero.permanent,cleanse:true,heal:6,splash};
+ report.profile={shards:validProfile.shards,receipts:validProfile.receipts.length,ranks:validProfile.ranks,failedAwardRecovered:true,duplicateBlocked:true,invalidPreserved:true};
+ report.resume={classId:knightCleared.hero.classId,hp:knightCleared.leaderHealth.currentHp,maxHp:knightCleared.leaderHealth.maxHp,changedProfileIgnored:true};
+ assert.equal(mageCleared.hero.classId,'ELEMENTALIST');assert.deepEqual(b.errors,[]);await writeFile(`${output}/report.json`,JSON.stringify(report,null,2));console.log(JSON.stringify({status:'passed',...report}));
+}finally{b.close();}

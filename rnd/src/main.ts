@@ -7,6 +7,9 @@ import { MenuScene } from './scenes/MenuScene';
 import { SquadScene } from './scenes/SquadScene';
 import { RewardScene } from './scenes/RewardScene';
 import { SummoningCircleScene } from './scenes/SummoningCircleScene';
+import { EndlessChoiceScene } from './scenes/EndlessChoiceScene';
+import { CodexScene } from './scenes/CodexScene';
+import { LegacyScene } from './scenes/LegacyScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -30,7 +33,7 @@ const config: Phaser.Types.Core.GameConfig = {
   input: {
     activePointers: 2
   },
-  scene: [BootScene, MenuScene, GameScene, SquadScene, SummoningCircleScene, RewardScene, GameOverScene]
+  scene: [BootScene, MenuScene, GameScene, SquadScene, SummoningCircleScene, EndlessChoiceScene, LegacyScene, CodexScene, RewardScene, GameOverScene]
 };
 
 export const game = new Phaser.Game(config);

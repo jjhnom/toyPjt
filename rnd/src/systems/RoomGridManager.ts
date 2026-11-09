@@ -1,5 +1,6 @@
 import { STAGES, getStageScaling } from '../config/stageData';
 import type { DoorDirection, RoomNode, StageDef } from '../types/game';
+import { sideSupplyCandidate } from './SideSupply';
 
 const OFFSETS: Record<DoorDirection, [number, number]> = { top: [0, -1], bottom: [0, 1], left: [-1, 0], right: [1, 0] };
 
@@ -10,7 +11,8 @@ export class RoomGridManager {
   private distances = new Map<string, number>();
   private maxDistance = 1;
 
-  constructor(public stage: StageDef = STAGES[0], savedGrid?: (RoomNode | null)[][]) {
+  constructor(public stage: StageDef = STAGES[0], savedGrid?: (RoomNode | null)[][],
+    private readonly random: () => number = Math.random) {
     if (!savedGrid) { this.generateGrid(); return; }
     this.grid = savedGrid.map(row => row.map(room => room ? { ...room, doors: { ...room.doors } } : null));
     this.currentX = Math.floor(stage.gridWidth / 2);
@@ -38,7 +40,7 @@ export class RoomGridManager {
         const x = node.gridX + dx, y = node.gridY + dy;
         if (x >= 0 && x < width && y >= 0 && y < height && !this.grid[y][x]) frontier.push([x, y]);
       }
-      const [x, y] = frontier[Math.floor(Math.random() * frontier.length)];
+      const [x, y] = frontier[Math.floor(this.random() * frontier.length)];
       add(x, y);
     }
     for (const node of nodes) for (const [direction, [dx, dy]] of Object.entries(OFFSETS)) {
@@ -51,7 +53,7 @@ export class RoomGridManager {
     boss.type = 'BOSS';
     const special = nodes.filter(node => node !== start && node !== boss);
     for (let i = special.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = Math.floor(this.random() * (i + 1));
       [special[i], special[j]] = [special[j], special[i]];
     }
     special[0].type = 'EVENT';
@@ -60,6 +62,8 @@ export class RoomGridManager {
     const bonus = getStageScaling(this.stage.index).waveCountBonus;
     for (const node of nodes) node.waveCount = node.type === 'EVENT' || node.type === 'RECOVERY' ? 0
       : node.type === 'BOSS' ? 1 : (node === start ? 1 : 2) + bonus;
+    const supply = sideSupplyCandidate(this.grid, this.stage.index);
+    if (supply) supply.sideSupply = true;
   }
 
   private measureDistances(): RoomNode[] {
@@ -82,6 +86,14 @@ export class RoomGridManager {
   }
 
   public getCurrentRoom(): RoomNode { return this.grid[this.currentY][this.currentX]!; }
+
+  /** Distances stay relative to the stage entrance, independent of the resumed room. */
+  public restoreCurrentRoom(id: string): void {
+    for (const row of this.grid) for (const room of row) if (room?.id === id) {
+      this.currentX = room.gridX; this.currentY = room.gridY; return;
+    }
+    throw new Error('Checkpoint room is absent from the grid');
+  }
   public getDepth(room: RoomNode): number { return (this.distances.get(room.id) ?? 0) / this.maxDistance; }
 
   public getAdjacentRoom(dir: DoorDirection): RoomNode | null {

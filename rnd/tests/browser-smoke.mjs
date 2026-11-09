@@ -8,6 +8,7 @@ const profile = await mkdtemp(join(tmpdir(), 'smash-browser-'));
 const browserPath = process.env.SMASH_BROWSER_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browser = spawn(browserPath, [
   '--headless=new', '--no-first-run', '--no-default-browser-check', '--enable-unsafe-swiftshader',
+  ...(process.env.SMASH_BROWSER_NO_SANDBOX==='1'?['--no-sandbox','--disable-gpu']:[]),
   '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
 ], { windowsHide: true, stdio: 'ignore' });
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -60,6 +61,13 @@ try {
     await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await sleep(150);
   };
+  const click = async (scene, name) => {
+    const point = await evaluate(`(() => { const find = list => { for (const o of list) { if (o.name === ${JSON.stringify(name)}) return o; const child = o.list && find(o.list); if (child) return child; } };
+      const control = find(smash.scene.getScene(${JSON.stringify(scene)}).children.list);
+      if (!control) throw Error('Missing control: ' + ${JSON.stringify(name)});
+      const matrix = control.getWorldTransformMatrix(); return { x: matrix.tx, y: matrix.ty }; })()`);
+    await tap(point.x, point.y);
+  };
   const screenshots = {};
   const capture = async label => {
     const result = await send('Page.captureScreenshot', { format: 'png' });
@@ -89,9 +97,9 @@ try {
   await capture('title-mobile360');
   await send('Emulation.setDeviceMetricsOverride', { width: 720, height: 1280, deviceScaleFactor: 1, mobile: true });
   await sleep(500);
-  await tap(360, 998); // No save: the Continue button is disabled.
+  await click('MenuScene', 'continue-run'); // No save: the Continue button is disabled.
   assert.equal(await evaluate("smash.scene.isActive('MenuScene')"), true);
-  await tap(360, 910);
+  await click('MenuScene', 'new-run');
   await waitFor("smash.scene.isActive('GameScene')");
   await evaluate("window.gs = smash.scene.getScene('GameScene'); undefined;");
   assert.equal(await evaluate("gs.children.getByName('dungeon-art').texture.key"), 'art_dungeon');
@@ -102,11 +110,11 @@ try {
   const hudLayout = await evaluate(`(() => {
     const hp = gs.hudHpText.getBounds(), room = gs.hudRoomText.getBounds(), wave = gs.hudWaveText.getBounds();
     const currency = gs.hudMineralText.getBounds(), squad = gs.hudSquadText.getBounds();
-    return { hpFits: hp.left >= 111 && hp.right <= 351 && hp.top >= 26 && hp.bottom <= 56,
+    return { hpFits: hp.left >= 111 && hp.right <= 351 && hp.top >= 36 && hp.bottom <= 66,
       roomFits: room.left >= 112 && room.right <= 546 && room.bottom <= wave.top,
       waveFits: wave.right <= 546 && wave.bottom <= 115,
       currencyFits: currency.left >= 410 && currency.right <= 532 && currency.bottom <= 70,
-      partyFits: squad.right <= 246, portraits: gs.hudUnitPortraits.length,
+      partyFits: squad.left >= 24 && squad.right <= 540 && squad.top >= 1080 && squad.bottom <= 1110, portraits: gs.hudUnitPortraits.length,
       fpsHidden: !gs.hudFpsText.visible };
   })()`);
   assert.deepEqual(hudLayout, { hpFits: true, roomFits: true, waveFits: true, currencyFits: true, partyFits: true, portraits: 6, fpsHidden: true });
@@ -124,25 +132,26 @@ try {
   await sleep(250);
   assert.equal(await evaluate('gs.time.now'), frozen, 'combat clock must pause during management');
 
-  await tap(570, 381); // Basic unit, 15 M.
+  await click('SquadScene', 'summon-BASIC_LASER'); // Basic unit, 15 M.
   assert.equal(await evaluate('gs.squad.roster.units.length'), 3);
   assert.equal(await evaluate('gs.squad.roster.minerals'), 40);
-  await tap(570, 526); // Gatling unit, 40 M.
+  await click('SquadScene', 'summon-GATLING_BOT'); // Gatling unit, 40 M.
   assert.equal(await evaluate('gs.squad.roster.minerals'), 0);
   await tap(360, 228); // Recipes.
   await capture('recipes');
-  await tap(550, 488); // Two basics -> gatling.
+  await click('SquadScene', 'combine-gatling'); // Two basics -> gatling.
   assert.equal(await evaluate("gs.squad.roster.units.filter(u => u.archetype === 'GATLING_BOT').length"), 2);
-  await tap(550, 898); // Basic + gatling -> cryo.
+  await click('SquadScene', 'squad-next'); await click('SquadScene', 'squad-next');
+  await click('SquadScene', 'combine-cryo'); // Basic + gatling -> cryo.
   assert.equal(await evaluate("gs.squad.roster.units.filter(u => u.archetype === 'STUN_BOT').length"), 1);
   const afterCombine = await evaluate('JSON.stringify(gs.squad.roster.units)');
-  await tap(550, 898); // Missing ingredients must not consume anything.
+  await click('SquadScene', 'combine-cryo'); // Missing ingredients must not consume anything.
   assert.equal(await evaluate('JSON.stringify(gs.squad.roster.units)'), afterCombine);
 
   await tap(575, 228); // Deployment.
-  await tap(570, 359);
+  await click('SquadScene', 'roster-deploy-' + await evaluate('gs.squad.roster.units[0].id'));
   assert.equal(await evaluate('gs.squad.roster.units.filter(u => u.deployed).length'), 1);
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
   assert.equal(await evaluate('gs.squad.drones.length'), 1);
   assert.equal(await evaluate('gs.squad.drones[0].id === gs.squad.roster.units.find(u => u.deployed).id'), true);
@@ -154,11 +163,11 @@ try {
   assert.ok(mobileBounds.width <= 360 && mobileBounds.height <= 640 && mobileBounds.x >= 0);
   await capture('battle-mobile360');
   const point = (x, y, id) => ({ x: mobileBounds.x + x * mobileBounds.width / 720, y: mobileBounds.y + y * mobileBounds.height / 1280, id });
-  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point(160, 1160, 11)] });
-  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [point(215, 1160, 11)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point(130, 1230, 11)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [point(185, 1230, 11)] });
   await sleep(100);
   assert.ok(await evaluate('gs.joystick.dirX > 0.5'), 'joystick must still respond to dragging');
-  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point(215, 1160, 11), point(540, 1178, 12)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point(185, 1230, 11), point(398, 1230, 12)] });
   await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await waitFor("smash.scene.isActive('SquadScene')");
   assert.equal(await evaluate('gs.joystick.dirX === 0 && gs.joystick.dirY === 0'), true, 'opening the book with a second touch clears movement');
@@ -167,15 +176,15 @@ try {
   const screenshot = await send('Page.captureScreenshot', { format: 'png' });
   const screenshotPath = join(profile, 'squad-management.png');
   await writeFile(screenshotPath, Buffer.from(screenshot.data, 'base64'));
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene')");
 
   await send('Emulation.setDeviceMetricsOverride', { width: 720, height: 1280, deviceScaleFactor: 1, mobile: true });
   await sleep(600);
   const fullBounds = await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()");
   const fullPoint = (x, y) => ({ x: fullBounds.x + x * fullBounds.width / 720, y: fullBounds.y + y * fullBounds.height / 1280, id: 21 });
-  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [fullPoint(160, 1160)] });
-  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [fullPoint(220, 1160)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [fullPoint(130, 1230)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [fullPoint(190, 1230)] });
   await send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
   await sleep(100);
   assert.equal(await evaluate('gs.joystick.dirX === 0 && gs.joystick.dirY === 0'), true, 'touch cancellation clears movement');
@@ -185,7 +194,7 @@ try {
   await waitFor("smash.scene.isActive('SquadScene')");
   await evaluate("smash.events.emit('hidden'); smash.events.emit('visible'); undefined;");
   assert.equal(await evaluate("smash.scene.isPaused('GameScene')"), true);
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene')");
 
   // Units approach enemies independently rather than orbiting the commander.
@@ -257,21 +266,21 @@ try {
   // Material selection is reviewable and can be changed before a touch confirmation.
   await evaluate('gs.openSquadModal()');
   await waitFor("smash.scene.isActive('SquadScene')");
-  await tap(570, 381); await tap(570, 381);
+  await click('SquadScene', 'summon-BASIC_LASER'); await click('SquadScene', 'summon-BASIC_LASER');
   const beforeManual = await evaluate('gs.squad.roster.units.length');
-  await tap(360, 228); await tap(170, 488);
+  await tap(360, 228); await click('SquadScene', 'recipe-picker-gatling');
   assert.equal(await evaluate("smash.scene.getScene('SquadScene').editingRecipe.id"), 'gatling');
   await tap(570, 374);
   assert.equal(await evaluate("smash.scene.getScene('SquadScene').selectedIds.length"), 1);
   await tap(570, 374);
   await capture('manual-ingredients');
-  await tap(530, 1040);
+  await click('SquadScene', 'ingredient-confirm');
   assert.equal(await evaluate('gs.squad.roster.units.length'), beforeManual - 1);
   assert.equal(await evaluate("smash.scene.getScene('SquadScene').editingRecipe"), null);
   await tap(145, 228);
-  await tap(570, 1030); // More T1 offers, including new class sprites.
+  await click('SquadScene', 'squad-next'); // More T1 offers, including new class sprites.
   await capture('new-unit-offers');
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene')");
 
   const promotion = await evaluate(`(() => {
@@ -340,11 +349,25 @@ try {
   await waitFor("smash.scene.isActive('GameScene')");
   assert.deepEqual(await evaluate("({ count: smash.scene.getScene('GameScene').squad.roster.units.length, minerals: smash.scene.getScene('GameScene').squad.roster.minerals })"), { count: 2, minerals: 30 });
   await evaluate(`window.gs = smash.scene.getScene('GameScene'); gs.squad.roster.combine('gatling'); gs.squad.syncRoster();
-    window.survivorId = gs.squad.roster.units[0].id; gs.stats.damageMultiplier = 1.7;`);
+    window.survivorId = gs.squad.roster.units[0].id; window.endlessPathClears = 0; gs.stats.damageMultiplier = 1.7;`);
   for (let stage = 0; stage < 5; stage++) {
     const result = await evaluate(`(() => {
       gs.clearEncounter();
       gs.squad.health.currentHp = 30;
+      if (gs.stats.stageIndex === 4) {
+        // The saved final-boss decision requires the real connected boss room, not a renamed entrance.
+        const start = gs.gridManager.getCurrentRoom(), queue = [start], previous = new Map([[start.id, null]]);
+        const bossRoom = gs.gridManager.grid.flat().find(r => r?.type === 'BOSS');
+        for (const r of queue) for (const [dx,dy] of [[0,-1],[0,1],[-1,0],[1,0]]) {
+          const next = gs.gridManager.grid[r.gridY+dy]?.[r.gridX+dx];
+          if (next && !previous.has(next.id)) { previous.set(next.id,r); queue.push(next); }
+        }
+        for (let r = previous.get(bossRoom.id); r; r = previous.get(r.id)) {
+          if (!r.cleared) { r.visited = r.cleared = true; gs.stats.roomsCleared++; endlessPathClears++; }
+          if (r.type === 'EVENT') r.circleChoice = 'SKIP';
+        }
+        bossRoom.visited = true; gs.gridManager.restoreCurrentRoom(bossRoom.id);
+      }
       const room = gs.gridManager.getCurrentRoom(); room.type = 'BOSS'; room.cleared = false;
       gs.startRoomLogic(room); gs.spawnNextWave(room); gs.processSpawns(1000);
       const boss = gs.enemies.getChildren().find(e => e.active && e.spec.archetype === 'BOSS_CORE');
@@ -362,21 +385,27 @@ try {
       await capture(`stage${stage + 1}-clear`);
       if (stage === 1) await evaluate("smash.events.emit('hidden'); smash.events.emit('visible'); undefined;");
       assert.equal(await evaluate("smash.scene.isPaused('GameScene')"), true);
-      await tap(360, 1150);
+      const stageMaxHp = await evaluate('gs.squad.health.maxHp');
+      assert.equal(await evaluate('gs.squad.health.currentHp'), 30, 'boss XP may raise max HP but cannot heal current HP');
+      await tap(360, 1210);
       await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
       assert.deepEqual(await evaluate(`({ stage: gs.stats.stageIndex, hp: gs.squad.health.currentHp,
         multiplier: gs.stats.damageMultiplier, units: gs.squad.roster.units.map(u => u.id),
         fresh: gs.gridManager.grid.flat().filter(Boolean).every(r => !r.cleared),
         width: gs.gridManager.grid[0].length, height: gs.gridManager.grid.length })`),
-      { stage: stage + 1, hp: 70, multiplier: 1.7, units: [await evaluate('survivorId')], fresh: true,
+      { stage: stage + 1, hp: Math.min(stageMaxHp, 30 + Math.round(stageMaxHp * 0.4)), multiplier: 1.7, units: [await evaluate('survivorId')], fresh: true,
         width: [3, 4, 4, 5][stage], height: [4, 4, 5, 5][stage] });
       if (stage === 3) await capture('stage5-battle');
     } else {
+      await waitFor("smash.scene.isActive('EndlessChoiceScene') && smash.scene.isPaused('GameScene')");
+      assert.equal(await evaluate("JSON.parse(localStorage.getItem('smash.run-checkpoint.v1')).endlessChoice"), 'pending');
+      await tap(360, 794); // Explicitly finish the story victory.
       await waitFor("smash.scene.isActive('GameOverScene')");
       assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), null, 'victory clears the checkpoint');
     }
   }
-  assert.deepEqual(await evaluate('({ rooms: gs.stats.roomsCleared, boss: gs.stats.bossDefeated, bosses: gs.stats.bossesDefeated })'), { rooms: 5, boss: true, bosses: 5 });
+  assert.deepEqual(await evaluate('({ rooms: gs.stats.roomsCleared, boss: gs.stats.bossDefeated, bosses: gs.stats.bossesDefeated })'),
+    { rooms: 5 + await evaluate('endlessPathClears'), boss: true, bosses: 5 });
   // A death during a later stage also resets the stage gate and all run state.
   await evaluate("smash.scene.getScene('GameOverScene').scene.start('GameScene'); undefined;");
   await waitFor("smash.scene.isActive('GameScene')");
@@ -416,19 +445,20 @@ try {
     gs.squad.health.currentHp = 30;
     gs.stats.damageMultiplier = 1.6; gs.stats.attackSpeedMultiplier = 1.2; gs.stats.moveSpeedBonus = 10;
   })()`);
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
   const savedText = await evaluate("localStorage.getItem('smash.run-checkpoint.v1')");
   const savedCheckpoint = JSON.parse(savedText);
   assert.equal(savedCheckpoint.stats.stageIndex, 1);
   assert.equal(savedCheckpoint.stats.bossesDefeated, 1);
-  assert.equal(savedCheckpoint.leaderHealth.currentHp, 70);
+  assert.equal(savedCheckpoint.leaderHealth.currentHp,
+    Math.min(savedCheckpoint.leaderHealth.maxHp, 30 + Math.round(savedCheckpoint.leaderHealth.maxHp * 0.4)));
   assert.equal(savedCheckpoint.roster.units.some(unit => unit.id === 'unit_1' || unit.id === 'unit_2'), false);
   assert.equal(savedCheckpoint.roster.units.some(unit => unit.star === 2), true);
-  await tap(510, 1120); // Stop through the new in-game title button.
+  await click('GameScene', 'return-title'); // Stop through the new in-game title button.
   await waitFor("smash.scene.isActive('MenuScene')");
   assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), savedText);
-  await tap(360, 910);
+  await click('MenuScene', 'new-run');
   assert.equal(await evaluate("!!smash.scene.getScene('MenuScene').children.getByName('new-run-confirmation')"), true);
   await tap(210, 700); // Cancel overwriting the saved run.
   assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), savedText);
@@ -445,7 +475,7 @@ try {
   await waitFor("smash.scene.isActive('MenuScene')");
   await sleep(300);
   for (let attempt = 0; attempt < 3; attempt++) {
-    await tap(360, 998);
+    await click('MenuScene', 'continue-run');
     await waitFor("smash.scene.isActive('GameScene')");
     const restored = await evaluate(`(() => {
       window.gs = smash.scene.getScene('GameScene'); gs.scene.pause();
@@ -456,7 +486,7 @@ try {
         bosses: gs.progression.bossesDefeated, state: gs.progression.state };
     })()`);
     assert.deepEqual(restored, { stats: savedCheckpoint.stats, roster: savedCheckpoint.roster,
-      leaderHealth: savedCheckpoint.leaderHealth, unitHealth: savedCheckpoint.unitHealth, grid: savedCheckpoint.grid,
+      leaderHealth: savedCheckpoint.leaderHealth, unitHealth: savedCheckpoint.unitHealth.map(({ id, currentHp }) => ({ id, currentHp })), grid: savedCheckpoint.grid,
       clean: true, bosses: 1, state: 'PLAYING' });
     assert.equal(await evaluate("localStorage.getItem('smash.run-checkpoint.v1')"), savedText, 'Continue never rewrites the boundary');
     if (attempt === 0) await capture('restored-stage');
@@ -469,7 +499,7 @@ try {
   assert.equal(newId, `unit_${savedCheckpoint.roster.nextId + 1}`);
   await evaluate('gs.returnToTitle()');
   await waitFor("smash.scene.isActive('MenuScene')");
-  await tap(360, 910); await tap(510, 700); // Explicitly replace the old checkpoint.
+  await click('MenuScene', 'new-run'); await tap(510, 700); // Explicitly replace the old checkpoint.
   await waitFor("smash.scene.isActive('GameScene')");
   assert.deepEqual(await evaluate(`(() => { window.gs = smash.scene.getScene('GameScene');
     return { stage: gs.stats.stageIndex, count: gs.squad.roster.units.length, minerals: gs.squad.roster.minerals }; })()`),
@@ -477,11 +507,11 @@ try {
   await evaluate(`gs.returnToTitle(); localStorage.setItem('smash.run-checkpoint.v1', '{broken');`);
   await waitFor("smash.scene.isActive('MenuScene')");
   await capture('invalid-save-menu');
-  await tap(360, 998);
+  await click('MenuScene', 'continue-run');
   assert.equal(await evaluate("smash.scene.isActive('MenuScene')"), true);
-  await tap(360, 910);
+  await click('MenuScene', 'new-run');
   await waitFor("smash.scene.isActive('GameScene')");
-  assert.equal(await evaluate("JSON.parse(localStorage.getItem('smash.run-checkpoint.v1')).version"), 1);
+  assert.equal(await evaluate("JSON.parse(localStorage.getItem('smash.run-checkpoint.v1')).version"), 2);
   // A valid saved ID must hydrate its saved type/star rather than reuse default starter sprites.
   await evaluate(`(() => {
     window.gs = smash.scene.getScene('GameScene');
@@ -492,7 +522,7 @@ try {
     gs.returnToTitle();
   })()`);
   await waitFor("smash.scene.isActive('MenuScene')");
-  await tap(360, 998);
+  await click('MenuScene', 'continue-run');
   await waitFor("smash.scene.isActive('GameScene')");
   assert.deepEqual(await evaluate(`(() => {
     window.gs = smash.scene.getScene('GameScene');
@@ -502,7 +532,7 @@ try {
   await evaluate('gs.returnToTitle()');
   await waitFor("smash.scene.isActive('MenuScene')");
   await evaluate("localStorage.removeItem('smash.run-checkpoint.v1')");
-  await tap(360, 998); // The save disappeared after the menu was rendered.
+  await click('MenuScene', 'continue-run'); // The save disappeared after the menu was rendered.
   await waitFor("smash.scene.isActive('MenuScene') && !smash.scene.isActive('GameScene')");
   assert.equal(errors.length, 0, JSON.stringify(errors));
   console.log(JSON.stringify({ status: 'passed', viewport: '720x1280 touch', screenshotPath, screenshots, performance,

@@ -4,6 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "economy:report": "node scripts/economy-report.mjs",
+    "balance:report": "node tests/balance-browser.mjs",
+    "balance:classes": "node tests/class-balance-browser.mjs",
+    "test:integration": "node scripts/integration-check.mjs",
     "test": "node --test tests/*.test.mjs",
     "dev": "vite",
     "build": "tsc && vite build",

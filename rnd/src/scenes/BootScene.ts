@@ -18,6 +18,9 @@ export class BootScene extends Phaser.Scene {
 
   public create(): void {
     this.createArtFrame();
+    const leaderPortrait = this.textures.createCanvas('portrait_leader', 192, 192)!;
+    leaderPortrait.getContext().drawImage(this.textures.get('art_mage').getSourceImage() as HTMLImageElement, 0, 0, 192, 192);
+    leaderPortrait.refresh();
     this.createAnimatedSpriteSheets();
     // Only the small runtime textures are used after preparation.
     for (const key of ['art_frame_source', 'art_mage', 'art_units_source']) this.textures.remove(key);
@@ -172,24 +175,22 @@ export class BootScene extends Phaser.Scene {
 
     // 가상 조이스틱 베이스 & 스틱
     g.clear();
-    g.fillStyle(0x080e17, 0.9).fillCircle(68, 68, 66);
-    g.fillStyle(0xb79a62).fillCircle(68, 68, 63);
-    g.fillStyle(0x4d5b69).fillCircle(68, 68, 60);
-    g.fillStyle(0x1b2633).fillCircle(68, 68, 55);
-    g.lineStyle(2, 0xd7c694, 0.55).strokeCircle(68, 68, 51);
-    g.lineStyle(1, 0x84949e, 0.35).strokeCircle(68, 68, 35);
+    g.fillStyle(0x221c32, 0.4).fillCircle(68, 68, 63);
+    g.lineStyle(3, 0xcbb5e4, 0.6).strokeCircle(68, 68, 61);
+    g.lineStyle(5, 0x9b80bd, 0.12).strokeCircle(68, 68, 55);
+    g.lineStyle(1, 0xcbb5e4, 0.2).strokeCircle(68, 68, 40);
     for (const [x, y] of [[65, 11], [65, 119], [11, 65], [119, 65]]) {
-      g.fillStyle(0xe8d39b).fillRect(x, y, 6, 6);
+      g.fillStyle(0xcbb5e4,0.4).fillRect(x,y,6,6);
     }
-    g.lineStyle(1, 0xb79a62, 0.35).lineBetween(24, 68, 112, 68).lineBetween(68, 24, 68, 112);
+    g.lineStyle(1,0xcbb5e4,0.12).lineBetween(24,68,112,68).lineBetween(68,24,68,112);
     g.generateTexture('tex_joy_base', 136, 136);
 
     g.clear();
     g.fillStyle(0x080e17).fillCircle(28, 28, 27);
-    g.fillStyle(0xdbc693).fillCircle(28, 28, 24);
-    g.fillStyle(0x8c794d).fillCircle(28, 29, 21);
-    g.fillStyle(0xb8a477).fillCircle(28, 26, 18);
-    g.lineStyle(1, 0xffe7ac, 0.75).strokeCircle(28, 26, 18);
+    g.fillStyle(0xb19acb,0.7).fillCircle(28,28,24);
+    g.fillStyle(0x655175,0.7).fillCircle(28,29,21);
+    g.fillStyle(0xaa8ac5,0.6).fillCircle(28,26,18);
+    g.lineStyle(1,0xe0c9f3,0.6).strokeCircle(28,26,18);
     g.generateTexture('tex_joy_thumb', 56, 56);
 
     // 사방 게이트 도어 텍스처

@@ -1,18 +1,95 @@
 <!doctype html>
 <html lang="ko">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#faf7f2"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="컬러링 데이"><meta name="description" content="좋아하는 티니핑 도안을 골라 나만의 색으로 칠해보세요."><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/png" href="/icons/icon-192.png"><title>컬러링 데이 — 나만의 색칠 놀이터</title><link rel="stylesheet" href="style.css"></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#faf7f2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="컬러링 데이">
+  <meta name="description" content="좋아하는 티니핑 도안을 골라 나만의 색으로 칠해보세요.">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/icons/icon-192.png">
+  <title>컬러링 데이 — 나만의 색칠 놀이터</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<header><a class="brand" href="/">✿ <span>컬러링 데이<small>COLOR YOUR LITTLE WORLD</small></span></a><span class="header-note">작은 상상에, 나만의 색을 더해요</span><button class="button dark" id="save">↓ 그림 저장</button></header>
-<main>
-<details class="install-guide" id="install-guide"><summary>휴대폰에 앱으로 설치하기 <button type="button" id="install-app" hidden>앱 설치</button></summary><p>아이폰: Safari의 공유 메뉴 → 홈 화면에 추가<br>안드로이드: Chrome 메뉴 → 앱 설치 또는 홈 화면에 추가</p><p id="install-status" role="status">설치하면 홈 화면 아이콘으로 실행할 수 있어요.</p></details>
-<div class="studio">
-<aside class="panel">
-<section class="library"><div class="section-label"><h2>시즌별 도안</h2><button id="refresh-library" type="button">새로고침</button></div><label class="season-label" for="season">시즌 선택</label><select id="season" disabled><option>도안 불러오는 중…</option></select><p id="library-status" class="hint" role="status"></p><div id="templates" class="templates"></div></section>
-<!-- section><div class="section-label"><h2>나의 도안</h2><span>01</span></div><label class="upload" id="drop"><input id="upload" type="file" accept="image/png,image/jpeg,image/webp"><span class="upload-icon">＋</span><strong>도안 불러오기</strong><small>클릭하거나 이미지를 끌어다 놓으세요</small><small>PNG, JPG, WEBP · 최대 15MB</small></label><p class="hint">흰 배경에 선이 또렷한 도안이 좋아요.</p></section -->
-<section><div class="section-label"><h2>색칠 도구</h2><span>02</span></div><div class="tools"><button data-tool="fill" class="tool active" aria-pressed="true">▨<span>색칠통</span></button><button data-tool="brush" class="tool" aria-pressed="false">✎<span>붓</span></button><button data-tool="eraser" class="tool" aria-pressed="false">▱<span>지우개</span></button></div><label class="size-label" for="size">붓 크기 <output id="size-value">24px</output></label><input id="size" type="range" min="4" max="100" value="24"></section>
-<section><div class="section-label"><h2>오늘의 팔레트</h2><span>03</span></div><div id="palette" class="palette"></div><label class="custom-color"><input type="color" id="custom" value="#f58fa6"><span>내가 고르는 색</span><strong id="hex">#F58FA6</strong></label></section>
-</aside>
-<section class="workspace"><div class="canvas-toolbar"><div><span class="live-dot"></span><strong id="filename">꽃 요정의 하루</strong><span class="sample-tag" id="sample-tag">연습 도안</span></div><div class="history"><button id="undo" title="실행 취소 (Ctrl+Z)" aria-label="실행 취소" disabled>↶</button><button id="redo" title="다시 실행 (Ctrl+Shift+Z)" aria-label="다시 실행" disabled>↷</button><span></span><button id="reset" title="색칠 초기화">초기화</button></div></div><div class="paper-area"><canvas id="canvas" width="800" height="900" aria-label="색칠할 도안. 마우스 또는 터치로 색칠하세요."></canvas></div><div class="canvas-footer"><span id="status" role="status">색을 고르고, 빈 공간을 눌러보세요.</span><span>✧ 나만의 작은 작품</span></div></section>
-</div><footer>완벽하지 않아도 괜찮아요. 당신의 색이 정답이니까요. <span>✿</span></footer>
-</main><script src="app.js"></script><script src="pwa.js"></script>
-</body></html>
+  <main class="studio">
+    <section class="workspace" aria-label="색칠 놀이터">
+      <div class="paper-area">
+        <canvas id="canvas" width="800" height="900" aria-label="색칠할 도안. 마우스 또는 터치로 색칠하세요."></canvas>
+      </div>
+    </section>
+    <button type="button" id="open-menu" class="menu-button" aria-haspopup="dialog" aria-controls="studio-menu" aria-expanded="false">
+      <span id="current-color" class="current-color" aria-hidden="true"></span>
+      <span>메뉴</span><span aria-hidden="true">☰</span>
+    </button>
+    <p id="status" class="sr-only" role="status">메뉴에서 색과 도구를 고르고, 빈 공간을 눌러보세요.</p>
+  </main>
+
+  <dialog id="studio-menu" aria-labelledby="menu-title">
+    <div class="menu-content">
+      <div class="menu-heading">
+        <div><h1 id="menu-title">컬러링 데이</h1><p id="current-tool">색칠통으로 칠하고 있어요</p></div>
+        <button type="button" class="icon-button" id="close-menu" aria-label="메뉴 닫기">×</button>
+      </div>
+      <div class="menu-tabs" role="tablist" aria-label="색칠 메뉴">
+        <button type="button" id="tab-colors" role="tab" aria-controls="panel-colors" aria-selected="true" tabindex="0" data-tab="colors">색상</button>
+        <button type="button" id="tab-tools" role="tab" aria-controls="panel-tools" aria-selected="false" tabindex="-1" data-tab="tools">도구</button>
+        <button type="button" id="tab-library" role="tab" aria-controls="panel-library" aria-selected="false" tabindex="-1" data-tab="library">다른 도안</button>
+        <button type="button" id="tab-more" role="tab" aria-controls="panel-more" aria-selected="false" tabindex="-1" data-tab="more">더보기</button>
+      </div>
+      <div class="menu-panels">
+        <section id="panel-colors" role="tabpanel" aria-labelledby="tab-colors" data-panel="colors" tabindex="0">
+          <h2>오늘의 팔레트</h2>
+          <p class="hint">색을 고르면 바로 색칠 화면으로 돌아가요.</p>
+          <div id="palette" class="palette"></div>
+          <label class="custom-color"><input type="color" id="custom" value="#f58fa6"><span>내가 고르는 색</span><strong id="hex">#F58FA6</strong></label>
+          <div class="section-label effect-heading"><h2>마법 색칠</h2><span id="effect-name" role="status">단일색</span></div>
+          <p class="hint">반짝이는 지금 고른 색으로 칠해져요. 효과를 누르면 바로 색칠할 수 있어요.</p>
+          <div class="paint-effects" role="group" aria-label="색칠 효과">
+            <button type="button" data-effect="solid" aria-pressed="true"><span class="effect-preview preview-solid" aria-hidden="true"></span>단일색</button>
+            <button type="button" data-effect="rainbow" aria-pressed="false"><span class="effect-preview preview-rainbow" aria-hidden="true"></span>무지개</button>
+            <button type="button" data-effect="glitter" aria-pressed="false"><span class="effect-preview preview-glitter" aria-hidden="true">✦</span>반짝이</button>
+            <button type="button" data-effect="rainbow-glitter" aria-pressed="false"><span class="effect-preview preview-rainbow preview-glitter" aria-hidden="true">✦</span>무지개 반짝이</button>
+          </div>
+        </section>
+        <section id="panel-tools" role="tabpanel" aria-labelledby="tab-tools" data-panel="tools" tabindex="0" hidden>
+          <h2>색칠 도구</h2>
+          <p class="hint">원하는 도구와 붓 크기를 골라주세요.</p>
+          <div class="tools">
+            <button type="button" data-tool="fill" class="tool active" aria-pressed="true">▨<span>색칠통</span></button>
+            <button type="button" data-tool="brush" class="tool" aria-pressed="false">✎<span>붓</span></button>
+            <button type="button" data-tool="eraser" class="tool" aria-pressed="false">▱<span>지우개</span></button>
+          </div>
+          <p id="tool-description" class="hint">빈 공간을 누르면 한 번에 색칠해요.</p>
+          <label class="size-label" for="size">붓 크기 <output id="size-value">24px</output></label>
+          <input id="size" type="range" min="4" max="100" value="24">
+          <div class="sound-setting"><div><strong>색칠 효과음</strong><p class="hint">색칠할 때 작은 소리가 나요.</p></div><button type="button" id="sound-toggle" aria-pressed="true">효과음 켜짐</button></div>
+        </section>
+        <section id="panel-library" class="library" role="tabpanel" aria-labelledby="tab-library" data-panel="library" tabindex="0" hidden>
+          <div class="section-label"><h2>시즌별 도안</h2><button id="refresh-library" type="button">새로고침</button></div>
+          <label class="season-label" for="season">시즌 선택</label>
+          <select id="season" disabled><option>도안 불러오는 중…</option></select>
+          <p id="library-status" class="hint" role="status"></p>
+          <div id="templates" class="templates"></div>
+        </section>
+        <section id="panel-more" role="tabpanel" aria-labelledby="tab-more" data-panel="more" tabindex="0" hidden>
+          <h2>나의 그림</h2>
+          <p class="drawing-name"><strong id="filename">꽃 요정의 하루</strong><span class="sample-tag" id="sample-tag">연습 도안</span></p>
+          <div class="history">
+            <button type="button" id="undo" title="실행 취소 (Ctrl+Z)" disabled>↶ 실행 취소</button>
+            <button type="button" id="redo" title="다시 실행 (Ctrl+Shift+Z)" disabled>↷ 다시 실행</button>
+            <button type="button" id="reset">색칠 초기화</button>
+          </div>
+          <button type="button" class="button dark save-button" id="save">↓ 그림 저장</button>
+          <details class="install-guide" id="install-guide"><summary>휴대폰에 앱으로 설치하기 <button type="button" id="install-app" hidden>앱 설치</button></summary><p>아이폰: Safari의 공유 메뉴 → 홈 화면에 추가<br>안드로이드: Chrome 메뉴 → 앱 설치 또는 홈 화면에 추가</p><p id="install-status" role="status">설치하면 홈 화면 아이콘으로 실행할 수 있어요.</p></details>
+        </section>
+      </div>
+      <div class="menu-footer"><button type="button" class="button dark" id="resume">색칠하러 가기</button></div>
+    </div>
+  </dialog>
+  <script src="app.js"></script><script src="pwa.js"></script>
+</body>
+</html>

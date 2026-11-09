@@ -1,4 +1,45 @@
 const $ = s => document.querySelector(s);
+const menu = $('#studio-menu'), menuButton = $('#open-menu');
+const menuTabs = [...document.querySelectorAll('[data-tab]')];
+function closeMenu() { if (menu.open) menu.close(); }
+function selectTab(tab) {
+  menuTabs.forEach(button => {
+    const selected = button === tab;
+    button.setAttribute('aria-selected', String(selected));
+    button.tabIndex = selected ? 0 : -1;
+  });
+  document.querySelectorAll('[data-panel]').forEach(panel => panel.hidden = panel.dataset.panel !== tab.dataset.tab);
+  $('.menu-panels').scrollTop = 0;
+}
+menuButton.onclick = () => {
+  menu.showModal();
+  menuButton.setAttribute('aria-expanded', 'true');
+  menuTabs.find(tab => tab.tabIndex === 0)?.focus();
+};
+$('#close-menu').onclick = $('#resume').onclick = closeMenu;
+menu.addEventListener('close', () => {
+  menuButton.setAttribute('aria-expanded', 'false');
+  menuButton.focus();
+});
+// A complete tap on the backdrop closes the layer; a drag from inside does not.
+let backdropPointer;
+menu.addEventListener('pointerdown', event => { backdropPointer = event.target === menu ? event.pointerId : undefined; });
+menu.addEventListener('pointerup', event => {
+  if (event.target === menu && event.pointerId === backdropPointer) closeMenu();
+  backdropPointer = undefined;
+});
+menuTabs.forEach((tab, index) => {
+  tab.onclick = () => selectTab(tab);
+  tab.onkeydown = event => {
+    let next;
+    if (event.key === 'ArrowRight') next = (index + 1) % menuTabs.length;
+    if (event.key === 'ArrowLeft') next = (index + menuTabs.length - 1) % menuTabs.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = menuTabs.length - 1;
+    if (next === undefined) return;
+    event.preventDefault(); selectTab(menuTabs[next]); menuTabs[next].focus();
+  };
+});
 const canvas = $('#canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
 const makeCanvas = () => document.createElement('canvas');
 const outline = makeCanvas(), paint = makeCanvas();
@@ -25,8 +66,12 @@ function showTemplates() {
     const label = document.createElement('span'); label.textContent = image.name;
     button.append(preview, label);
     button.onclick = async () => {
-      try { if (!await loadOutline(image.url, image.name)) return; document.querySelectorAll('.template').forEach(b => b.setAttribute('aria-pressed', b === button ? 'true' : 'false')); }
-      catch { $('#status').textContent = '도안을 열 수 없어요. 목록을 새로고침해주세요.'; }
+      try {
+        if (!await loadOutline(image.url, image.name)) return;
+        document.querySelectorAll('.template').forEach(b => b.setAttribute('aria-pressed', b === button ? 'true' : 'false'));
+        closeMenu();
+      }
+      catch { $('#library-status').textContent = $('#status').textContent = '도안을 열 수 없어요. 목록을 새로고침해주세요.'; }
     };
     $('#templates').append(button);
   }
@@ -52,15 +97,136 @@ async function refreshLibrary() {
 }
 $('#season').onchange = showTemplates;
 $('#refresh-library').onclick = refreshLibrary;
-let color = '#f58fa6', tool = 'fill', drawing = false, last, history = [], future = [], boundary;
+let color = '#f58fa6', paintEffect = 'solid', tool = 'fill', drawing = false, last, history = [], future = [], boundary;
+const effectNames = { solid: '단일색', rainbow: '무지개', glitter: '반짝이', 'rainbow-glitter': '무지개 반짝이' };
 const colors = ['#f58fa6','#f4b38d','#f4d674','#a9c79d','#93c8cc','#a6b4d6','#d4b0d4','#e85e69','#e8a153','#88a966','#58a9b3','#7d88b6','#b18abe','#855d53','#e9d6bb','#c9c9c4','#555c60','#ffffff'];
-colors.forEach(c => { const b = document.createElement('button'); b.className = 'swatch'; b.style.background = c; b.dataset.color = c; b.setAttribute('aria-label', `색상 ${c}`); b.onclick = () => selectColor(c); $('#palette').append(b); });
-function selectColor(c) { color = c; $('#custom').value = c; $('#hex').textContent = c.toUpperCase(); document.querySelectorAll('.swatch').forEach(b => { b.classList.toggle('selected', b.dataset.color === c); b.setAttribute('aria-pressed', b.dataset.color === c); }); }
+colors.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.className = 'swatch'; b.style.background = c; b.dataset.color = c; b.setAttribute('aria-label', `색상 ${c}`); b.onclick = () => { selectColor(c); closeMenu(); }; $('#palette').append(b); });
+function selectEffect(effect) {
+  paintEffect = effect;
+  $('#effect-name').textContent = effectNames[effect];
+  $('#current-color').dataset.effect = effect;
+  $('#current-color').style.backgroundColor = color;
+  document.querySelectorAll('button[data-effect]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.effect === effect)));
+  document.querySelectorAll('.preview-solid, .preview-glitter').forEach(preview => preview.style.backgroundColor = color);
+}
+function selectColor(c) { color = c; $('#custom').value = c; $('#hex').textContent = c.toUpperCase(); selectEffect('solid'); document.querySelectorAll('.swatch').forEach(b => { b.classList.toggle('selected', b.dataset.color === c); b.setAttribute('aria-pressed', b.dataset.color === c); }); }
+document.querySelectorAll('button[data-effect]').forEach(button => button.onclick = () => { selectEffect(button.dataset.effect); closeMenu(); });
 selectColor(color);
 $('#custom').oninput = e => selectColor(e.target.value);
-document.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => { tool = b.dataset.tool; document.querySelectorAll('[data-tool]').forEach(t => { t.classList.toggle('active', t === b); t.setAttribute('aria-pressed', t === b); }); $('#size').disabled = tool !== 'brush'; $('#status').textContent = { fill:'색칠할 빈 공간을 눌러보세요.', brush:'드래그해서 원하는 색으로 칠해보세요.', eraser:'지울 영역을 누르면 영역 전체의 색칠이 지워집니다. 도안의 선은 유지됩니다.' }[tool]; });
+$('#custom').onchange = closeMenu;
+document.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => {
+  tool = b.dataset.tool;
+  document.querySelectorAll('[data-tool]').forEach(t => { t.classList.toggle('active', t === b); t.setAttribute('aria-pressed', t === b); });
+  $('#size').disabled = tool !== 'brush';
+  $('#current-tool').textContent = { fill: '색칠통으로 칠하고 있어요', brush: '붓으로 칠하고 있어요', eraser: '지우개를 사용하고 있어요' }[tool];
+  $('#tool-description').textContent = $('#status').textContent = { fill:'색칠할 빈 공간을 눌러보세요.', brush:'드래그해서 원하는 색으로 칠해보세요.', eraser:'지울 영역을 누르면 영역 전체의 색칠이 지워집니다. 도안의 선은 유지됩니다.' }[tool];
+});
 $('#size').disabled = tool !== 'brush';
 $('#size').oninput = e => $('#size-value').value = `${e.target.value}px`;
+
+// One small, seamless material tile is shared by the fill tool and brush.
+// The texture becomes actual paint pixels, so history and PNG exports retain it.
+let material;
+function paintMaterial() {
+  const key = `${paintEffect}:${color}`;
+  if (material?.key === key) return material;
+  const rgb = [1, 3, 5].map(i => parseInt(color.slice(i, i + 2), 16));
+  if (paintEffect === 'solid') return material = { key, rgb, style: color };
+  const tile = makeCanvas(), size = 192;
+  tile.width = tile.height = size;
+  const tileContext = tile.getContext('2d', { willReadFrequently: true });
+  const pixels = tileContext.createImageData(size, size);
+  const rainbow = [[243,109,145],[255,182,92],[255,231,120],[133,214,160],[112,205,229],[173,145,230],[243,109,145]];
+  const multicolor = paintEffect.includes('rainbow'), glitter = paintEffect.includes('glitter');
+  let seed = 2761;
+  const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const offset = (y * size + x) * 4;
+    const position = ((x + y) % size) / size * (rainbow.length - 1);
+    const stop = Math.floor(position), blend = position - stop;
+    const grain = glitter ? random() : .5;
+    const shade = glitter ? .78 + grain * .36 : 1;
+    for (let channel = 0; channel < 3; channel++) {
+      const base = multicolor ? rainbow[stop][channel] * (1 - blend) + rainbow[stop + 1][channel] * blend : rgb[channel];
+      // Light flecks are visible even over a dark base; darker grain gives white paint texture.
+      pixels.data[offset + channel] = grain > .92 ? base * .35 + 255 * .65 : base * shade;
+    }
+    pixels.data[offset + 3] = 255;
+  }
+  tileContext.putImageData(pixels, 0, 0);
+  if (glitter) {
+    for (let i = 0; i < 24; i++) {
+      const x = 7 + random() * (size - 14), y = 7 + random() * (size - 14), radius = 2 + random() * 3;
+      tileContext.fillStyle = i % 3 ? '#ffffff' : '#fff4bc';
+      tileContext.beginPath();
+      tileContext.moveTo(x, y - radius);
+      tileContext.lineTo(x + 1, y - 1); tileContext.lineTo(x + radius, y);
+      tileContext.lineTo(x + 1, y + 1); tileContext.lineTo(x, y + radius);
+      tileContext.lineTo(x - 1, y + 1); tileContext.lineTo(x - radius, y);
+      tileContext.lineTo(x - 1, y - 1); tileContext.closePath(); tileContext.fill();
+    }
+  }
+  return material = { key, size, pixels: tileContext.getImageData(0, 0, size, size).data, style: brush.createPattern(tile, 'repeat') };
+}
+
+let soundEnabled = true, audio, soundVolume, lastSoundAt = -Infinity, note = 0;
+try { soundEnabled = globalThis.localStorage?.getItem('coloring-day-sound') !== 'off'; } catch { /* Storage is optional. */ }
+function soundControls() {
+  $('#sound-toggle').setAttribute('aria-pressed', String(soundEnabled));
+  $('#sound-toggle').textContent = soundEnabled ? '효과음 켜짐' : '효과음 꺼짐';
+  if (soundVolume) soundVolume.gain.setValueAtTime(soundEnabled ? 1 : 0, audio.currentTime);
+}
+soundControls();
+$('#sound-toggle').onclick = () => {
+  soundEnabled = !soundEnabled; soundControls();
+  try { globalThis.localStorage?.setItem('coloring-day-sound', soundEnabled ? 'on' : 'off'); } catch { /* Keep the in-session setting. */ }
+  if (soundEnabled) playPaintSound();
+};
+async function playPaintSound(erase = false) {
+  if (!soundEnabled) return;
+  try {
+    const AudioEngine = globalThis.AudioContext || globalThis.webkitAudioContext;
+    if (!AudioEngine) return;
+    if (!audio) {
+      audio = new AudioEngine(); soundVolume = audio.createGain();
+      soundVolume.connect(audio.destination); soundControls();
+    }
+    if (audio.state === 'suspended') await audio.resume();
+    if (!soundEnabled || audio.state !== 'running') return;
+    const now = audio.currentTime;
+    if (now - lastSoundAt < .18) return;
+    lastSoundAt = now;
+    const base = erase ? 392 : [523.25, 659.25, 783.99, 1046.5][note++ % 4];
+    const notes = erase ? [1, .75] : paintEffect.includes('glitter') ? [1, 1.5, 2] : [1, 1.25];
+    notes.forEach((ratio, index) => {
+      const oscillator = audio.createOscillator(), gain = audio.createGain(), start = now + index * .035;
+      oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(base * ratio, start);
+      gain.gain.setValueAtTime(0, start); gain.gain.linearRampToValueAtTime(.035, start + .012);
+      gain.gain.exponentialRampToValueAtTime(.0001, start + .18);
+      oscillator.connect(gain); gain.connect(soundVolume);
+      oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
+      oscillator.start(start); oscillator.stop(start + .2);
+    });
+  } catch { /* Sound support must never interrupt drawing. */ }
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && audio?.state === 'running') audio.suspend().catch(() => {}); });
+let lastSparkleAt = -Infinity;
+function paintFeedback(event, erase = false) {
+  playPaintSound(erase);
+  if (erase || !paintEffect.includes('glitter') || globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  const now = performance.now();
+  if (now - lastSparkleAt < 120) return;
+  lastSparkleAt = now;
+  for (let i = 0; i < 5; i++) {
+    const sparkle = document.createElement('span'), angle = i * Math.PI * 2 / 5;
+    sparkle.className = 'paint-sparkle'; sparkle.textContent = '✦'; sparkle.setAttribute('aria-hidden', 'true');
+    sparkle.style.left = `${event.clientX}px`; sparkle.style.top = `${event.clientY}px`;
+    sparkle.style.setProperty('--sparkle-x', `${Math.cos(angle) * 32}px`);
+    sparkle.style.setProperty('--sparkle-y', `${Math.sin(angle) * 32 - 16}px`);
+    document.body.append(sparkle);
+    setTimeout(() => sparkle.remove(), 700);
+  }
+}
 function render() { ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(paint, 0, 0); ctx.globalCompositeOperation = 'multiply'; ctx.drawImage(outline, 0, 0); ctx.globalCompositeOperation = 'source-over'; }
 function controls() { $('#undo').disabled = !history.length; $('#redo').disabled = !future.length; }
 function snapshot() { history.push(brush.getImageData(0, 0, paint.width, paint.height)); const limit = Math.max(1, Math.min(16, Math.floor(24 * 1024 * 1024 / (paint.width * paint.height * 4)))); while (history.length > limit) history.shift(); future = []; controls(); }
@@ -73,22 +239,25 @@ function setup(w, h) { [canvas, outline, paint].forEach(c => { c.width = w; c.he
 function cacheBoundary() { const pixels = ink.getImageData(0, 0, outline.width, outline.height).data; boundary = new Uint8Array(outline.width * outline.height); for (let i = 0; i < boundary.length; i++) boundary[i] = (pixels[i*4] * .299 + pixels[i*4+1] * .587 + pixels[i*4+2] * .114) < 185 ? 1 : 0; }
 function fill(x, y, erase = false) {
   const w = canvas.width, h = canvas.height, start = y*w+x;
-  if (boundary[start]) return;
+  if (boundary[start]) return false;
   snapshot();
   const data = brush.getImageData(0, 0, w, h), seen = new Uint8Array(w*h), stack = new Int32Array(w*h);
-  const rgb = [1,3,5].map(i => parseInt(color.slice(i,i+2),16));
+  const surface = erase ? null : paintMaterial();
   let count = 1; stack[0] = start; seen[start] = 1;
-  while (count) { const p = stack[--count], offset = p*4; data.data[offset] = erase ? 0 : rgb[0]; data.data[offset+1] = erase ? 0 : rgb[1]; data.data[offset+2] = erase ? 0 : rgb[2]; data.data[offset+3] = erase ? 0 : 255;
-    const px = p%w;
+  while (count) { const p = stack[--count], offset = p*4, px = p%w;
+    const textureOffset = surface?.pixels ? ((Math.floor(p / w) % surface.size) * surface.size + px % surface.size) * 4 : 0;
+    for (let channel = 0; channel < 3; channel++) data.data[offset + channel] = erase ? 0 : surface.pixels ? surface.pixels[textureOffset + channel] : surface.rgb[channel];
+    data.data[offset + 3] = erase ? 0 : 255;
     const add = n => { if (!seen[n] && !boundary[n]) { seen[n] = 1; stack[count++] = n; } };
     if (px > 0) add(p-1); if (px < w-1) add(p+1); if (p >= w) add(p-w); if (p < w*(h-1)) add(p+w);
   }
   brush.putImageData(data, 0, 0); render();
+  return true;
 }
 function point(e) { const r = canvas.getBoundingClientRect(); return { x: Math.max(0, Math.min(canvas.width-1, Math.floor((e.clientX-r.left)*canvas.width/r.width))), y: Math.max(0, Math.min(canvas.height-1, Math.floor((e.clientY-r.top)*canvas.height/r.height))) }; }
-function stroke(a,b) { brush.globalCompositeOperation = 'source-over'; brush.strokeStyle = color; brush.fillStyle = color; brush.lineWidth = Number($('#size').value); brush.lineCap = 'round'; brush.lineJoin = 'round'; brush.beginPath(); brush.moveTo(a.x,a.y); brush.lineTo(b.x,b.y); brush.stroke(); brush.beginPath(); brush.arc(b.x,b.y,brush.lineWidth/2,0,Math.PI*2); brush.fill(); render(); }
-canvas.onpointerdown = e => { if (e.button !== 0 || drawing) return; const p = point(e); if (tool === 'fill' || tool === 'eraser') { fill(p.x,p.y,tool === 'eraser'); return; } snapshot(); drawing = true; last = p; canvas.setPointerCapture(e.pointerId); stroke(p,p); };
-canvas.onpointermove = e => { if (!drawing) return; const p = point(e); stroke(last,p); last = p; };
+function stroke(a,b) { const surface = paintMaterial(); brush.globalCompositeOperation = 'source-over'; brush.strokeStyle = surface.style; brush.fillStyle = surface.style; brush.lineWidth = Number($('#size').value); brush.lineCap = 'round'; brush.lineJoin = 'round'; brush.beginPath(); brush.moveTo(a.x,a.y); brush.lineTo(b.x,b.y); brush.stroke(); brush.beginPath(); brush.arc(b.x,b.y,brush.lineWidth/2,0,Math.PI*2); brush.fill(); render(); }
+canvas.onpointerdown = e => { if (e.button !== 0 || drawing) return; const p = point(e); if (tool === 'fill' || tool === 'eraser') { if (fill(p.x,p.y,tool === 'eraser')) paintFeedback(e,tool === 'eraser'); return; } snapshot(); drawing = true; last = p; canvas.setPointerCapture(e.pointerId); stroke(p,p); paintFeedback(e); };
+canvas.onpointermove = e => { if (!drawing) return; const p = point(e); stroke(last,p); last = p; paintFeedback(e); };
 canvas.onpointerup = canvas.onpointercancel = canvas.onlostpointercapture = () => drawing = false;
 async function upload(file) {
   if (!file) return;

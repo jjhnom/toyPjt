@@ -4,6 +4,21 @@ import { fixture, load } from './helpers/skill-fixture.mjs';
 
 const { createCombatHudStatus, readCombatHudStatus } = load('src/ui/combatStatus.ts');
 
+test('fractional scene times do not add an extra second to revival, skill or shield countdowns', () => {
+  const state = createCombatHudStatus();
+  for (const now of [6384.4, 13905.4, 32768.2, 100000.7]) {
+    const source = { archetype: 'PHOENIX_LORD', lastSkillAt: now, reviveAt: now + 12000,
+      health: { isDead: false, shieldHp: 30, shieldUntil: now + 4000 } };
+    readCombatHudStatus(source, now, true, state);
+    assert.equal(state.seconds, 10); assert.equal(state.shieldSeconds, 4);
+    readCombatHudStatus(source, now + 1000, true, state); assert.equal(state.seconds, 9);
+    source.health.isDead = true;
+    readCombatHudStatus(source, now, true, state); assert.equal(state.seconds, 12);
+    readCombatHudStatus(source, source.reviveAt - 0.0001, true, state); assert.equal(state.seconds, 1);
+    readCombatHudStatus(source, source.reviveAt, true, state); assert.equal(state.seconds, 0);
+  }
+});
+
 test('revival uses ceiling seconds and clears immediately after the actual automatic revival', () => {
   const f = fixture(['BASIC_LASER']);
   const unit = f.squad.drones[0], state = createCombatHudStatus();

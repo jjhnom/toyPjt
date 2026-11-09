@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ARENA_BOUNDS } from '../config/gameData';
-import { BulletFireConfig, DroneArchetype, ProjectileTarget } from '../types/game';
+import { BulletFireConfig, DroneArchetype, ProjectileTarget, DamageSourceKind } from '../types/game';
 import { UNIT_COMBAT_STYLES, UNIT_PROJECTILE_SKILLS } from '../config/skillData';
 import { skillProjectileTexture } from '../ui/skillEffectTextures';
 
@@ -14,6 +14,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
   public bulletColor = 0xffffff;
   public readonly hitEnemyLives = new Set<number>();
   public sourceUnitId: string | undefined;
+  public sourceKind: DamageSourceKind = 'environment';
   public unitTypeId: DroneArchetype = 'BASIC_LASER';
   public splitPending = false;
   public flightSpeed = 0;
@@ -36,9 +37,10 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
     this.enableBody(true, config.x, config.y, true, true);
     this.setPosition(config.x, config.y);
     this.sourceUnitId = config.sourceUnitId;
+    this.sourceKind = config.sourceKind ?? (config.sourceUnitId ? 'unit' : 'environment');
     this.unitTypeId = config.unitTypeId ?? 'BASIC_LASER';
     this.isFragment = config.isFragment ?? false;
-    const skill = this.isFragment ? undefined : UNIT_PROJECTILE_SKILLS[this.unitTypeId];
+    const skill = this.isFragment || this.sourceKind === 'hero' ? undefined : UNIT_PROJECTILE_SKILLS[this.unitTypeId];
     this.splitPending = !!skill?.split;
     this.turnRate = skill?.homing?.turnRate ?? 0;
     this.homingTarget = this.turnRate > 0 ? config.target : undefined;
@@ -81,6 +83,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
     this.disableBody(true, true);
     this.hitEnemyLives.clear();
     this.sourceUnitId = undefined;
+    this.sourceKind = 'environment';
     this.homingTarget = undefined;
     this.homingLifeId = this.turnRate = 0;
     this.splitPending = false;

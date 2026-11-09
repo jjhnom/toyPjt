@@ -10,6 +10,7 @@ const profile = await mkdtemp(join(tmpdir(), 'smash-browser-'));
 const browserPath = process.env.SMASH_BROWSER_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browser = spawn(browserPath, [
   '--headless=new', '--no-first-run', '--no-default-browser-check', '--enable-unsafe-swiftshader',
+  ...(process.env.SMASH_BROWSER_NO_SANDBOX==='1'?['--no-sandbox','--disable-gpu']:[]),
   '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
 ], { windowsHide: true, stdio: 'ignore' });
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -91,15 +92,22 @@ try {
     gs.openSquadModal();`);
   await waitFor("smash.scene.isActive('SquadScene') && smash.scene.isPaused('GameScene')");
   await evaluate("window.ss = smash.scene.getScene('SquadScene'); undefined;");
-  await tap(570, 73);
+  const click = async name => {
+    const point = await evaluate(`(() => { const scene = smash.scene.isActive('SquadScene') ? ss : gs;
+      const control = scene.children.getByName(${JSON.stringify(name)});
+      if (!control) throw Error('Missing control: ' + ${JSON.stringify(name)});
+      return {x: control.x, y: control.y}; })()`);
+    await tap(point.x, point.y);
+  };
+  await click('quick-craft-open');
   assert.equal(await evaluate('ss.quickMode'), true);
-  await tap(632, 287); // T4.
+  await click('quick-tier-4');
   assert.equal(await evaluate('ss.quickTier'), 4);
   assert.equal(await evaluate("ss.children.getChildren().filter(c => c.name.startsWith('quick-craft-') && !['quick-craft-open'].includes(c.name)).length"), 4);
   await capture('list-720');
   await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 640, deviceScaleFactor: 1, mobile: true });
   await sleep(300); await capture('list-360');
-  await tap(525, 515); // Phoenix.
+  await click('quick-craft-PHOENIX_LORD');
   assert.deepEqual(await evaluate('({ id: ss.quickQuote.unitTypeId, cost: ss.quickQuote.totalCost })'),
     { id: 'PHOENIX_LORD', cost: 250 });
   await capture('quote-360');
@@ -113,7 +121,7 @@ try {
   assert.equal(await evaluate("ss.message.includes('불사조 군주 ★1 제작 완료')"), true);
   await capture('crafted-360');
   // Insufficient funds must disable the commit action and leave all state untouched.
-  await tap(525, 515);
+  await click('quick-craft-PHOENIX_LORD');
   const afterCraft = await evaluate('JSON.stringify(gs.squad.roster.snapshot())');
   assert.equal(await evaluate("!!ss.children.getByName('quick-craft-confirm').list.find(c => c.input?.enabled)"), false);
   await tap(520, 930);
@@ -123,18 +131,18 @@ try {
   await evaluate(`gs.squad.roster.minerals = 5000;
     while (gs.squad.roster.units.length < 16) gs.squad.roster.summon('BASIC_LASER');
     gs.squad.roster.freeSummons = 2; ss.render();`);
-  await tap(525, 726); // Earth deity.
+  await click('quick-craft-EARTH_DEITY');
   assert.equal(await evaluate('ss.quickQuote.unitTypeId'), 'EARTH_DEITY');
   const full = await evaluate('JSON.stringify(gs.squad.roster.snapshot())');
   assert.equal(await evaluate("!!ss.children.getByName('quick-craft-confirm').list.find(c => c.input?.enabled)"), false);
   await tap(520, 930);
   assert.equal(await evaluate('JSON.stringify(gs.squad.roster.snapshot())'), full);
   await capture('full-roster-360');
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
   assert.equal(await evaluate("gs.squad.drones.some(d => d.archetype === 'PHOENIX_LORD')"), true);
   assert.equal(await evaluate('gs.squad.drones.length'), 6);
-  await tap(540, 1178);
+  await click('squad-open');
   await waitFor("smash.scene.isActive('SquadScene')");
   assert.equal(await evaluate("smash.scene.getScene('SquadScene').quickQuote"), null);
   assert.equal(await evaluate("smash.scene.getScene('SquadScene').quickMode"), false);

@@ -71,8 +71,10 @@ export function fixture(archetypes) {
   const { UNIT_TYPES } = load('src/config/unitData.ts');
   const scene = { time: { now: 0 }, physics: { add: { sprite: (x, y) => new Sprite(scene, x, y) } },
     add: { existing() {} }, anims: { exists: () => false }, sys: { updateList: { add() {} } } };
-  const events = [], shots = [];
-  const squad = new PlayerSquad(scene, 360, 650, config => shots.push({ ...config }), () => {}, () => {},
+  // Keep summoned-unit assertions independent of the leader's automatic weapon.
+  const events = [], shots = [], heroShots = [];
+  const squad = new PlayerSquad(scene, 360, 650, config =>
+    (config.sourceKind === 'hero' ? heroShots : shots).push({ ...config }), () => {}, () => {},
     (...event) => events.push(event));
   squad.roster.units = archetypes.map((archetype, i) => ({ id: `skill_${i}`, archetype,
     tier: UNIT_TYPES[archetype].tier, deployed: true, star: 1 }));
@@ -84,5 +86,5 @@ export function fixture(archetypes) {
     scene.time.now = time;
     squad.update(time, 0, 0, 0, enemies, 1, 1, 0, active);
   };
-  return { squad, scene, events, enemies, update, shots };
+  return { squad, scene, events, enemies, update, shots, heroShots };
 }

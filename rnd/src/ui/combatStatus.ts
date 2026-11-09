@@ -21,6 +21,9 @@ export const createCombatHudStatus = (): CombatHudStatus => ({
   kind: 'none', seconds: 0, progress: 0, skillName: '', shieldHp: 0, shieldSeconds: 0
 });
 
+// Ignore nanosecond cancellation error at whole-second boundaries; gameplay deadlines stay unchanged.
+export const countdownSeconds = (ms: number): number => Math.ceil(Math.max(0, ms - 0.000001) / 1000);
+
 /** Read existing combat deadlines into a reused slot; no timers or gameplay mutations. */
 export function readCombatHudStatus(unit: StatusSource, time: number, combatActive: boolean, out: CombatHudStatus): void {
   const cooldown = unit.archetype === 'PHOENIX_LORD' ? UNIQUE_SKILLS.phoenix.cooldownMs
@@ -29,13 +32,13 @@ export function readCombatHudStatus(unit: StatusSource, time: number, combatActi
     : unit.archetype === 'EARTH_DEITY' ? '대지 방벽' : '';
   out.kind = 'none'; out.seconds = 0; out.progress = 0;
   out.shieldHp = !unit.health.isDead && time < unit.health.shieldUntil ? unit.health.shieldHp : 0;
-  out.shieldSeconds = out.shieldHp > 0 ? Math.ceil((unit.health.shieldUntil - time) / 1000) : 0;
+  out.shieldSeconds = out.shieldHp > 0 ? countdownSeconds(unit.health.shieldUntil - time) : 0;
   if (unit.health.isDead) {
     out.kind = 'revive';
-    out.seconds = Math.ceil(Math.max(0, unit.reviveAt - time) / 1000);
+    out.seconds = countdownSeconds(unit.reviveAt - time);
   } else if (cooldown > 0) {
-    const remaining = Math.max(0, unit.lastSkillAt + cooldown - time);
-    out.seconds = Math.ceil(remaining / 1000);
+    const remaining = Math.max(0, cooldown - (time - unit.lastSkillAt));
+    out.seconds = countdownSeconds(remaining);
     out.progress = Math.max(0, Math.min(1, 1 - remaining / cooldown));
     out.kind = !combatActive ? 'waiting' : remaining > 0 ? 'cooldown' : 'ready';
   }

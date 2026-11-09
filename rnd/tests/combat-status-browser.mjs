@@ -10,6 +10,7 @@ const profile = await mkdtemp(join(tmpdir(), 'smash-browser-'));
 const browserPath = process.env.SMASH_BROWSER_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browser = spawn(browserPath, [
   '--headless=new', '--no-first-run', '--no-default-browser-check', '--enable-unsafe-swiftshader',
+  ...(process.env.SMASH_BROWSER_NO_SANDBOX==='1'?['--no-sandbox','--disable-gpu']:[]),
   '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
 ], { windowsHide: true, stdio: 'ignore' });
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -104,29 +105,30 @@ try {
   assert.equal(await evaluate('gs.hudUnitStatuses[0].kind'), 'cooldown');
   assert.equal(await evaluate('gs.hudUnitStatuses[1].kind'), 'cooldown');
   assert.equal(await evaluate('gs.hudUnitStatuses[2].kind'), 'revive');
-  await tap(268, 127);
+  await tap(630, 1130);
   assert.equal(await evaluate('gs.hudStatusDetail.visible && gs.selectedHudUnitId === gs.squad.drones[0].id'), true);
-  assert.equal(await evaluate("gs.hudStatusLine.text.includes('불사조 재림')"), true);
+  assert.equal(await evaluate("gs.hudStatusRows[0].state.text.includes('불사조 재림')"), true);
   const clockBefore = await evaluate('gs.time.now'); await sleep(200);
   assert.ok(await evaluate('gs.time.now') > clockBefore, 'the detail panel must not pause combat');
   assert.equal(await evaluate('gs.joystick.dirX === 0 && gs.joystick.dirY === 0'), true);
   const touchBounds = await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()");
   const touch = (x, y) => ({ x: touchBounds.x + x * touchBounds.width / 720, y: touchBounds.y + y * touchBounds.height / 1280 });
-  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [touch(100, 250)] });
-  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [touch(145, 275)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [touch(100, 400)] });
+  await send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [touch(145, 425)] });
   await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   assert.equal(await evaluate('gs.joystick.dirX === 0 && gs.joystick.dirY === 0'), true, 'detail touches must not steer the leader');
   await capture('cooldowns-720');
   await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 640, deviceScaleFactor: 1, mobile: true });
   await sleep(300);
-  await tap(358, 127); // Fallen third unit.
-  assert.equal(await evaluate("gs.hudStatusLine.text.includes('자동 부활까지')"), true);
+  // The summary panel shows all six units, including the fallen third unit.
+  assert.equal(await evaluate("gs.hudStatusRows[2].state.text.includes('자동 부활')"), true);
   await capture('revive-detail-360');
   const layout = await evaluate(`(() => {
     const detail = gs.hudStatusDetail.getBounds();
-    return { inside: detail.left >= 0 && detail.right <= 720 && detail.bottom <= 360,
-      labels: gs.hudUnitStatusTexts.every(t => !t.visible || t.getBounds().width <= 36),
-      hp: gs.hudHpText.getBounds().bottom <= 56, wave: gs.hudWaveText.getBounds().bottom <= 115 };
+    return { inside: detail.left >= 0 && detail.right <= 720 && detail.bottom <= 1080,
+      labels: gs.hudUnitStatusTexts.every(t => !t.visible || t.getBounds().width <= 78),
+      hp: gs.hudHpText.getBounds().top >= 36 && gs.hudHpText.getBounds().bottom <= 66,
+      wave: gs.hudWaveText.getBounds().bottom <= 115 };
   })()`);
   assert.deepEqual(layout, { inside: true, labels: true, hp: true, wave: true });
 
@@ -135,10 +137,11 @@ try {
   const frozen = await evaluate('JSON.stringify({ time: gs.time.now, states: gs.hudUnitStatuses })');
   await sleep(350);
   assert.equal(await evaluate('JSON.stringify({ time: gs.time.now, states: gs.hudUnitStatuses })'), frozen);
-  await tap(360, 1150);
+  await tap(360, 1210);
   await waitFor("smash.scene.isActive('GameScene') && !smash.scene.isActive('SquadScene')");
-  const background = await evaluate('gs.time.now');
   await evaluate("smash.events.emit('hidden'); undefined;");
+  await waitFor("smash.scene.isPaused('GameScene')");
+  const background = await evaluate('gs.time.now');
   await sleep(200);
   assert.equal(await evaluate('gs.time.now'), background);
   await evaluate("smash.events.emit('visible'); undefined;");
@@ -160,16 +163,19 @@ try {
     gs.updateHudVitals();
     const phoenixRevive = !ally.health.isDead && gs.hudUnitStatuses[0].seconds === 10
       && gs.hudUnitStatuses[0].kind === 'cooldown' && !gs.hudUnitStatusTexts[2].visible;
+    const revivalDiagnostic = { now: gs.time.now, phoenixHp: phoenix.health.currentHp, allyHp: ally.health.currentHp,
+      lastSkillAt: phoenix.lastSkillAt, status: {...gs.hudUnitStatuses[0]}, allyStatus: {...gs.hudUnitStatuses[2]} };
     deity.health.invulnerableUntil = 0; deity.health.takeDamage(12, gs.time.now);
     gs.selectedHudUnitId = deity.id; gs.nextStatusDetailAt = 0; gs.updateHudVitals();
-    const shield = gs.hudUnitStatuses[1].shieldHp === 18 && gs.hudStatusShield.text.includes('18');
+    const shield = gs.hudUnitStatuses[1].shieldHp === 18 && gs.hudStatusRows[1].state.text.includes('보호막 18');
     gs.time.now += 4000; gs.nextStatusDetailAt = 0; gs.updateHudVitals();
-    const expiredShield = !gs.hudStatusShield.visible && gs.hudUnitStatuses[1].shieldHp === 0;
+    const expiredShield = !gs.hudStatusRows[1].state.text.includes('보호막') && gs.hudUnitStatuses[1].shieldHp === 0;
     gs.time.now = phoenix.lastSkillAt + 10000; gs.updateHudVitals();
     const ready = gs.hudUnitStatusTexts[0].text === '준비' && gs.hudUnitStatuses[0].progress === 1;
-    return { naturalRevive, phoenixRevive, shield, expiredShield, ready };
+    return { naturalRevive, phoenixRevive, shield, expiredShield, ready, revivalDiagnostic };
   })()`);
-  for (const [key, value] of Object.entries(transitions)) assert.equal(value, true, key);
+  for (const key of ['naturalRevive', 'phoenixRevive', 'shield', 'expiredShield', 'ready'])
+    assert.equal(transitions[key], true, `${key}: ${JSON.stringify(transitions.revivalDiagnostic)}`);
   await evaluate(`gs.selectedHudUnitId = gs.squad.drones[0].id; gs.nextStatusDetailAt = 0; gs.updateHudVitals(); undefined;`);
   await capture('phoenix-ready-360');
   const cleanup = await evaluate(`(() => {

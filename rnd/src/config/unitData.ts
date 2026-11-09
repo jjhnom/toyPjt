@@ -11,12 +11,16 @@ export const ROLE_NAMES: Record<UnitRole, string> = {
   VANGUARD: '전열', MELEE: '근접', RANGED: '원거리', MAGIC: '마법', SUPPORT: '지원'
 };
 
+export const SUPPORT_HEAL_AMOUNTS: Partial<Record<DroneArchetype, number>> = {
+  HERBAL_PRIEST: 3, MOON_PRIEST: 4, WORLD_DRUID: 6
+};
+
 function unit(id: DroneArchetype, name: string, tier: DroneTier, elements: Element[], role: UnitRole,
   weaponId: DroneArchetype, summonCost?: number): UnitTypeDef {
   return { id, name, tier, elements, role, weaponId, tags: [role, ...elements],
     summonable: summonCost !== undefined, summonCost,
     maxHp: (role === 'VANGUARD' ? 180 : role === 'MELEE' ? 95 : 70) * tier,
-    healAmount: role === 'SUPPORT' ? 2 * tier : 0 };
+    healAmount: SUPPORT_HEAL_AMOUNTS[id] ?? 0 };
 }
 
 // The two legacy evolutions remain available alongside the 20-unit design roster.

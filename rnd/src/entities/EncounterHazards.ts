@@ -17,7 +17,7 @@ export class EncounterHazards {
   private readonly graphics: Phaser.GameObjects.Graphics;
   constructor(scene: Phaser.Scene,
     private readonly resolve: (kind: HazardKind, x: number, y: number, radius: number, damage: number, sourceLife: number) => void) {
-    this.graphics = scene.add.graphics().setDepth(18);
+    this.graphics = scene.add.graphics().setDepth(38);
   }
 
   public add(kind: HazardKind, x: number, y: number, damage: number, sourceLife: number,

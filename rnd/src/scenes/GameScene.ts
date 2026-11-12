@@ -1,6 +1,14 @@
 import Phaser from 'phaser';
-import { pixelPanel, fantasyButton, paintPanel, pixelIcon, FANTASY } from '../ui/fantasyTheme';
+import { PROVIDED_UI, providedFloor } from '../ui/providedArt';
+import { paintBattleEnvironment } from '../ui/battleEnvironment';
+import { pixelPanel, fantasyButton, FANTASY, BATTLE_UI } from '../ui/fantasyTheme';
 import { unitPortrait } from '../ui/pixelCharacters';
+import { hudLabel, setHudText } from '../ui/battleHudText';
+import { BattleTopHud } from '../ui/BattleTopHud';
+import { drawBattleMinimap } from '../ui/battleMinimap';
+import { StageBanner } from '../ui/StageBanner';
+import { BattleSquadHud } from '../ui/BattleSquadHud';
+import { BattleControlHud } from '../ui/BattleControlHud';
 import { createCombatHudStatus, readCombatHudStatus } from '../ui/combatStatus';
 import type { CombatHudStatus } from '../ui/combatStatus';
 import {
@@ -70,25 +78,33 @@ export class GameScene extends Phaser.Scene {
   private particles!: EffectParticleGroup;
   private joystick!: VirtualJoystick;
   private activeSkillButton!: ActiveSkillButton;
+  private topHud!: BattleTopHud;
+  private stageBanner!: StageBanner;
+  private squadHud!: BattleSquadHud;
+  private controlHud!: BattleControlHud;
 
   private doors: Record<DoorDirection, DoorVisual> = {} as Record<DoorDirection, DoorVisual>;
   private arenaGraphics!: Phaser.GameObjects.Graphics;
   private arenaArtwork!: Phaser.GameObjects.Image;
+  private arenaFloor!: Phaser.GameObjects.TileSprite;
+  private arenaDecoration!: Phaser.GameObjects.RenderTexture;
   private unitOverlayGraphics!: Phaser.GameObjects.Graphics;
   private skillGroundGraphics!: Phaser.GameObjects.Graphics;
   private lightningGraphics!: Phaser.GameObjects.Graphics;
   private minimapGraphics!: Phaser.GameObjects.Graphics;
-  private hpBarGraphics!: Phaser.GameObjects.Graphics;
 
-  private hudRoomText!: Phaser.GameObjects.Text;
+  // Keep existing browser/debug handles while their objects are owned by reusable HUD components.
+  public hudRoomText!: Phaser.GameObjects.Text;
+  private hudStageIndex!: Phaser.GameObjects.Text;
+  public hudRoomBadge!: Phaser.GameObjects.Text;
   private hudWaveText!: Phaser.GameObjects.Text;
-  private hudMineralText!: Phaser.GameObjects.Text;
-  private hudHpText!: Phaser.GameObjects.Text;
-  private hudSquadText!: Phaser.GameObjects.Text;
+  public hudMineralText!: Phaser.GameObjects.Text;
+  public hudHpText!: Phaser.GameObjects.Text;
+  public hudSquadText!: Phaser.GameObjects.Text;
   private hudFpsText!: Phaser.GameObjects.Text;
-  private hudHeroName!: Phaser.GameObjects.Text;
-  private hudHeroXpText!: Phaser.GameObjects.Text;
-  private hudHeroXpBar!: Phaser.GameObjects.Graphics;
+  public hudHeroName!: Phaser.GameObjects.Text;
+  public hudHeroLevel!: Phaser.GameObjects.Text;
+  public hudHeroXpText!: Phaser.GameObjects.Text;
   private lastHeroLevel = -1;
   private lastHeroXp = -1;
   private centerBannerText!: Phaser.GameObjects.Text;
@@ -96,6 +112,7 @@ export class GameScene extends Phaser.Scene {
   private bannerContainer!: Phaser.GameObjects.Container;
   private hudUnitBars!: Phaser.GameObjects.Graphics;
   private hudUnitPortraits: Phaser.GameObjects.Image[] = [];
+  private hudUnitGrades: Phaser.GameObjects.Text[] = [];
   private hudUnitStatusTexts: Phaser.GameObjects.Text[] = [];
   private hudUnitSkillIcons: Phaser.GameObjects.Image[] = [];
   private hudUnitStatuses: CombatHudStatus[] = [];
@@ -216,6 +233,13 @@ export class GameScene extends Phaser.Scene {
     this.arenaGraphics = this.add.graphics().setDepth(0);
     this.arenaArtwork = this.add.image(ARENA_BOUNDS.centerX, ARENA_BOUNDS.centerY, 'art_dungeon')
       .setDisplaySize(ARENA_BOUNDS.width + 40, ARENA_BOUNDS.height + 40).setDepth(1).setName('dungeon-art');
+    this.arenaFloor=this.add.tileSprite(ARENA_BOUNDS.centerX,ARENA_BOUNDS.centerY,
+      ARENA_BOUNDS.width-16,ARENA_BOUNDS.height-16,PROVIDED_UI,'floor_grass').setDepth(1.1).setAlpha(.85).setName('provided-floor');
+    const decoration=this.add.container(0,0).setDepth(2).setName('provided-room-props');
+    this.arenaDecoration=this.add.renderTexture(0,0,GAME_WIDTH,GAME_HEIGHT).setOrigin(0).setDepth(BATTLE_UI.depth.environment).setName('battle-environment');
+    for(const [name,x,y]of [['rock',30,450],['crystal',690,550],['barrel',30,900],['crate',690,950],['banner',28,270]] as const){
+      decoration.add(this.add.image(x,y,PROVIDED_UI,'prop_'+name).setDisplaySize(48,48));
+    }
     this.unitOverlayGraphics = this.add.graphics().setDepth(28);
     this.skillGroundGraphics = this.add.graphics().setDepth(16);
     this.lightningGraphics = this.add.graphics().setDepth(32);
@@ -392,9 +416,9 @@ export class GameScene extends Phaser.Scene {
       }
     }
     if (checkpoint) {
-      this.saveStatusText.setText(loaded?.status === 'ready' && loaded.recovered
-        ? '최근 저장 손상 · 이전 정상 지점에서 복구했습니다'
-        : `S${this.stats.stageIndex + 1} ${completedCheckpoint ? '방 클리어' : '시작'} 저장 · 이어하는 중`);
+      setHudText(this.saveStatusText, loaded?.status === 'ready' && loaded.recovered
+        ? '이전 정상 저장 복구'
+        : `S${this.stats.stageIndex+1} 이어하기`, 120);
       if (completedCheckpoint) {
         this.roomState = 'CLEARED';
         this.updateDoorsVisual(this.gridManager.getCurrentRoom(), this.progression.state !== 'PLAYING');
@@ -489,82 +513,54 @@ export class GameScene extends Phaser.Scene {
 
   private createHud(): void {
     const ability=HERO_CLASSES[this.squad.hero.classId];
-    this.activeSkillButton = new ActiveSkillButton(this, () => {
+    this.controlHud = new BattleControlHud(this,{name:ability.activeName,label:ability.activeLabel}, () => {
       const active = !this.runEnded && !this.rewardModalOpen && !this.backgroundPaused && this.scene.isActive()
         && this.progression.state === 'PLAYING' && this.roomState === 'LOCKED_WAVES';
       if (this.squad.castCommandHeal(active)) this.updateHudVitals();
       else if (active && !this.squad.health.isDead && this.squad.activeRemaining() <= 0) this.showBanner(`${ability.activeName} · 적용할 대상이 없습니다`);
-    }, () => { this.joystick?.reset(); this.squad.movement.stop(); },{name:ability.activeName,label:ability.activeLabel});
-    fantasyButton(this, 642, 1230, 112, 88, '중단\n타이틀', () => this.returnToTitle(),
-      {fontSize:22,hitWidth:112,hitHeight:100}).setDepth(65).setName('return-title');
-    this.saveStatusText = this.add.text(24, 155, '', {
-      fontFamily: FANTASY.font, fontSize: '12px', color: '#d9b969'
-    }).setDepth(65);
-    fantasyButton(this, 398, 1230, 112, 88, '원정\n정비', () => {
+    }, () => { this.joystick?.reset(); this.squad.movement.stop(); },()=>{
       if (this.roomState === 'CLEARED' && !this.rewardModalOpen && !this.runEnded) this.openSquadModal();
       else this.showBanner('전투 종료 후 정비할 수 있습니다');
-    }, {fontSize:22,hitWidth:112,hitHeight:100}).setDepth(65).setName('squad-open');
-    const dock=this.add.graphics().setDepth(50);
-    dock.fillStyle(0x201c2d,0.98).fillRect(0,1080,720,100);
-    dock.fillStyle(0x231d32,0.99).fillRect(0,1180,720,100);
-    dock.lineStyle(2,0x897496).lineBetween(0,1080,720,1080);
-    dock.lineStyle(1,0x51415e).lineBetween(0,1180,720,1180);
-    this.add.rectangle(360,1130,720,100,0,0).setDepth(50).setInteractive()
-      .on('pointerdown',(_p:Phaser.Input.Pointer,_x:number,_y:number,e:Phaser.Types.Input.EventData)=>e.stopPropagation());
-    pixelPanel(this, 12, 10, 534, 142, FANTASY.panel, FANTASY.gold).setDepth(50);
-    pixelPanel(this, 554, 10, 154, 142, FANTASY.panel, FANTASY.edge).setDepth(50);
-    pixelPanel(this, 24, 22, 68, 68, 0x263344, FANTASY.gold).setDepth(51);
-    this.add.image(58, 56, 'spr_player_leader', 0).setScale(0.85).setDepth(52);
-    const ornaments = this.add.graphics().setDepth(52);
-    paintPanel(ornaments, 370, 22, 162, 48, 0x131e2b, 0x566675);
-    pixelIcon(ornaments, 'gem', 382, 36, 1.6);
-    pixelIcon(ornaments, 'heart', 96, 29, 1);
-    this.add.text(411, 26, '마력석', { fontFamily: FANTASY.font, fontSize: '11px', color: FANTASY.muted }).setDepth(53);
-    this.add.text(568, 17, '미니맵', { fontFamily: FANTASY.font, fontSize: '12px', color: FANTASY.muted }).setDepth(53);
-    this.hpBarGraphics = this.add.graphics().setDepth(52);
-    this.minimapGraphics = this.add.graphics().setDepth(52);
-    const label = (x: number, y: number, size: number, color = FANTASY.cream) => this.add.text(x, y, '', {
-      fontFamily: FANTASY.font, fontSize: `${size}px`, fontStyle: 'bold', color, resolution: 2
-    }).setDepth(53);
-    this.hudRoomText = label(112, 70, 19);
-    this.hudWaveText = label(112, 95, 16, '#d6bc83');
-    this.hudHpText = label(234, 51, 16).setOrigin(0.5);
-    this.hudHeroName = label(112, 10, 20, '#dec8f2').setName('hero-name');
-    this.hudHeroXpText = label(24, 94, 12, '#cfb7ff').setName('hero-xp');
-    this.hudHeroXpBar = this.add.graphics().setDepth(54);
+    },()=>this.returnToTitle());
+    this.activeSkillButton=this.controlHud.active;
+    this.topHud=new BattleTopHud(this);
+    this.saveStatusText=this.topHud.save;
+    this.minimapGraphics=this.topHud.map;this.hudHeroName=this.topHud.name;this.hudHeroLevel=this.topHud.level;
+    this.hudHpText=this.topHud.hp;this.hudHeroXpText=this.topHud.xp;
+    this.hudMineralText=this.topHud.minerals;
+    this.stageBanner=new StageBanner(this);
+    this.hudStageIndex=this.stageBanner.index;this.hudRoomText=this.stageBanner.name;
+    this.hudRoomBadge=this.stageBanner.badge;this.hudWaveText=this.stageBanner.status;
+    this.bossHud=this.stageBanner.boss;this.bossHudLabel=this.stageBanner.bossLabel;this.bossHudBar=this.stageBanner.bossBar;
+    const label=(x:number,y:number,size:number,color:string=FANTASY.cream)=>hudLabel(this,x,y,size,color);
     this.lastHeroLevel = this.lastHeroXp = -1;
-    this.hudMineralText = label(411, 40, 24, '#f3c64d');
-    this.hudSquadText = label(24, 1086, 18, '#e4d5ed');
-    this.hudTeamCount = label(548,1086,18,'#c2b4d1').setOrigin(1,0).setName('squad-living');
+    this.squadHud=new BattleSquadHud(this,SQUAD_LIMITS.deployed,index=>{
+      if(this.rewardModalOpen||this.runEnded||this.backgroundPaused)return;
+      const drone=this.squad.drones[index];if(!drone)return;
+      this.selectedHudUnitId=this.selectedHudUnitId===drone.id?null:drone.id;
+      this.nextStatusDetailAt=0;this.updateHudVitals();
+    },()=>{
+      if(this.rewardModalOpen||this.runEnded||this.backgroundPaused||!this.squad.drones.length)return;
+      this.selectedHudUnitId=this.selectedHudUnitId?null:this.squad.drones[0].id;
+      this.nextStatusDetailAt=0;this.updateHudVitals();
+    });
+    this.hudSquadText=this.squadHud.deployed;this.hudTeamCount=this.squadHud.living;
     this.hudFpsText = label(555, 1250, 12, FANTASY.muted)
       .setVisible(new URLSearchParams(window.location.search).has('debug'));
-    this.hudUnitBars = this.add.graphics().setDepth(54);
-    this.hudUnitPortraits = [];
-    this.hudUnitStatusTexts = []; this.hudUnitSkillIcons = []; this.hudUnitStatuses = [];
+    this.hudUnitBars=this.squadHud.bars;this.hudUnitPortraits=this.squadHud.portraits;
+    this.hudUnitGrades=this.squadHud.grades;
+    this.hudUnitStatusTexts=this.squadHud.statuses;this.hudUnitSkillIcons=this.squadHud.skillIcons;this.hudUnitStatuses=[];
     this.hudUnitLastKinds = []; this.hudUnitLastSeconds = [];
     this.selectedHudUnitId = null; this.nextStatusDetailAt = 0;
     for (let i = 0; i < SQUAD_LIMITS.deployed; i++) {
-      pixelPanel(this,24+i*86,1108,78,64,0x211b31,0x655275).setDepth(51);
-      const portrait = this.add.image(63+i*86,1138,unitPortrait('BASIC_LASER'))
-        .setDisplaySize(60,60).setDepth(53).setVisible(false);
-      this.hudUnitPortraits.push(portrait);
-      this.hudUnitStatusTexts.push(label(63+i*86,1149,18).setOrigin(0.5)
-        .setStroke('#080c16', 4).setDepth(56).setVisible(false));
-      this.hudUnitSkillIcons.push(this.add.image(85+i*86,1120,'skill_shield')
-        .setDisplaySize(16,16).setDepth(55).setVisible(false));
       this.hudUnitStatuses.push(createCombatHudStatus());
       this.hudUnitLastKinds.push(''); this.hudUnitLastSeconds.push(-1);
     }
-    fantasyButton(this,630,1130,108,88,'상세 ›',()=>{
-      if(this.rewardModalOpen||this.runEnded||this.backgroundPaused||!this.squad.drones.length)return;
-      this.selectedHudUnitId=this.selectedHudUnitId?null:this.squad.drones[0].id;
-      this.nextStatusDetailAt=0;this.updateStatusDetail();
-    },{fontSize:24,hitHeight:100}).setDepth(65).setName('squad-status-open');
     this.hudStatusDetail = this.add.container(24,286).setDepth(70).setVisible(false).setName('squad-status-detail');
     const statusPanel = pixelPanel(this,0,0,672,714,FANTASY.slate,FANTASY.edge);
     const statusHit = this.add.rectangle(336,357,672,714,0,0).setInteractive()
       .on('pointerdown', (_pointer: Phaser.Input.Pointer, _x: number, _y: number, event: Phaser.Types.Input.EventData) => event.stopPropagation());
-    this.hudStatusTitle = label(24,18,28).setText('분대 상태 · 전투는 계속됩니다');
+    this.hudStatusTitle = label(60,28,24).setText('분대 상태 · 전투는 계속됩니다');
     this.hudStatusRows=[];
     this.hudStatusDetail.add([statusPanel,statusHit,this.hudStatusTitle]);
     for(let i=0;i<SQUAD_LIMITS.deployed;i++){
@@ -579,10 +575,6 @@ export class GameScene extends Phaser.Scene {
       this.selectedHudUnitId = null; this.hudStatusDetail.setVisible(false);
     },{fontSize:28}).setName('squad-status-close');
     this.hudStatusDetail.add(closeStatus);
-    this.bossHud=this.add.container(24,116).setDepth(60).setVisible(false).setName('boss-hud');
-    this.bossHudLabel=label(10,4,16,'#edc6d9');
-    this.bossHudBar=this.add.graphics();
-    this.bossHud.add([pixelPanel(this,0,0,508,40,0x352033,0xa96e87),this.bossHudBar,this.bossHudLabel]);
     this.bossHudLastHp=-1;
     this.lastHudHp = this.lastHudMaxHp = this.lastAliveCount = -1;
     this.bannerContainer = this.add.container(360, 302).setDepth(48).setAlpha(0);
@@ -598,6 +590,9 @@ export class GameScene extends Phaser.Scene {
     const palette = this.progression.current.palette;
     const tint = [0xffffff, 0xdbe8c1, 0xffd3b4, 0xc1eaff, 0xe3c8ff][this.progression.index] ?? 0xffffff;
     this.arenaArtwork.setTint(tint);
+    this.arenaFloor.setTexture(PROVIDED_UI,providedFloor(this.progression.current.themeId));
+    this.arenaFloor.setTint(room.type==='BOSS'?0x7d7798:this.progression.current.themeId==='glacier'?0x9faec6:0x9296aa);
+    paintBattleEnvironment(this,this.arenaDecoration,this.progression.current.themeId,room.type==='BOSS',room.id);
     g.fillStyle(room.type === 'BOSS' ? 0x201725 : palette.background).fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
     // Painted walls sit around the arena; physics and door triggers use the
     // existing bounds. All room decoration is part of the background texture.
@@ -818,7 +813,7 @@ export class GameScene extends Phaser.Scene {
       const added=this.hazards.add(attack.kind,attack.x,attack.y,boss.spec.contactDamage,boss.lifeId,attack);
       if(added&&attack.kind==='CHARGE')boss.windUpCharge(attack.warningMs);
     }
-    this.hudWaveText.setText(`${stage.bossName} · PHASE ${phase}/${stage.bossPhases}`);
+    this.stageBanner.setStatus(`${stage.bossName} · PHASE ${phase}/${stage.bossPhases}`);
   }
 
   private getPerimeterSpawnPoint(seedIndex: number): { x: number; y: number } {
@@ -1398,8 +1393,7 @@ export class GameScene extends Phaser.Scene {
       grid: this.gridManager.grid
     };
     const saved = runSaveManager.save(checkpoint);
-    this.saveStatusText.setText(saved ? `S${this.stats.stageIndex + 1} ${stageStart ? '시작' : '정비'} 자동 저장 · 중단 시 이 지점에서 재개`
-      : '자동 저장 실패 · 이전 저장 유지 · 권한/용량 확인');
+    setHudText(this.saveStatusText,saved?`자동 저장 · S${this.stats.stageIndex+1}`:'저장 실패 · 이전 기록 유지',120);
     this.saveStatusText.setColor(saved ? '#d9b969' : '#f87171');
     return saved;
   }
@@ -1436,27 +1430,24 @@ export class GameScene extends Phaser.Scene {
     const room = this.gridManager.getCurrentRoom();
     const meta = ROOM_TYPE_META[room.type];
 
-    this.hudRoomText.setText(
-      `${this.progression.index >= 5 ? `S${this.progression.index + 1} ∞` : `S${this.progression.index + 1}/${STAGES.length}`} ${this.progression.current.name} · ${room.sideSupply ? '보급고' : meta.badgeText}${this.progression.mutation !== 'NONE' ? ` · ${MUTATIONS[this.progression.mutation].name}` : ''}`
-    );
+    setHudText(this.hudStageIndex,this.progression.index >= 5 ? `STAGE ${this.progression.index + 1} ∞` : `STAGE ${this.progression.index + 1} / ${STAGES.length}`,166);
+    this.stageBanner.setName(this.progression.current.name);
+    this.stageBanner.setBadge(`${room.sideSupply ? '보급고' : meta.badgeText}${this.progression.mutation !== 'NONE' ? ` · ${MUTATIONS[this.progression.mutation].name}` : ''}`);
 
     if (this.roomState === 'LOCKED_WAVES') {
       const aliveCount = this.enemies.countActive(true);
-      this.hudWaveText.setText(
-        `WAVE ${this.currentWave}/${this.totalWavesInRoom}  ·  적 ${aliveCount}기  ·  전투 중`
-      );
+      this.stageBanner.setStatus(`WAVE ${this.currentWave}/${this.totalWavesInRoom}  ·  적 ${aliveCount}기  ·  전투 중`);
       this.hudWaveText.setColor('#f87171');
     } else {
-      this.hudWaveText.setText(this.roomState === 'ENTERING' ? '회랑 진입 중 · 전투를 준비하세요' : '구역 확보 · 열린 문으로 이동하세요');
+      this.stageBanner.setStatus(this.roomState === 'ENTERING' ? '회랑 진입 중 · 전투를 준비하세요' : '구역 확보 · 열린 문으로 이동하세요');
       this.hudWaveText.setColor('#b5c68a');
     }
 
     this.updateHudVitals();
-    this.hudMineralText.setText(`${this.stats.mineralsCollected}`).setFontSize(this.stats.mineralsCollected >= 100000 ? 19 : 24);
+    this.topHud.setMinerals(this.stats.mineralsCollected);
     const synergy=resolveSynergies(this.squad.roster.units);
-    this.hudSquadText.setText(
-      `출전 ${this.squad.drones.length}/${SQUAD_LIMITS.deployed} · 보유 ${this.squad.roster.units.length}/${SQUAD_LIMITS.owned} · 시너지 ${SYNERGY_IDS.filter(id=>synergy.counts[id]>=2).length}/3`
-    );
+    this.squadHud.setCounts(this.squad.drones.length,SQUAD_LIMITS.deployed,this.squad.roster.units.length,
+      SQUAD_LIMITS.owned,SYNERGY_IDS.filter(id=>synergy.counts[id]>=2).length);
 
     this.drawMinimap();
   }
@@ -1465,67 +1456,58 @@ export class GameScene extends Phaser.Scene {
     const hero = this.squad.hero;
     if (hero.level !== this.lastHeroLevel || hero.xp !== this.lastHeroXp) {
       this.lastHeroLevel = hero.level; this.lastHeroXp = hero.xp;
-      const next = heroXpToNext(hero.level), ratio = next > 0 ? hero.xp / next : 1;
-      this.hudHeroName.setText(`${HERO_CLASSES[hero.classId].name} · Lv.${hero.level}`);
-      this.hudHeroXpText.setText(next > 0 ? `XP ${hero.xp}/${next}` : 'XP MAX');
-      this.hudHeroXpBar.clear().fillStyle(0x182032).fillRect(24, 110, 68, 4)
-        .fillStyle(0xb78cff).fillRect(24, 110, Math.round(68 * ratio), 4);
+      this.topHud.setProgress(HERO_CLASSES[hero.classId].name,hero.level,hero.xp,heroXpToNext(hero.level));
     }
     const hp = this.squad.health.currentHp, maxHp = this.squad.health.maxHp;
     if (hp !== this.lastHudHp || maxHp !== this.lastHudMaxHp) {
       this.lastHudHp = hp; this.lastHudMaxHp = maxHp;
-      const width = Math.round(230 * Phaser.Math.Clamp(this.squad.health.ratio, 0, 1));
-      this.hpBarGraphics.clear();
-      this.hpBarGraphics.fillStyle(0xb79a62).fillRect(111, 36, 240, 30);
-      this.hpBarGraphics.fillStyle(0x150f1b).fillRect(114, 39, 234, 24);
-      if (width > 0) {
-        this.hpBarGraphics.fillStyle(hp / maxHp > 0.25 ? FANTASY.hp : 0xf17b53).fillRect(116, 41, width, 20);
-        this.hpBarGraphics.fillStyle(0xffb09c, 0.45).fillRect(116, 41, width, 4);
-      }
-      this.hudHpText.setText(`HP ${hp} / ${maxHp}`);
+      this.topHud.setHealth(hp,maxHp,this.squad.health.ratio);
     }
     const alive = this.enemies.countActive(true);
+    if((alive>0)!==(this.lastAliveCount>0))this.drawMinimap();
     if (alive !== this.lastAliveCount && this.roomState === 'LOCKED_WAVES') {
-      this.hudWaveText.setText(`WAVE ${this.currentWave}/${this.totalWavesInRoom}  ·  적 ${alive}기  ·  전투 중`);
+      this.stageBanner.setStatus(`WAVE ${this.currentWave}/${this.totalWavesInRoom}  ·  적 ${alive}기  ·  전투 중`);
     }
     this.lastAliveCount = alive;
     this.hudUnitBars.clear();
+    this.controlHud.updateMaintenance(this.roomState==='CLEARED',this.roomState==='ENTERING');
     let living=0;
     for (let i = 0; i < this.hudUnitPortraits.length; i++) {
       const image = this.hudUnitPortraits[i], drone = this.squad.drones[i];
       image.setVisible(!!drone);
+      this.squadHud.setOccupied(i,!!drone);
+      this.hudUnitGrades[i].setVisible(!!drone);
+      this.squadHud.empty[i].setVisible(!drone);
       const text = this.hudUnitStatusTexts[i], icon = this.hudUnitSkillIcons[i];
       text.setVisible(false); icon.setVisible(false);
       if (!drone) { this.hudUnitLastKinds[i] = ''; continue; }
+      const grade=`★${drone.star}`;if(this.hudUnitGrades[i].text!==grade)this.hudUnitGrades[i].setText(grade);
       if(!drone.health.isDead)living++;
       const status = this.hudUnitStatuses[i];
       readCombatHudStatus(drone, this.time.now, this.roomState === 'LOCKED_WAVES', status);
       if (image.name !== drone.archetype) { image.setTexture(unitPortrait(drone.archetype)); image.name = drone.archetype; }
       image.setAlpha(drone.health.isDead ? 0.3 : 1);
-      const x = 32+i*86;
-      this.hudUnitBars.fillStyle(0x100f1b).fillRect(x,1164,62,6);
-      this.hudUnitBars.fillStyle(0xdc727c).fillRect(x,1164,Math.round(62*drone.health.ratio),6);
+      const slot=BATTLE_UI.slot,x=slot.x+8+i*slot.step;
+      this.hudUnitBars.fillStyle(0x100f1b).fillRoundedRect(x-1,slot.statusY-1,70,8,3);
+      this.hudUnitBars.lineStyle(1,0xd9c5e9).strokeRoundedRect(x-1,slot.statusY-1,70,8,3);
+      this.hudUnitBars.fillStyle(BATTLE_UI.color.alive).fillRect(x+1,slot.statusY+1,Math.round(66*drone.health.ratio),4);
       if (status.skillName && status.kind !== 'revive') {
         icon.setTexture(drone.archetype === 'PHOENIX_LORD' ? 'skill_glyph_feather' : 'skill_shield')
           .setTint(drone.archetype === 'PHOENIX_LORD' ? 0xffb55a : 0x9ceeff).setVisible(true);
-        if (status.kind !== 'waiting') {
-          this.hudUnitBars.fillStyle(0x080f18).fillRect(x,1173,62,4);
-          this.hudUnitBars.fillStyle(status.kind === 'ready' ? 0xb2f06a : 0xffd65c)
-            .fillRect(x,1173,Math.round(62*status.progress),4);
-        }
       }
-      text.setVisible(status.kind !== 'none');
+      text.setVisible(status.kind!=='none');
       if (status.kind !== this.hudUnitLastKinds[i] || status.seconds !== this.hudUnitLastSeconds[i]) {
         text.setText(status.kind === 'revive' ? status.seconds > 0 ? `${status.seconds}초` : '곧'
-          : status.kind === 'cooldown' ? `${status.seconds}초` : status.kind === 'ready' ? '준비' : '대기');
+          : status.kind === 'cooldown' ? `${status.seconds}초` : status.kind === 'ready' ? '준비' : status.kind==='waiting'?'대기':'출전');
         text.setColor(status.kind === 'revive' ? '#ffaba0' : status.kind === 'ready' ? '#b2f06a' : '#ffe6a0');
         this.hudUnitLastKinds[i] = status.kind; this.hudUnitLastSeconds[i] = status.seconds;
       }
-      if (status.kind === 'revive') this.hudUnitBars.lineStyle(2,0xa35c74).strokeRoundedRect(x-8,1108,78,64,5);
+      if(status.kind==='revive'||this.selectedHudUnitId===drone.id)this.hudUnitBars.lineStyle(2,this.selectedHudUnitId===drone.id?FANTASY.gold:0xa35c74)
+        .strokeRect(x-6,slot.y+2,slot.width-4,slot.height-4);
     }
     const livingLabel=`생존 ${living}/${this.squad.drones.length}`;
     if(this.hudTeamCount.text!==livingLabel)this.hudTeamCount.setText(livingLabel)
-      .setColor(living<this.squad.drones.length?'#f1a6b7':'#c2b4d1');
+      .setColor(living<this.squad.drones.length?'#f1a6b7':'#68d96c');
     this.updateBossHud();
     this.updateStatusDetail();
   }
@@ -1563,52 +1545,15 @@ export class GameScene extends Phaser.Scene {
     this.bossHudLastHp=boss.health.currentHp;
     const stage=this.progression.current,ratio=boss.health.ratio;
     const phase=Math.min(stage.bossPhases,1+Math.floor((1-ratio)*stage.bossPhases));
-    this.bossHudLabel.setText(`${stage.bossName} · PHASE ${phase}/${stage.bossPhases} · HP ${Math.ceil(ratio*100)}%`);
-    this.bossHudBar.clear().fillStyle(0x160f20).fillRect(10,29,488,6)
-      .fillStyle(0xdb6675).fillRect(10,29,Math.round(488*ratio),6);
+    const bossWidth=BATTLE_UI.stagePanel.width-40;
+    setHudText(this.bossHudLabel,`S${stage.index+1} · ${stage.bossName}\nPHASE ${phase}/${stage.bossPhases} · WAVE ${this.currentWave}/${this.totalWavesInRoom} · HP ${Math.ceil(ratio*100)}%`,bossWidth-8);
+    this.bossHudBar.clear().fillStyle(0x160f20).fillRect(20,51,bossWidth,3)
+      .fillStyle(FANTASY.danger).fillRect(20,51,Math.round(bossWidth*ratio),3);
   }
 
   private drawMinimap(): void {
-    this.minimapGraphics.clear();
-    const cellSize = 17;
-    const gap = 3;
-    const startX = Math.round(631 - (this.progression.current.gridWidth * 20 - 3) / 2);
-    const startY = Math.round(89 - (this.progression.current.gridHeight * 20 - 3) / 2);
-
-    for (let y = 0; y < this.progression.current.gridHeight; y++) {
-      for (let x = 0; x < this.progression.current.gridWidth; x++) {
-        const node = this.gridManager.grid[y][x];
-        if (!node) continue;
-        const rx = startX + x * (cellSize + gap);
-        const ry = startY + y * (cellSize + gap);
-        const meta = ROOM_TYPE_META[node.type];
-
-        const isCurrent =
-          x === this.gridManager.currentX && y === this.gridManager.currentY;
-
-        if (node.doors.right) this.minimapGraphics.fillStyle(0x8496a2, 0.6).fillRect(rx + cellSize, ry + 7, gap, 3);
-        if (node.doors.bottom) this.minimapGraphics.fillStyle(0x8496a2, 0.6).fillRect(rx + 7, ry + cellSize, 3, gap);
-        this.minimapGraphics.fillStyle(
-          meta.color,
-          node.visited || node.type === 'BOSS' ? 0.95 : 0.55
-        );
-        this.minimapGraphics.fillRect(rx, ry, cellSize, cellSize);
-
-        if (isCurrent) {
-          this.minimapGraphics.lineStyle(2, 0xc5f5ff, 1).strokeRect(rx - 2, ry - 2, cellSize + 4, cellSize + 4);
-          this.minimapGraphics.fillStyle(0xf5ffff).fillRect(rx + 6, ry + 6, 5, 5);
-        } else if (node.cleared) {
-          this.minimapGraphics.lineStyle(1, 0x9ebd7c, 0.9);
-          this.minimapGraphics.strokeRect(rx, ry, cellSize, cellSize);
-        }
-        if (!isCurrent && node.type === 'BOSS') this.minimapGraphics.fillStyle(0xffd29a).fillRect(rx + 5, ry + 4, 7, 6).fillRect(rx + 7, ry + 10, 3, 3);
-        if (!isCurrent && node.type === 'RECOVERY') this.minimapGraphics.fillStyle(0xc8f5ce).fillRect(rx + 7, ry + 4, 3, 9).fillRect(rx + 4, ry + 7, 9, 3);
-        if (!isCurrent && node.type === 'EVENT') this.minimapGraphics.lineStyle(1, 0xe5ccff)
-          .strokeCircle(rx + 8, ry + 8, 5).lineBetween(rx + 8, ry + 2, rx + 8, ry + 14);
-        if (!isCurrent && node.sideSupply) this.minimapGraphics.lineStyle(1, 0xffe6a4)
-          .strokeRect(rx + 3, ry + 4, 11, 9).lineBetween(rx + 3, ry + 7, rx + 14, ry + 7);
-      }
-    }
+    drawBattleMinimap(this.minimapGraphics,this.gridManager.grid,this.gridManager.currentX,
+      this.gridManager.currentY,this.enemies.countActive(true)>0);
   }
 
   public override update(time: number, delta: number): void {
@@ -1692,6 +1637,13 @@ export class GameScene extends Phaser.Scene {
     this.unitOverlayGraphics.clear();
     const ground = this.skillGroundGraphics;
     ground.clear();
+    const lx=this.squad.leader.x,ly=this.squad.leader.y+24;
+    ground.fillStyle(0x080b1c,.5).fillEllipse(lx,ly,76,30);
+    ground.lineStyle(2,FANTASY.violet,.9).strokeEllipse(lx,ly,76,30).strokeEllipse(lx,ly,58,22);
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3+this.time.now*.0002,x=lx+Math.cos(a)*33,y=ly+Math.sin(a)*12;
+      ground.fillStyle(FANTASY.gold,.9).fillRect(x-2,y-2,4,4);
+    }
     const room = this.gridManager.getCurrentRoom();
     if (room.type === 'EVENT') {
       const x = ARENA_BOUNDS.centerX, y = ARENA_BOUNDS.centerY;
@@ -1703,6 +1655,8 @@ export class GameScene extends Phaser.Scene {
       ground.lineStyle(2, 0x9ceeff, 0.75).strokeCircle(this.squad.leader.x, this.squad.leader.y, 30);
     for (const drone of this.squad.drones) {
       if (drone.health.isDead) continue;
+      ground.fillStyle(0x080b1c,.55).fillEllipse(drone.x,drone.y+25,46,18);
+      ground.lineStyle(2,FANTASY.ally,.65).strokeEllipse(drone.x,drone.y+25,46,18);
       if (drone.health.shieldHp > 0) ground.lineStyle(2, 0x9ceeff, 0.75).strokeCircle(drone.x, drone.y, 29);
       if (drone.attackBuffMultiplier > 1) {
         this.unitOverlayGraphics.fillStyle(0xffb55a).fillTriangle(drone.x + 20, drone.y - 24, drone.x + 26, drone.y - 15, drone.x + 14, drone.y - 15);
@@ -1710,8 +1664,9 @@ export class GameScene extends Phaser.Scene {
       if (this.roomState === 'LOCKED_WAVES' && drone.archetype === 'LAVA_GOLEM') {
         ground.lineStyle(2, 0xff8a2a, 0.35).strokeCircle(drone.x, drone.y, UNIQUE_SKILLS.lava.radius);
       }
-      this.unitOverlayGraphics.fillStyle(0x17252b).fillRect(drone.x - 18, drone.y - 30, 36, 4);
-      this.unitOverlayGraphics.fillStyle(FANTASY.ally).fillRect(drone.x - 18, drone.y - 30, 36 * drone.health.ratio, 4);
+      this.unitOverlayGraphics.fillStyle(0x080c1b,.95).fillRect(drone.x-23,drone.y-40,46,8);
+      this.unitOverlayGraphics.fillStyle(FANTASY.green).fillRect(drone.x-21,drone.y-38,42*drone.health.ratio,4);
+      if(drone.health.shieldHp>0)this.unitOverlayGraphics.fillStyle(FANTASY.ally).fillRect(drone.x-21,drone.y-30,6,4);
     }
 
     // 적군 머리 위 체력바 (피격된 적 또는 정예/보스 상시 표시)

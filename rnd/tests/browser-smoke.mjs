@@ -90,7 +90,7 @@ try {
   assert.equal(await evaluate("document.querySelectorAll('canvas').length"), 1);
   await waitFor("smash.scene.isActive('MenuScene')");
   await sleep(500); // Allow Phaser's first input/scale frame after scene creation.
-  assert.equal(await evaluate("smash.scene.getScene('MenuScene').children.getByName('title-art').texture.key"), 'art_title');
+  assert.equal(await evaluate("smash.scene.getScene('MenuScene').children.getByName('title-art').texture.key"), 'art_lobby');
   await capture('title');
   await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 640, deviceScaleFactor: 1, mobile: true });
   await sleep(500);
@@ -110,10 +110,10 @@ try {
   const hudLayout = await evaluate(`(() => {
     const hp = gs.hudHpText.getBounds(), room = gs.hudRoomText.getBounds(), wave = gs.hudWaveText.getBounds();
     const currency = gs.hudMineralText.getBounds(), squad = gs.hudSquadText.getBounds();
-    return { hpFits: hp.left >= 111 && hp.right <= 351 && hp.top >= 36 && hp.bottom <= 66,
-      roomFits: room.left >= 112 && room.right <= 546 && room.bottom <= wave.top,
-      waveFits: wave.right <= 546 && wave.bottom <= 115,
-      currencyFits: currency.left >= 410 && currency.right <= 532 && currency.bottom <= 70,
+    return { hpFits: hp.left >= 154 && hp.right <= 374 && hp.top >= 52 && hp.bottom <= 76,
+      roomFits: room.left >= 348 && room.right <= 492 && room.top>=108 && room.bottom <= wave.top,
+      waveFits: wave.left>=140 && wave.right <= 580 && wave.bottom <= 154,
+      currencyFits: currency.left >= 436 && currency.right <= 532 && currency.top >= 48 && currency.bottom <= 76,
       partyFits: squad.left >= 24 && squad.right <= 540 && squad.top >= 1080 && squad.bottom <= 1110, portraits: gs.hudUnitPortraits.length,
       fpsHidden: !gs.hudFpsText.visible };
   })()`);

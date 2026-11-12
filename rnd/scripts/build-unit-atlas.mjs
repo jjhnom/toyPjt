@@ -4,7 +4,9 @@ import { launchChrome } from './lib/chrome-cdp.mjs';
 
 // Asset preparation only: preserves source PNGs and packs alpha-trimmed copies.
 // Nothing runs during game frames; the shipped game loads one small atlas.
-const root = new URL('../src/assets/units-v3/', import.meta.url);
+const version = process.argv[2] ?? 'units-v3';
+assert.ok(['units-v3', 'units-v4'].includes(version), 'Use units-v3 or units-v4');
+const root = new URL(`../src/assets/${version}/`, import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('sources/manifest.json', root), 'utf8'));
 assert.equal(manifest.length, 22);
 assert.equal(new Set(manifest.map(unit => unit.id)).size, 22);

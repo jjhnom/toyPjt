@@ -1,0 +1,452 @@
+{
+  "sourceFolder": ".agent/skills/design/20261111",
+  "sources": [
+    {
+      "id": "frames",
+      "file": "frames.png",
+      "sha256": "c7303bedc564932dacb4561ef3604db980d947c59a0b985497299b5aa0df4740"
+    },
+    {
+      "id": "buttons",
+      "file": "buttons.png",
+      "sha256": "4bccb1e212d369a35bfe2b32254307cb9bd33b88e6373684f01d887dbcf8ba15"
+    },
+    {
+      "id": "tiles",
+      "file": "tiles.png",
+      "sha256": "031b638e9f422a09c26268321919c3df9498131829a7e7fb949a9bdc66db7688"
+    },
+    {
+      "id": "icons",
+      "file": "icons.png",
+      "sha256": "6bdbfc1e4d80d31f2dbcbb720fdca674f51697cabf13ac4d00b2472d90d2a7e1"
+    },
+    {
+      "id": "props",
+      "file": "props.png",
+      "sha256": "0fa0cab1aa30962cfed416a2fb5e6a84431c0da65d916f2901068aa84d2ba69c"
+    }
+  ],
+  "regions": [
+    {
+      "id": "button_primary",
+      "source": "buttons",
+      "box": [
+        66,
+        88,
+        674,
+        202
+      ],
+      "width": 320,
+      "height": 96
+    },
+    {
+      "id": "button_secondary",
+      "source": "buttons",
+      "box": [
+        788,
+        102,
+        601,
+        177
+      ],
+      "width": 320,
+      "height": 96
+    },
+    {
+      "id": "button_disabled",
+      "source": "buttons",
+      "box": [
+        788,
+        102,
+        601,
+        177
+      ],
+      "width": 320,
+      "height": 96
+    },
+    {
+      "id": "tab_selected",
+      "source": "buttons",
+      "box": [
+        93,
+        429,
+        603,
+        158
+      ],
+      "width": 320,
+      "height": 80
+    },
+    {
+      "id": "tab_normal",
+      "source": "buttons",
+      "box": [
+        757,
+        440,
+        599,
+        147
+      ],
+      "width": 320,
+      "height": 80
+    },
+    {
+      "id": "control_back",
+      "source": "buttons",
+      "box": [
+        97,
+        743,
+        191,
+        189
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "control_plus",
+      "source": "buttons",
+      "box": [
+        366,
+        743,
+        191,
+        189
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "control_minus",
+      "source": "buttons",
+      "box": [
+        629,
+        743,
+        195,
+        189
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "control_pause",
+      "source": "buttons",
+      "box": [
+        899,
+        743,
+        190,
+        189
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "control_close",
+      "source": "buttons",
+      "box": [
+        1164,
+        743,
+        194,
+        189
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "panel",
+      "source": "frames",
+      "box": [
+        27,
+        178,
+        665,
+        341
+      ],
+      "width": 256,
+      "height": 128
+    },
+    {
+      "id": "popup",
+      "source": "frames",
+      "box": [
+        716,
+        180,
+        367,
+        334
+      ],
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "card",
+      "source": "frames",
+      "box": [
+        1114,
+        87,
+        306,
+        465
+      ],
+      "width": 128,
+      "height": 256
+    },
+    {
+      "id": "icon_swords",
+      "source": "icons",
+      "box": [
+        63,
+        45,
+        307,
+        235
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_helmet",
+      "source": "icons",
+      "box": [
+        427,
+        42,
+        249,
+        237
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_book",
+      "source": "icons",
+      "box": [
+        739,
+        39,
+        294,
+        240
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_shop",
+      "source": "icons",
+      "box": [
+        1093,
+        44,
+        283,
+        235
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_crown",
+      "source": "icons",
+      "box": [
+        58,
+        390,
+        319,
+        221
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_settings",
+      "source": "icons",
+      "box": [
+        434,
+        414,
+        245,
+        195
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_heart",
+      "source": "icons",
+      "box": [
+        747,
+        411,
+        271,
+        196
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_bolt",
+      "source": "icons",
+      "box": [
+        1105,
+        401,
+        268,
+        207
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_gem",
+      "source": "icons",
+      "box": [
+        66,
+        747,
+        294,
+        196
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_coin",
+      "source": "icons",
+      "box": [
+        432,
+        737,
+        251,
+        200
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_skull",
+      "source": "icons",
+      "box": [
+        759,
+        750,
+        264,
+        187
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "icon_hourglass",
+      "source": "icons",
+      "box": [
+        1123,
+        754,
+        235,
+        183
+      ],
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "floor_dungeon",
+      "source": "tiles",
+      "box": [
+        76,
+        136,
+        266,
+        261
+      ],
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "floor_grass",
+      "source": "tiles",
+      "box": [
+        422,
+        135,
+        261,
+        264
+      ],
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "floor_ice",
+      "source": "tiles",
+      "box": [
+        760,
+        137,
+        262,
+        264
+      ],
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "floor_lava",
+      "source": "tiles",
+      "box": [
+        1101,
+        135,
+        260,
+        262
+      ],
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "night",
+      "source": "tiles",
+      "box": [
+        48,
+        586,
+        1349,
+        304
+      ],
+      "width": 704,
+      "height": 160
+    },
+    {
+      "id": "prop_rock",
+      "source": "props",
+      "box": [
+        47,
+        477,
+        278,
+        203
+      ],
+      "width": 96,
+      "height": 96
+    },
+    {
+      "id": "prop_crystal",
+      "source": "props",
+      "box": [
+        366,
+        439,
+        232,
+        244
+      ],
+      "width": 96,
+      "height": 96
+    },
+    {
+      "id": "prop_barrel",
+      "source": "props",
+      "box": [
+        649,
+        459,
+        196,
+        224
+      ],
+      "width": 96,
+      "height": 96
+    },
+    {
+      "id": "prop_crate",
+      "source": "props",
+      "box": [
+        899,
+        454,
+        246,
+        234
+      ],
+      "width": 96,
+      "height": 96
+    },
+    {
+      "id": "prop_banner",
+      "source": "props",
+      "box": [
+        1175,
+        379,
+        238,
+        301
+      ],
+      "width": 96,
+      "height": 96
+    }
+  ]
+}

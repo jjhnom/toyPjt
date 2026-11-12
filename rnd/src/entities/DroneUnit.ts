@@ -7,6 +7,7 @@ import { HealthComponent } from '../components/HealthComponent';
 import { FireBulletFn, WeaponComponent } from '../components/WeaponComponent';
 import { DroneArchetype, DroneSpec } from '../types/game';
 import { awakeningMultiplier } from '../config/expeditionFacilities';
+import { BATTLE_UI } from '../ui/fantasyTheme';
 
 export class DroneUnit extends Phaser.GameObjects.Sprite {
   public id: string;
@@ -45,6 +46,7 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     this.spec = spec;
 
     this.setDepth(24);
+    this.setScale(BATTLE_UI.allyScale);
 
     this.weapon = new WeaponComponent(spec, fireCallback, id);
     scene.add.existing(this);
@@ -127,15 +129,15 @@ export class DroneUnit extends Phaser.GameObjects.Sprite {
     if (target) {
       this.setFlipX(target.x < this.x);
       this.recoilTimerMs = 90;
-      this.setScale(1);
+      this.setScale(BATTLE_UI.allyScale);
     } else if (this.recoilTimerMs > 0) {
       this.recoilTimerMs -= delta;
       if (this.recoilTimerMs <= 0) {
-        this.setScale(1.0);
+        this.setScale(BATTLE_UI.allyScale);
       }
     } else {
       if (nearest) this.setFlipX(nearest.x < this.x);
-      this.setScale(1.0);
+      this.setScale(BATTLE_UI.allyScale);
     }
   }
 }

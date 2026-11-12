@@ -10,6 +10,7 @@ export async function launchChrome() {
   const profile = await mkdtemp(join(tmpdir(), 'smash-art-'));
   const browser = spawn(process.env.SMASH_BROWSER_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe', [
     '--headless=new', '--no-first-run', '--no-default-browser-check', '--enable-unsafe-swiftshader',
+    ...(process.env.SMASH_BROWSER_NO_SANDBOX === '1' ? ['--no-sandbox', '--disable-gpu'] : []),
     '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
   ], { windowsHide: true, stdio: 'ignore' });
   let socket;

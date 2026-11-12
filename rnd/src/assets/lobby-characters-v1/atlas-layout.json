@@ -1,0 +1,86 @@
+{
+  "cell": 256,
+  "columns": 3,
+  "frames": [
+    {
+      "id": "summoner",
+      "frame": 0,
+      "source": {
+        "left": 93,
+        "top": 67,
+        "width": 1104,
+        "height": 1127
+      },
+      "atlas": {
+        "x": 18,
+        "y": 16,
+        "width": 219,
+        "height": 224
+      }
+    },
+    {
+      "id": "knight",
+      "frame": 1,
+      "source": {
+        "left": 164,
+        "top": 57,
+        "width": 946,
+        "height": 1144
+      },
+      "atlas": {
+        "x": 291,
+        "y": 16,
+        "width": 185,
+        "height": 224
+      }
+    },
+    {
+      "id": "archer",
+      "frame": 2,
+      "source": {
+        "left": 92,
+        "top": 79,
+        "width": 951,
+        "height": 1123
+      },
+      "atlas": {
+        "x": 545,
+        "y": 16,
+        "width": 190,
+        "height": 224
+      }
+    },
+    {
+      "id": "healer",
+      "frame": 3,
+      "source": {
+        "left": 148,
+        "top": 104,
+        "width": 967,
+        "height": 1062
+      },
+      "atlas": {
+        "x": 26,
+        "y": 272,
+        "width": 204,
+        "height": 224
+      }
+    },
+    {
+      "id": "fireMage",
+      "frame": 4,
+      "source": {
+        "left": 110,
+        "top": 82,
+        "width": 1047,
+        "height": 1118
+      },
+      "atlas": {
+        "x": 279,
+        "y": 272,
+        "width": 210,
+        "height": 224
+      }
+    }
+  ]
+}

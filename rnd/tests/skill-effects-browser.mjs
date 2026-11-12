@@ -93,7 +93,9 @@ try {
     gs.squad.drones.forEach(d => { d.setPosition(360, 650); d.lastSkillAt = now - 10000; });
     const [lava, druid, phoenix, deity, assassin, ally] = gs.squad.drones;
     const enemy = gs.enemies.spawnEnemy('TANK', 400, 650);
-    ally.health.takeDamage(ally.health.maxHp, now);
+    // This formation grants 5% vanguard defense; ensure an actual death before testing revival.
+    ally.health.takeDamage(ally.health.maxHp * 2, now);
+    if(!ally.health.isDead)throw Error('Revival fixture must begin with a fallen ally');
     gs.squad.update(now, 0, 0, 0, gs.enemies, 1, 1, 0, true);
     const skills = { burn: enemy.burn.damage === 6 && enemy.burn.sourceUnitId === lava.id,
       buff: assassin.attackBuffMultiplier === 1.15,

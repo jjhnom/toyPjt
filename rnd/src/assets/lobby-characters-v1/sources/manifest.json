@@ -1,0 +1,52 @@
+[
+  {
+    "id": "summoner",
+    "file": "summoner.png",
+    "tool": "image_gen.imagegen",
+    "date": "2026-11-11",
+    "reference": ".agent/skills/design/mockups/01_lobby.png",
+    "description": "보라색 별 모자·흰 머리·파란 눈·청록 수정 지팡이",
+    "style": "독자적인 치비 픽셀 판타지, 큰 머리와 짧은 팔다리, 밝은 눈과 볼터치, 보라색 외곽선, 전신·장비와 투명 배경",
+    "generatedFile": "exec-ed2225de-768c-4870-8051-884cae76edce.png"
+  },
+  {
+    "id": "knight",
+    "file": "knight.png",
+    "tool": "image_gen.imagegen",
+    "date": "2026-11-11",
+    "reference": ".agent/skills/design/mockups/01_lobby.png",
+    "description": "은청색 갑옷·큰 투구·검과 방패",
+    "style": "독자적인 치비 픽셀 판타지, 큰 머리와 짧은 팔다리, 밝은 눈과 볼터치, 보라색 외곽선, 전신·장비와 투명 배경",
+    "generatedFile": "exec-d549c036-4154-4087-8e74-4eafb9094ef9.png"
+  },
+  {
+    "id": "archer",
+    "file": "archer.png",
+    "tool": "image_gen.imagegen",
+    "date": "2026-11-11",
+    "reference": ".agent/skills/design/mockups/01_lobby.png",
+    "description": "초록 후드·갈색 머리·활과 화살통",
+    "style": "독자적인 치비 픽셀 판타지, 큰 머리와 짧은 팔다리, 밝은 눈과 볼터치, 보라색 외곽선, 전신·장비와 투명 배경",
+    "generatedFile": "exec-fc040e5b-7806-4dfb-a695-adb303e20e4c.png"
+  },
+  {
+    "id": "healer",
+    "file": "healer.png",
+    "tool": "image_gen.imagegen",
+    "date": "2026-11-11",
+    "reference": ".agent/skills/design/mockups/01_lobby.png",
+    "description": "화이트골드 로브·흰 머리·나뭇잎 장식·태양 지팡이",
+    "style": "독자적인 치비 픽셀 판타지, 큰 머리와 짧은 팔다리, 밝은 눈과 볼터치, 보라색 외곽선, 전신·장비와 투명 배경",
+    "generatedFile": "exec-392370e9-7fc9-47a2-8925-2f85b4f8ce0d.png"
+  },
+  {
+    "id": "fireMage",
+    "file": "fireMage.png",
+    "tool": "image_gen.imagegen",
+    "date": "2026-11-11",
+    "reference": ".agent/skills/design/mockups/01_lobby.png",
+    "description": "빨강 모자·갈색 머리·호박색 눈·불꽃 지팡이",
+    "style": "독자적인 치비 픽셀 판타지, 큰 머리와 짧은 팔다리, 밝은 눈과 볼터치, 보라색 외곽선, 전신·장비와 투명 배경",
+    "generatedFile": "exec-115cdf39-644d-4b72-ba7c-80e674c9df48.png"
+  }
+]

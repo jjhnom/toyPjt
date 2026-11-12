@@ -13,6 +13,7 @@ export class EffectParticle extends Phaser.GameObjects.Sprite {
   private isLine = false;
   private spin = 0;
   private startAlpha = 1;
+  private ringAspect = 1;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'tex_particle');
@@ -33,6 +34,7 @@ export class EffectParticle extends Phaser.GameObjects.Sprite {
     this.setRotation(0).setDepth(35).setFlip(false, false).setOrigin(0.5).clearTint();
     this.spin = 0;
     this.startAlpha = 1;
+    this.ringAspect = 1;
     this.setPosition(x, y);
     this.setTint(color);
     this.vx = vx;
@@ -48,16 +50,17 @@ export class EffectParticle extends Phaser.GameObjects.Sprite {
     this.setVisible(true);
   }
 
-  public launchShockwave(x: number, y: number, radius: number, color: number, texture = 'tex_ring', spin = 0): void {
+  public launchShockwave(x: number, y: number, radius: number, color: number, texture = 'tex_ring', spin = 0, aspect = 1): void {
     this.launchSpark(x, y, 0, 0, color);
     this.setTexture(texture);
     this.spin = spin;
+    this.ringAspect = aspect;
     this.setPosition(x, y);
     this.setTint(color);
     this.vx = 0;
     this.vy = 0;
     this.startScale = Math.max(0.1, radius / 42);
-    this.setScale(this.startScale * 0.25);
+    this.setScale(this.startScale * 0.25,this.startScale * 0.25 * this.ringAspect);
     this.fadeFrom(0.65);
     this.elapsedMs = 0;
     this.durationMs = 260;
@@ -101,7 +104,8 @@ export class EffectParticle extends Phaser.GameObjects.Sprite {
     if (this.isLine) {
       this.setAlpha(this.startAlpha * (1 - t));
     } else if (this.isRing) {
-      this.setScale(this.startScale * (0.25 + 0.75 * (1 - (1 - t) ** 3)));
+      const scale=this.startScale * (0.25 + 0.75 * (1 - (1 - t) ** 3));
+      this.setScale(scale,scale*this.ringAspect);
       this.setAlpha(this.startAlpha * (1 - t));
     } else {
       const dt = delta / 1000;
@@ -160,11 +164,11 @@ export class EffectParticleGroup extends Phaser.GameObjects.Group {
   public emitCast(unit: DroneArchetype, x: number, y: number, angle: number): void {
     const style = UNIT_COMBAT_STYLES[unit];
     const p = this.get(x, y) as EffectParticle | null;
-    p?.launchGlyph(skillGlyphTexture(style.shape), x, y, style.accent, style.intensity === 'S' ? 12 : 18, 130, angle);
+    p?.launchGlyph(skillGlyphTexture(style.shape),x,y,style.shape==='bolt'?0xc5f6ff:style.accent,style.intensity==='S'?16:24,130,angle);
     if (style.intensity !== 'S') {
       const rune = this.get(x, y) as EffectParticle | null;
-      rune?.launchFragment('skill_rune', x, y + 14, 0, 0, style.color, 34, 180, 0, 1.5);
-      rune?.setDepth(18).fadeFrom(0.55);
+      rune?.launchShockwave(x,y+14,24,style.color,skillWaveTexture('rune'),0,.42);
+      rune?.setDepth(18).fadeFrom(0.4);
     }
   }
 
@@ -176,7 +180,7 @@ export class EffectParticleGroup extends Phaser.GameObjects.Group {
     const drifting = style.shape === 'fire' || style.shape === 'feather' || style.shape === 'frost';
     p?.launchFragment(skillGlyphTexture(style.shape), x, y,
       -Math.cos(angle) * (drifting ? 28 : 0), -Math.sin(angle) * (drifting ? 28 : 0),
-      style.color, style.intensity === 'S' ? 7 : 11, drifting ? 180 : 100, angle,
+      style.shape==='bolt'?0x3fb7ff:style.color,style.intensity==='S'?9:14,drifting?180:100,angle,
       style.shape === 'void' ? 5 : drifting ? 2 : 0);
   }
 
@@ -185,15 +189,15 @@ export class EffectParticleGroup extends Phaser.GameObjects.Group {
     const p = this.get(x, y) as EffectParticle | null;
     p?.launchGlyph(skillGlyphTexture('star'), x, y, 0xfff5d6, style.intensity === 'S' ? 14 : 22, 90);
     const shard = this.get(x, y) as EffectParticle | null;
-    shard?.launchFragment(skillGlyphTexture(style.shape), x, y, 0, -28, style.accent,
-      style.intensity === 'S' ? 12 : 20, 170, 0, style.shape === 'void' ? 5 : 0);
+    shard?.launchFragment(skillGlyphTexture(style.shape),x,y,0,-28,style.shape==='bolt'?0xc5f6ff:style.accent,
+      style.shape==='slash'?38:style.intensity==='S'?16:26,190,0,style.shape==='void'?5:0);
     this.emitBurst(x, y, style.color, style.intensity === 'S' ? 2 : 4, 80);
   }
 
   public emitExplosion(unit: DroneArchetype, x: number, y: number, radius: number): void {
     const style = UNIT_COMBAT_STYLES[unit];
     const ring = this.get(x, y) as EffectParticle | null;
-    ring?.launchShockwave(x, y, radius, style.color, skillWaveTexture(style.shape), style.shape === 'void' ? 3 : 0);
+    ring?.launchShockwave(x,y,radius,style.shape==='bolt'?0x3fb7ff:style.color,skillWaveTexture(style.shape),style.shape==='void'?3:0);
     // Fragments stay within the instantaneous damage radius and fade in under 300ms.
     for (let i = 0; i < 6; i++) {
       if (this.countActive(true) >= 100) break;
@@ -207,7 +211,7 @@ export class EffectParticleGroup extends Phaser.GameObjects.Group {
 
   public emitSkill(kind: SkillEffectKind, x: number, y: number, unit: DroneArchetype): void {
     const style = UNIT_COMBAT_STYLES[unit];
-    const texture = kind === 'poison' ? 'skill_poison' : kind === 'heal' ? 'skill_heal' : kind === 'shield' ? 'skill_shield'
+    const texture = kind === 'poison' ? skillGlyphTexture('poison_support') : kind === 'heal' ? 'skill_heal' : kind === 'shield' ? skillGlyphTexture('shield')
       : kind === 'buff' && unit !== 'SHADOW_ASSASSIN' ? 'skill_buff' : kind === 'summon' ? 'skill_rune'
       : skillGlyphTexture(kind === 'revive' ? 'feather' : kind === 'burn' ? 'fire' : style.shape);
     const color = kind === 'poison' ? 0x79d842 : kind === 'heal' ? 0x79d878 : kind === 'shield' ? 0x9ceeff
@@ -215,16 +219,41 @@ export class EffectParticleGroup extends Phaser.GameObjects.Group {
     const p = this.get(x, y) as EffectParticle | null;
     p?.launchFragment(texture, x, y + (kind === 'summon' ? 14 : kind === 'heal' || kind === 'buff' ? -24 : 0),
       0, kind === 'heal' ? -65 : kind === 'buff' || kind === 'poison' ? -35 : 0, color,
-      kind === 'summon' ? 52 : kind === 'revive' ? 44 : kind === 'poison' ? 14 : 26,
+      kind === 'summon' ? 52 : kind === 'revive' ? 44 : kind === 'shield' ? 58 : kind === 'poison' ? 14 : 26,
       kind === 'split' ? 150 : kind === 'heal' ? 480 : 380,
       0, kind === 'summon' ? 2 : 0);
     if (kind === 'summon') p?.setDepth(18);
-    if (kind === 'summon' || kind === 'revive') this.emitShockwave(x, y + 12, 34, color);
+    if(kind==='heal'){
+      const rune=this.get(x,y) as EffectParticle|null;
+      rune?.launchShockwave(x,y+20,34,0x4ade80,skillWaveTexture('heal'),0,.42);rune?.setDepth(18);
+      const pillar=this.get(x,y) as EffectParticle|null;
+      pillar?.launchFragment(skillGlyphTexture('heal'),x,y+4,0,-12,0xa9ffce,52,380);
+      pillar?.setDepth(19).fadeFrom(.65);
+      for(let i=0;i<3;i++){
+        const light=this.get(x,y) as EffectParticle|null;
+        light?.launchFragment(skillGlyphTexture('star'),x-18+i*18,y+12,0,-44-i*12,0xa9ffce,8,420+i*30);
+      }
+    }
+    if(kind==='shield')p?.setDepth(19).fadeFrom(.6);
+    if(kind==='buff'&&unit!=='SHADOW_ASSASSIN'){
+      const ring=this.get(x,y) as EffectParticle|null;
+      ring?.launchShockwave(x,y+18,28,color,skillWaveTexture('buff'),0,.42);ring?.setDepth(18).fadeFrom(.45);
+    }
+    if(kind==='poison'){
+      const cloud=this.get(x,y) as EffectParticle|null;
+      cloud?.launchFragment(skillGlyphTexture('poison_support'),x,y,0,-12,0x79d842,34,400,0,.25);cloud?.fadeFrom(.4);
+    }
+    if(kind==='summon'){
+      const ring=this.get(x,y) as EffectParticle|null;
+      ring?.launchShockwave(x,y+12,34,color,skillWaveTexture('rune'),0,.42);ring?.setDepth(18);
+    }
+    if(kind==='revive')this.emitShockwave(x,y+12,34,color);
     if (kind === 'burn') this.emitExplosion(unit, x, y, UNIQUE_SKILLS.lava.radius);
     if (kind === 'revive') this.emitBurst(x, y, style.color, 6, 95);
   }
 
   public emitLightning(x: number, y: number, toX: number, toY: number, color: number, branch: number): void {
+    color=0x8ee9ff; // Visual color only; target chain, damage and timing stay with the caller.
     const dx = toX - x, dy = toY - y, length = Math.max(1, Math.hypot(dx, dy));
     let fromX = x, fromY = y;
     for (let i = 1; i <= 4; i++) {

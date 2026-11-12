@@ -2,9 +2,14 @@ import Phaser from 'phaser';
 import { DRONE_SPECS, ENEMY_SPECS } from '../config/gameData';
 import type { DroneArchetype, EnemyArchetype } from '../types/game';
 import { drawCharacter, unitTexture, unitPortrait, unitAnimation, enemyTexture, enemyAnimation } from '../ui/pixelCharacters';
-import { ART_ASSETS } from '../ui/artAssets';
+import { ART_ASSETS, PROVIDED_ATLAS } from '../ui/artAssets';
+import { PROVIDED_UI } from '../ui/providedArt';
+import { HUD_ART, REFERENCE_HUD } from '../ui/hudArt';
+import { BOTTOM_HUD, BOTTOM_HUD_ART } from '../ui/bottomHudArt';
 import { UNIT_ART_CELL, UNIT_ART_COLUMNS, UNIT_ART_FRAMES } from '../ui/unitArt';
 import { createSkillEffectTextures } from '../ui/skillEffectTextures';
+import { LOBBY_CHARACTER_CELL, LOBBY_CHARACTER_COLUMNS, LOBBY_CHARACTER_FRAMES, lobbyCharacterPortrait } from '../ui/lobbyCharacters';
+import type { LobbyCharacter } from '../ui/lobbyCharacters';
 
 export class BootScene extends Phaser.Scene {
   private characterArt = new Map<string, HTMLCanvasElement>();
@@ -14,6 +19,9 @@ export class BootScene extends Phaser.Scene {
 
   public preload(): void {
     for (const [key, url] of Object.entries(ART_ASSETS)) this.load.image(key, url);
+    this.load.atlas(PROVIDED_UI,PROVIDED_ATLAS.image,PROVIDED_ATLAS.data);
+    this.load.atlas(REFERENCE_HUD,HUD_ART.image,HUD_ART.data);
+    this.load.atlas(BOTTOM_HUD,BOTTOM_HUD_ART.image,BOTTOM_HUD_ART.data);
   }
 
   public create(): void {
@@ -21,14 +29,41 @@ export class BootScene extends Phaser.Scene {
     const leaderPortrait = this.textures.createCanvas('portrait_leader', 192, 192)!;
     leaderPortrait.getContext().drawImage(this.textures.get('art_mage').getSourceImage() as HTMLImageElement, 0, 0, 192, 192);
     leaderPortrait.refresh();
+    // Reuse the existing mage art as a larger bust inside the reference HUD's portrait frame.
+    const mage=this.textures.get('art_mage').getSourceImage() as HTMLImageElement;
+    const hudPortrait=this.textures.createCanvas('portrait_leader_hud',240,192)!;
+    const hudContext=hudPortrait.getContext();hudContext.imageSmoothingEnabled=true;
+    hudContext.drawImage(mage,mage.width*.08,mage.height*.02,mage.width*.82,mage.height*.62,0,0,240,192);
+    hudPortrait.refresh();
+    const familiar = this.textures.createCanvas('portrait_lobby_familiar', 96, 96)!;
+    const familiarContext = familiar.getContext();
+    familiarContext.imageSmoothingEnabled = true;
+    familiarContext.imageSmoothingQuality = 'high';
+    familiarContext.drawImage(this.textures.get('art_lobby_familiar_source').getSourceImage() as HTMLImageElement, 0, 0, 96, 96);
+    familiar.refresh();
+    this.createLobbyPortraits();
     this.createAnimatedSpriteSheets();
     // Only the small runtime textures are used after preparation.
-    for (const key of ['art_frame_source', 'art_mage', 'art_units_source']) this.textures.remove(key);
+    for (const key of ['art_frame_source', 'art_mage', 'art_units_source', 'art_lobby_familiar_source', 'art_lobby_party_source']) this.textures.remove(key);
     this.characterArt.clear();
     this.createStaticUiTextures();
     createSkillEffectTextures(this);
     this.registerAnimations();
     this.scene.start('MenuScene');
+  }
+
+  private createLobbyPortraits(): void {
+    const source = this.textures.get('art_lobby_party_source').getSourceImage() as HTMLImageElement;
+    const cell = LOBBY_CHARACTER_CELL;
+    for (const role of Object.keys(LOBBY_CHARACTER_FRAMES) as LobbyCharacter[]) {
+      const frame = LOBBY_CHARACTER_FRAMES[role];
+      const portrait = this.textures.createCanvas(lobbyCharacterPortrait(role), cell, cell)!;
+      const ctx = portrait.getContext();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(source, frame % LOBBY_CHARACTER_COLUMNS * cell,
+        Math.floor(frame / LOBBY_CHARACTER_COLUMNS) * cell, cell, cell, 0, 0, cell, cell);
+      portrait.refresh();
+    }
   }
 
   private createArtFrame(): void {
@@ -186,11 +221,13 @@ export class BootScene extends Phaser.Scene {
     g.generateTexture('tex_joy_base', 136, 136);
 
     g.clear();
-    g.fillStyle(0x080e17).fillCircle(28, 28, 27);
-    g.fillStyle(0xb19acb,0.7).fillCircle(28,28,24);
-    g.fillStyle(0x655175,0.7).fillCircle(28,29,21);
-    g.fillStyle(0xaa8ac5,0.6).fillCircle(28,26,18);
-    g.lineStyle(1,0xe0c9f3,0.6).strokeCircle(28,26,18);
+    g.fillStyle(0x170e25).fillCircle(28,28,27);
+    g.fillStyle(0xc68cea).fillCircle(28,28,24);
+    g.fillStyle(0x6b3594).fillCircle(28,29,21);
+    g.fillStyle(0x9b5bc9).fillCircle(28,25,19);
+    g.fillStyle(0xbb7cdb).fillEllipse(25,17,27,15);
+    g.fillStyle(0xefd4ff,.8).fillEllipse(18,13,9,6);
+    g.lineStyle(1,0xe0c9f3).strokeCircle(28,27,22);
     g.generateTexture('tex_joy_thumb', 56, 56);
 
     // 사방 게이트 도어 텍스처

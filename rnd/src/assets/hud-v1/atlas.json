@@ -1,0 +1,52 @@
+{
+  "frames": {
+    "top": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 1024,
+        "h": 196
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 196
+      },
+      "sourceSize": {
+        "w": 1024,
+        "h": 196
+      }
+    },
+    "stage": {
+      "frame": {
+        "x": 2,
+        "y": 202,
+        "w": 1024,
+        "h": 168
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 168
+      },
+      "sourceSize": {
+        "w": 1024,
+        "h": 168
+      }
+    }
+  },
+  "meta": {
+    "image": "atlas.png",
+    "size": {
+      "w": 1028,
+      "h": 376
+    },
+    "scale": "1"
+  }
+}

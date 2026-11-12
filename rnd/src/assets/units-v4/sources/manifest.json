@@ -1,0 +1,223 @@
+[
+  {
+    "id": "BASIC_LASER",
+    "name": "숲의 사수",
+    "file": "basic_laser.png",
+    "mode": "reuse built-in image_gen lobby art",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "reuse": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Reuse the approved cute archer lobby character, preserving the original PNG and alpha; see lobby-characters-v1/README.md."
+  },
+  {
+    "id": "GATLING_BOT",
+    "name": "바람 순찰자",
+    "file": "gatling_bot.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a nimble WIND ranger in mint teal hood and a flowing ivory scarf, two long white feathers on the hood, double-limbed silver recurved bow and arrow quiver; visibly distinct from a green forest archer.",
+    "generatedFile": "exec-850e0407-7135-46c0-9551-21b9b3f2bfa7.png"
+  },
+  {
+    "id": "ROCKET_BOT",
+    "name": "불꽃 마법사",
+    "file": "rocket_bot.png",
+    "mode": "reuse built-in image_gen lobby art",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "reuse": "src/assets/lobby-characters-v1/sources/fireMage.png",
+    "prompt": "Reuse the approved cute fireMage lobby character, preserving the original PNG and alpha; see lobby-characters-v1/README.md."
+  },
+  {
+    "id": "STUN_BOT",
+    "name": "서리 현자",
+    "file": "stun_bot.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: an elderly FROST sage with white beard, icy blue pointed hat and pale cyan layered robe, crystalline ice staff crowned by a snowflake, frosty silver trim.",
+    "generatedFile": "exec-f80978de-a5a2-4c9e-858f-da862d70e756.png"
+  },
+  {
+    "id": "PIERCE_BEAM",
+    "name": "별빛 명궁",
+    "file": "pierce_beam.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a royal STARLIGHT master archer in ivory and gold light armor, long white hair and small star diadem, elegant luminous golden longbow with a cyan string, navy cape.",
+    "generatedFile": "exec-d31740fb-63e1-465f-bb90-1835a830a349.png"
+  },
+  {
+    "id": "BLACKHOLE_MISSILE",
+    "name": "황혼 대마법사",
+    "file": "blackhole_missile.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: an imposing TWILIGHT archwizard in midnight indigo and violet ceremonial robes with a tall split wizard hat, orange and cyan small gems, crescent staff holding a compact purple void orb, gold shoulder ornaments.",
+    "generatedFile": "exec-cfdecf5e-c288-4ebe-9b07-c72ea4597618.png"
+  },
+  {
+    "id": "CHAIN_LIGHTNING",
+    "name": "번개 대사제",
+    "file": "chain_lightning.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a LIGHTNING high priest in white and antique gold ceremonial robes, bright yellow mantle and a golden mitre, short ivory staff crowned with a forked golden lightning crystal.",
+    "generatedFile": "exec-51ba6a6b-b4dc-4d00-97f5-1a1346f8f30b.png",
+    "revisionPrompt": "Edit this one sprite while preserving the entire cute white-and-gold lightning high priest character, its pose, colors, proportions, equipment and crisp pixel edges exactly. Remove ONLY the detached white/grey stray artifact at the very top-left corner of the image, replacing those corner pixels with full transparency. All pixels outside the character must be genuinely transparent. No additions, no ground shadow, no labels."
+  },
+  {
+    "id": "STONE_GUARD",
+    "name": "석재 방패병",
+    "file": "stone_guard.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a stocky EARTH stone shield soldier, rough carved granite helmet and grey stone plated armor with bronze trim, gigantic rectangular basalt shield on left and short iron sword on right, visible friendly tan face.",
+    "generatedFile": "exec-c91f91f5-426e-4888-8896-be241aa896b6.png"
+  },
+  {
+    "id": "HERBAL_PRIEST",
+    "name": "약초 사제",
+    "file": "herbal_priest.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a gentle herbal healer with an oversized round green hood and leaf wreath, short soft blond hair, big bright green eyes and happy rosy face, tiny green and cream robes, herb satchel, wooden staff crowned with three big fresh green leaves and a small golden light. Clearly a green FOREST healer, not a white moon priest.",
+    "generatedFile": "exec-feb9ee96-0e7e-426d-85e9-2fc313774d52.png"
+  },
+  {
+    "id": "SPARK_SPIRIT",
+    "name": "번개 정령",
+    "file": "spark_spirit.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a small cute LIGHTNING elemental made of golden glowing crystal, round golden face with two expressive dark eyes, jagged yellow lightning hair and floating amber crystal hands, tiny sparking feet and a compact body, no human clothing.",
+    "generatedFile": "exec-733c89ce-3945-4a0b-b1a4-c16e808f3d3e.png"
+  },
+  {
+    "id": "SHADOW_DAGGER",
+    "name": "그림자 단검수",
+    "file": "shadow_dagger.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a young friendly shadow rogue in an oversized round deep-purple hood, huge bright lavender eyes and rosy upper cheeks visible, a tiny scarf covering only the mouth, short charcoal leather outfit, violet belt, two SHORT curved silver daggers, tiny leather boots. Cute, not menacing.",
+    "generatedFile": "exec-2f814429-b57f-4725-8b66-8e7c27591140.png"
+  },
+  {
+    "id": "LAVA_GOLEM",
+    "name": "용암 골렘",
+    "file": "lava_golem.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a BABY LAVA golem, oversized round charcoal stone head with huge glowing amber eyes and a friendly smiling mouth, round rock cheeks, tiny squat black basalt body and very short sturdy rock legs, large rounded fists, simple bright orange magma cracks. A cute rock creature with no human clothing, no weapon, no horns or scary teeth.",
+    "generatedFile": "exec-4ded040b-1b08-47f8-a288-206cbe33e4f2.png"
+  },
+  {
+    "id": "THORN_GUARD",
+    "name": "가시 수호자",
+    "file": "thorn_guard.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a FOREST thorn guardian in interlocking bark armor and a leafy crown, broad bramble shield with a small glowing green gem, thorn spear, green vines around sturdy wooden legs, a friendly small face under the leafy helmet.",
+    "generatedFile": "exec-64359f74-2e7a-49b5-b2bb-9410a1b3db1b.png"
+  },
+  {
+    "id": "STORM_ARCHER",
+    "name": "폭풍 궁수",
+    "file": "storm_archer.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a STORM archer in cobalt blue and turquoise leather armor, swept white hair and a small lightning hair clasp, dark blue cape and a golden lightning-shaped shortbow, bright cyan compact electric accents.",
+    "generatedFile": "exec-9356bf61-0ed6-4145-8e31-d8c42989fadf.png"
+  },
+  {
+    "id": "MOON_PRIEST",
+    "name": "달빛 사제",
+    "file": "moon_priest.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a gentle MOON priestess in white and pale lavender robes with silver trim, pale blue hair, crescent moon headdress, slender silver staff carrying a crescent and ice-blue gem, serene face.",
+    "generatedFile": "exec-59540f00-3ab2-4c44-9111-8bb1d3003a32.png"
+  },
+  {
+    "id": "PALADIN",
+    "name": "성기사",
+    "file": "paladin.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a stout holy PALADIN in polished ivory plate armor with thick gold trim, small winged helmet revealing face, deep royal blue tabard, round golden sun shield and bright silver longsword.",
+    "generatedFile": "exec-45c9f4d3-f1c4-4a58-81c8-ab1115a787ad.png"
+  },
+  {
+    "id": "THUNDER_MAGE",
+    "name": "뇌운 술사",
+    "file": "thunder_mage.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a THUNDER cloud sorcerer in dark storm-blue robes with yellow trim, messy silver hair and small dark cloud-shaped pointed hat, staff topped by a small grey cloud and bright forked yellow lightning, cheerful face.",
+    "generatedFile": "exec-f70c25c6-2c15-4009-9f84-3de5964a0ca8.png"
+  },
+  {
+    "id": "SHADOW_ASSASSIN",
+    "name": "그림자 암살자",
+    "file": "shadow_assassin.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: an elite but adorable shadow assassin, oversized angular violet hood framing a huge expressive round head, big sparkling magenta eyes and rosy cheeks above a SMALL silver lower-face mask, tiny black and violet segmented armor, two violet crystal blades and a short torn violet cape. Distinct from the basic shadow rogue through crystal blades and silver mask.",
+    "generatedFile": "exec-fcf1ef29-3f9f-4d40-9731-f5e6e57cc4d9.png"
+  },
+  {
+    "id": "WORLD_DRUID",
+    "name": "세계수 드루이드",
+    "file": "world_druid.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a wise WORLD TREE druid in emerald and ivory robes, wooden antler crown with fresh green leaves, long silver beard, gnarled root staff carrying a compact emerald crystal and golden leaf, bark shoulder pieces.",
+    "generatedFile": "exec-b0920469-1263-4ed6-a3ed-091464b33824.png"
+  },
+  {
+    "id": "PHOENIX_LORD",
+    "name": "불사조 군주",
+    "file": "phoenix_lord.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a noble PHOENIX lord in brilliant crimson and antique gold ceremonial armor, red hair and a golden phoenix crown, compact fiery feather mantle spreading just behind shoulders, gold staff with a small stylized phoenix head, warm orange gems, human chibi hero.",
+    "generatedFile": "exec-94c21e05-8060-4214-8d2e-592b2fff2dbe.png"
+  },
+  {
+    "id": "STORM_GENERAL",
+    "name": "폭풍의 대장군",
+    "file": "storm_general.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a legendary STORM general in ornate navy and bright gold plate armor, majestic blue winged helmet and a white plume, long teal cape, imposing golden crossbow shaped like a thunderbolt, electric cyan gem on chest.",
+    "generatedFile": "exec-2ee5001b-865e-4ede-823d-33e9c2a5cb47.png"
+  },
+  {
+    "id": "EARTH_DEITY",
+    "name": "대지의 수호신",
+    "file": "earth_deity.png",
+    "mode": "built-in image_gen",
+    "transparent": true,
+    "reference": "src/assets/lobby-characters-v1/sources/archer.png",
+    "prompt": "Create ONE standalone original production RPG character sprite. The reference image is ONLY a STYLE reference for its cute chibi proportions, bright face and pixel clusters; do not copy its archer costume onto other roles. Match this new party set: oversized round head and headgear together about 60 percent of total height, tiny plump torso, very short chunky legs and arms, huge sparkling expressive eyes, rosy cheeks and a warm cheerful expression. Full body including ALL feet, hat and weapons. Front three-quarter facing slightly right. Clean crisp 32-bit pixel art with chunky readable color clusters, dark purple outlines, luminous highlights and simple shaded volumes. Simplify details to remain readable at 48px battle size; no thin noisy details. Single centered character occupying about 80 percent of square canvas, generous clear margins for all equipment. GENUINELY TRANSPARENT alpha background, no ground shadow, scenery, text, labels, UI, frame, watermark or other characters. Preserve the specific role's signature equipment, colors and species. CHARACTER: a legendary but adorable EARTH guardian deity with oversized round mossy stone head, big cheerful emerald eyes and smiling face, small leafy stone antlers, tiny squat carved stone armor body and short root-and-rock legs, large emerald heart gem, broad root-and-rock shield and a short stone hammer, a few large gold accents without lettering. Cute guardian creature, not a human knight.",
+    "generatedFile": "exec-6cc2a53f-770c-48de-b928-24ed43593b84.png"
+  }
+]

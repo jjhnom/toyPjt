@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameData';
+import { FANTASY } from './fantasyTheme';
+import {BOTTOM_HUD} from './bottomHudArt';
 
 export class VirtualJoystick {
   public dirX = 0;
@@ -11,7 +13,7 @@ export class VirtualJoystick {
   private hintText: Phaser.GameObjects.Text;
 
   private activePointerId: number | null = null;
-  private anchorX = 130;
+  private anchorX = 90;
   private anchorY = GAME_HEIGHT - 50;
   private maxRadius = 64;
 
@@ -27,21 +29,21 @@ export class VirtualJoystick {
     this.scene = scene;
 
     this.baseSprite = scene.add
-      .image(this.anchorX, this.anchorY, 'tex_joy_base')
-      .setDisplaySize(100,100)
+      .image(this.anchorX, this.anchorY,BOTTOM_HUD,'joystick')
+      .setDisplaySize(94,94)
       .setDepth(60)
-      .setAlpha(0.82);
+      .setAlpha(1);
     this.thumbSprite = scene.add
       .image(this.anchorX, this.anchorY, 'tex_joy_thumb')
-      .setDisplaySize(42,42)
+      .setDisplaySize(46,46)
       .setDepth(61)
-      .setAlpha(0.92);
+      .setAlpha(1);
 
     this.hintText = scene.add
-      .text(130,1184,'드래그 이동 / WASD',{
-        fontFamily: 'sans-serif',
-        fontSize:'13px',
-        color: '#94a3b8'
+      .text(181,1230,'드래그 이동\nWASD',{
+        fontFamily:FANTASY.font,
+        fontSize:'12px',align:'center',resolution:2,
+        color:FANTASY.muted,stroke:'#140e24',strokeThickness:2
       })
       .setOrigin(0.5, 0.5)
       .setDepth(60);
@@ -112,10 +114,10 @@ export class VirtualJoystick {
     this.dirY = 0;
 
     // 기본 좌측 하단 대기 위치로 복귀
-    this.anchorX = 130;
+    this.anchorX = 90;
     this.anchorY = GAME_HEIGHT - 50;
-    this.baseSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.82);
-    this.thumbSprite.setPosition(this.anchorX, this.anchorY).setAlpha(0.92);
+    this.baseSprite.setPosition(this.anchorX, this.anchorY).setAlpha(1);
+    this.thumbSprite.setPosition(this.anchorX, this.anchorY).setAlpha(1);
   }
 
   public update(): void {
@@ -155,7 +157,7 @@ export class VirtualJoystick {
     this.activePointerId = null;
     this.dirX = 0;
     this.dirY = 0;
-    this.anchorX = 130;
+    this.anchorX = 90;
     this.anchorY = GAME_HEIGHT - 50;
     this.baseSprite.setPosition(this.anchorX, this.anchorY);
     this.thumbSprite.setPosition(this.anchorX, this.anchorY);

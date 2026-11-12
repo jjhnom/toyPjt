@@ -1,0 +1,172 @@
+{
+  "frames": {
+    "board": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 720,
+        "h": 200
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 720,
+        "h": 200
+      },
+      "sourceSize": {
+        "w": 720,
+        "h": 200
+      }
+    },
+    "card": {
+      "frame": {
+        "x": 2,
+        "y": 206,
+        "w": 84,
+        "h": 72
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 84,
+        "h": 72
+      },
+      "sourceSize": {
+        "w": 84,
+        "h": 72
+      }
+    },
+    "empty": {
+      "frame": {
+        "x": 90,
+        "y": 206,
+        "w": 84,
+        "h": 72
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 84,
+        "h": 72
+      },
+      "sourceSize": {
+        "w": 84,
+        "h": 72
+      }
+    },
+    "detail": {
+      "frame": {
+        "x": 178,
+        "y": 206,
+        "w": 132,
+        "h": 76
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 132,
+        "h": 76
+      },
+      "sourceSize": {
+        "w": 132,
+        "h": 76
+      }
+    },
+    "maintenance": {
+      "frame": {
+        "x": 314,
+        "y": 206,
+        "w": 180,
+        "h": 84
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 180,
+        "h": 84
+      },
+      "sourceSize": {
+        "w": 180,
+        "h": 84
+      }
+    },
+    "skill": {
+      "frame": {
+        "x": 498,
+        "y": 206,
+        "w": 128,
+        "h": 84
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 84
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 84
+      }
+    },
+    "exit": {
+      "frame": {
+        "x": 630,
+        "y": 206,
+        "w": 140,
+        "h": 84
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 140,
+        "h": 84
+      },
+      "sourceSize": {
+        "w": 140,
+        "h": 84
+      }
+    },
+    "joystick": {
+      "frame": {
+        "x": 774,
+        "y": 206,
+        "w": 94,
+        "h": 94
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 94,
+        "h": 94
+      },
+      "sourceSize": {
+        "w": 94,
+        "h": 94
+      }
+    }
+  },
+  "meta": {
+    "image": "atlas.png",
+    "size": {
+      "w": 1024,
+      "h": 512
+    },
+    "scale": "1"
+  }
+}

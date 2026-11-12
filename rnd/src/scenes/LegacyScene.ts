@@ -8,7 +8,7 @@ export class LegacyScene extends Phaser.Scene {
   private message='효과와 클래스는 다음 새 모험에 적용 · 이어하기는 유지';
   private closed=false;
   constructor(){super('LegacyScene');}
-  public create():void {this.input.enabled=true;this.tab='classes';this.closed=false;legacyProfile.flush();this.message='효과와 클래스는 다음 새 모험에 적용 · 이어하기는 유지';
+  public create(data:{tab?:'classes'|'growth'}={}):void {this.input.enabled=true;this.tab=data.tab==='growth'?'growth':'classes';this.closed=false;legacyProfile.flush();this.message='효과와 클래스는 다음 새 모험에 적용 · 이어하기는 유지';
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.scene.stop('CodexScene'));this.render();}
   private text(x:number,y:number,value:string,size=20,color=FANTASY.cream){return this.add.text(x,y,value,
     {fontFamily:FANTASY.font,fontSize:`${size}px`,resolution:2,color,wordWrap:{width:584}});}

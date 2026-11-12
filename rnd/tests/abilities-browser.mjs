@@ -60,7 +60,7 @@ try {
   await ready();
   const skillPng=await send('Page.captureScreenshot',{format:'png'});await writeFile(`${output}/skill-360.png`,Buffer.from(skillPng.data,'base64'));
   const skillBounds=await evaluate("gs.children.getByName('active-skill').getBounds()");
-  assert.ok(skillBounds.x>=464&&skillBounds.y>=1180&&skillBounds.x+skillBounds.width<=576&&skillBounds.y+skillBounds.height<=1280,
+  assert.ok(skillBounds.x>=420&&skillBounds.y>=1180&&skillBounds.x+skillBounds.width<=548&&skillBounds.y+skillBounds.height<=1280,
     'active skill stays in its bottom control slot');
   await touch('touchStart',[point(1,520,1230)]); await sleep(80);
   assert.equal(await evaluate('gs.squad.activeRemaining()'),0,'press alone must not cast');

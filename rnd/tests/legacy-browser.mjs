@@ -63,10 +63,13 @@ try{
  await evaluate("gs.scene.start('MenuScene');undefined;");await waitFor("smash.scene.isActive('MenuScene')");await click('MenuScene','new-run');await tap(510,700);
  await waitFor("smash.scene.isActive('GameScene')");await ref();const mageStart=await save();
  assert.equal(mageStart.hero.classId,'ELEMENTALIST');assert.deepEqual(mageStart.hero.permanent,{vitality:1,power:1});assert.equal(mageStart.leaderHealth.maxHp,95);
- await freeze();await evaluate('gs.squad.health.currentHp=95;gs.squad.drones.forEach(d=>d.health.currentHp=d.health.maxHp);gs.squad.movement.applySlow(0.65,800,gs.time.now);undefined;');
+ // freeze() stops combat updates, not Phaser's Clock. Keep this controlled debuff
+ // alive across CDP cancel/recast commands; otherwise a slow renderer expires it first.
+ await freeze();await evaluate('gs.squad.health.currentHp=95;gs.squad.drones.forEach(d=>d.health.currentHp=d.health.maxHp);gs.squad.movement.applySlow(0.65,60000,gs.time.now);undefined;');
  const canvas=await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()");
  await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:canvas.x+520*canvas.width/720,y:canvas.y+1230*canvas.height/1280}]});
  await send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});assert.equal(await evaluate('gs.squad.activeRemaining()'),0);assert.equal(await evaluate('gs.squad.movement.slowFactor'),0.65);
+ assert.equal(await evaluate('gs.time.now<gs.squad.movement.slowUntil'),true,'Cleanse fixture must still have a live debuff');
  await tap(520,1230);assert.equal(await evaluate('gs.squad.movement.slowFactor'),1);assert.equal(await evaluate('gs.squad.activeRemaining()'),18000);
  await evaluate(`gs.squad.restoreHero({...gs.squad.heroSnapshot(),activeRemainingMs:0});gs.squad.health.currentHp=23;gs.squad.drones[0].health.currentHp=20;
   gs.activeSkillButton.update(true,0,18000);undefined;`);await tap(520,1230);

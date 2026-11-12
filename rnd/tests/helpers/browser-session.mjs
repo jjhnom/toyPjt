@@ -78,7 +78,8 @@ export async function browserSession() {
       await waitFor("document.querySelector('canvas') !== null", 300);
       await evaluate(`(async () => { const entry = document.querySelector('script[type="module"][src*="/src/main.ts"]');
         window.smash = (await import(entry.src)).game; })()`);
-      await waitFor("smash.scene.isActive('MenuScene')"); await sleep(350);
+      // Cold image decode / software WebGL upload can outlast an ordinary scene transition.
+      await waitFor("smash.scene.isActive('MenuScene')", 300); await sleep(350);
       assert.equal(mainLoader,loader,'Document changed while attaching');
       attachedLoader=loader;
     };

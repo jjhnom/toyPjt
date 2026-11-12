@@ -1,13 +1,17 @@
 import Phaser from 'phaser';
+import { providedSkin, providedIcon, providedButtonFrame } from './providedArt';
 
 /** Semantic colors from detailed design v2. Existing FANTASY keys remain compatible. */
 export const DESIGN_TOKENS = {
   background: { base: 0x12152f, deep: 0x0c1022 },
-  surface: { panel: 0x2a1f3f, raised: 0x473b72, slate: 0x1b2633 },
-  accent: { magic: 0x6a30f0, ice: 0x3fb7ff, fire: 0xff9f3a, gold: 0xffd966, heal: 0x68d96c },
-  text: { primary: '#f4e9ff', secondary: '#b9b0d2', onPrimary: '#302035', selected: '#ffe9aa' },
-  state: { danger: 0xff5a65, disabledFill: 0x302d43, disabledEdge: 0x6c627e, disabledText: '#b9b0c6' },
+  surface: { panel: 0x2a1e3f, raised: 0x473872, slate: 0x1b2633, light: 0xede6ff },
+  accent: { magic: 0x6a30f0, ice: 0x3fb7ff, fire: 0xff9f3a, gold: 0xffd966, heal: 0x4ade80 },
+  text: { primary: '#ede6ff', secondary: '#b9b0d2', onPrimary: '#302035', selected: '#ffe9aa' },
+  state: { danger: 0xff5a5a, disabledFill: 0x302d43, disabledEdge: 0x6c627e, disabledText: '#b9b0c6' },
   stroke: { soft: 0x8b6eb6, light: 0xc5a0f2, goldShade: 0xb67b36 },
+  material: { goldLight: 0xfff3bd, goldMid: 0xffd966, goldLow: 0xf0a52e, goldDark: 0x78451f,
+    violetLight: 0x9c6dff, violetMid: 0x68459b, violetLow: 0x35234f },
+  tier: { 1: 0x9cb2cf, 2: 0x77d5ae, 3: 0xbf8dff, 4: 0xffd966 },
   font: '"Malgun Gothic", "Segoe UI", sans-serif'
 };
 
@@ -20,6 +24,19 @@ export const FANTASY = {
   primary: DESIGN_TOKENS.accent.gold, slate: DESIGN_TOKENS.surface.slate, violet: 0xb78bff,
   font: DESIGN_TOKENS.font
 };
+
+/** Visual-only battle geometry; arena, collision and input contracts live in their existing owners. */
+export const BATTLE_UI = {
+  allyScale: 1.25, stroke: '#140e24', currency: '#6edcff',
+  color: {background:0x12152f,panel:0x2a1f3f,hp:0xff5a65,xp:0x3fb7ff,alive:0x68d96c},
+  hp: {x:154,y:52,width:220,height:24},
+  xp: {x:174,y:78,width:164,height:20},
+  heroPanel: {x:12,y:6,width:548,height:106},
+  stagePanel: {x:56,y:98,width:608,height:58},
+  slot: {x:12,step:92,y:1106,width:84,height:72,portrait:50,portraitY:1140,statusY:1167},
+  control: {y:1230,width:112,height:88},
+  depth: {environment:3,ground:16,unitStatus:28,effect:35,warning:38,panel:50,text:54,control:65}
+} as const;
 
 /** Integer corner cuts keep panel/button silhouettes crisp with nearest-neighbor rendering. */
 function clippedRect(g: Phaser.GameObjects.Graphics, x: number, y: number, width: number, height: number,
@@ -38,13 +55,15 @@ export function paintPanel(g: Phaser.GameObjects.Graphics, x: number, y: number,
   clippedRect(g, x, y, width, height, edge);
   clippedRect(g, x + 2, y + 2, width - 4, height - 4, DESIGN_TOKENS.background.deep, 4);
   clippedRect(g, x + 4, y + 4, width - 8, height - 8, fill, 2);
-  g.fillStyle(0xffffff, 0.035).fillRect(x + 6, y + 5, width - 12, Math.min(24, height / 4));
-  g.fillStyle(DESIGN_TOKENS.stroke.light, 0.32).fillRect(x + 8, y + 1, width - 16, 1);
+  g.lineStyle(1, edge, .38).strokeRect(x + 7, y + 7, width - 14, height - 14);
+  g.fillStyle(0xffffff, 0.045).fillRect(x + 9, y + 8, width - 18, Math.min(24, height / 4));
+  g.fillStyle(DESIGN_TOKENS.stroke.light, 0.6).fillRect(x + 9, y + 1, width - 18, 1);
   g.fillStyle(0x000000, 0.18).fillRect(x + 6, y + height - 7, width - 12, 3);
   for (const px of [x + 4, x + width - 14]) {
     for (const py of [y + 4, y + height - 14]) {
       const dx = px === x + 4 ? 0 : 8, dy = py === y + 4 ? 0 : 8;
-      g.fillStyle(FANTASY.gold, 0.7).fillRect(px, py + dy, 10, 2).fillRect(px + dx, py, 2, 10);
+      g.fillStyle(edge, .95).fillRect(px, py + dy, 10, 3).fillRect(px + dx, py, 3, 10);
+      g.fillStyle(DESIGN_TOKENS.material.goldLight, .8).fillRect(px + dx, py + dy, 3, 3);
     }
   }
 }
@@ -53,25 +72,31 @@ export function paintPanel(g: Phaser.GameObjects.Graphics, x: number, y: number,
 export function paintButton(g: Phaser.GameObjects.Graphics, x: number, y: number, width: number, height: number,
   primary = false, enabled = true, pressed = false, selected = false): void {
   const gold = primary && !selected;
-  const fill = !enabled ? DESIGN_TOKENS.state.disabledFill : gold ? pressed ? 0xe7b64f : FANTASY.primary
-    : selected ? pressed ? 0x4b2797 : 0x6036ad : pressed ? 0x352747 : FANTASY.raised;
-  const edge = !enabled ? DESIGN_TOKENS.state.disabledEdge : gold ? 0xffedaf
-    : selected ? DESIGN_TOKENS.stroke.light : DESIGN_TOKENS.stroke.soft;
+  const m = DESIGN_TOKENS.material;
+  const fill = !enabled ? DESIGN_TOKENS.state.disabledFill : gold ? pressed ? 0xe4a537 : m.goldMid
+    : selected ? pressed ? 0x48218b : DESIGN_TOKENS.accent.magic : pressed ? 0x30203e : FANTASY.raised;
+  const edge = !enabled ? DESIGN_TOKENS.state.disabledEdge : gold || selected ? m.goldLight : DESIGN_TOKENS.stroke.light;
   const top = y + (pressed ? 2 : 0);
-  clippedRect(g, x, y + 6, width, height, gold && enabled ? 0x724321 : DESIGN_TOKENS.background.deep);
-  clippedRect(g, x, top, width, height, edge);
+  clippedRect(g, x, y + 6, width, height, gold && enabled ? m.goldDark : DESIGN_TOKENS.background.deep);
+  clippedRect(g, x, top, width, height, edge, 10);
   clippedRect(g, x + 2, top + 2, width - 4, height - 4,
-    gold && enabled ? DESIGN_TOKENS.stroke.goldShade : DESIGN_TOKENS.background.deep, 4);
-  clippedRect(g, x + 4, top + 4, width - 8, height - 8, fill, 2);
-  // Banded pixel highlights give depth without shaders, textures or continuous tweens.
-  g.fillStyle(0xffffff, !enabled ? 0.035 : gold ? 0.25 : 0.10)
-    .fillRect(x + 7, top + 5, width - 14, Math.floor((height - 12) / 2));
-  g.fillStyle(gold ? 0x8b4f18 : 0x160b2b, !enabled ? 0.08 : 0.22)
-    .fillRect(x + 7, top + height - 12, width - 14, 6);
-  if (gold && enabled) {
-    g.fillStyle(0xfff5cb, 0.85).fillRect(x + 9, top + 5, width - 18, 2);
-    g.fillStyle(0xffefaa).fillRect(x + 4, top + height / 2 - 2, 4, 4)
-      .fillRect(x + width - 8, top + height / 2 - 2, 4, 4);
+    gold && enabled ? m.goldDark : DESIGN_TOKENS.background.deep, 8);
+  clippedRect(g, x + 4, top + 4, width - 8, height - 8, fill, 6);
+  if (enabled) {
+    // Discrete material bands keep highlights crisp at the game's pixel scale.
+    const inner = height - 14, upper = Math.floor(inner * .42), lower = Math.floor(inner * .32);
+    g.fillStyle(gold ? m.goldLight : selected ? m.violetLight : m.violetMid, pressed ? .18 : gold ? .55 : selected ? .25 : .5)
+      .fillRect(x + 9, top + 7, width - 18, upper);
+    g.fillStyle(gold ? m.goldLow : m.violetLow, pressed ? .45 : .5)
+      .fillRect(x + 9, top + height - 7 - lower, width - 18, lower);
+    g.lineStyle(1, gold ? m.goldLight : m.violetLight, .75).strokeRect(x + 7, top + 7, width - 14, height - 14);
+    g.fillStyle(gold ? m.goldLight : DESIGN_TOKENS.stroke.light, .9).fillRect(x + 13, top + 4, width - 26, 2);
+    for (const px of [x + 4, x + width - 9]) {
+      const py = top + height / 2;
+      g.fillStyle(gold || selected ? m.goldLight : m.violetLight).fillPoints([
+        {x:px,y:py-5},{x:px+5,y:py},{x:px,y:py+5},{x:px-5,y:py}
+      ], true);
+    }
   }
   if (selected && enabled) {
     g.fillStyle(DESIGN_TOKENS.accent.magic, 0.25).fillRect(x + 8, top + height - 15, width - 16, 9);
@@ -108,7 +133,12 @@ export function fantasyCrest(scene: Phaser.Scene, x: number, y: number): Phaser.
   container.add([g,text,sub]);return container;
 }
 
-export function pixelIcon(g: Phaser.GameObjects.Graphics, kind: 'book' | 'gem' | 'heart', x: number, y: number, scale = 1): void {
+export const PIXEL_ICON_KINDS = ['book','gem','heart','swords','helmet','summon','merge','growth','relic',
+  'coin','skull','hourglass','settings','check','lock','bolt','sound'] as const;
+export type PixelIconKind = typeof PIXEL_ICON_KINDS[number];
+
+/** Original pixel glyphs: shared palette, dark outline and bounded 18px grid. */
+export function pixelIcon(g: Phaser.GameObjects.Graphics, kind: PixelIconKind, x: number, y: number, scale = 1): void {
   const rect = (px: number, py: number, w: number, h: number, color: number) =>
     g.fillStyle(color).fillRect(x + px * scale, y + py * scale, w * scale, h * scale);
   if (kind === 'book') {
@@ -121,34 +151,109 @@ export function pixelIcon(g: Phaser.GameObjects.Graphics, kind: 'book' | 'gem' |
   } else if (kind === 'gem') {
     rect(5, 0, 4, 2, 0xdff8ff); rect(3, 2, 8, 3, 0xa9efff); rect(1, 5, 12, 5, FANTASY.ally);
     rect(3, 10, 8, 2, 0x2f8fbf); rect(5, 12, 4, 2, 0x18517f); rect(4, 4, 2, 7, 0xeafcff);
-  } else {
+  } else if (kind === 'heart') {
     rect(1, 0, 4, 2, 0xff9a8d); rect(7, 0, 4, 2, 0xff9a8d); rect(0, 2, 12, 4, FANTASY.hp);
     rect(2, 6, 8, 2, FANTASY.hp); rect(4, 8, 4, 2, 0xa93540); rect(2, 2, 2, 2, 0xffd4b8);
+  } else {
+    const dark=0x1a102e,white=0xf4efff,gold=FANTASY.gold,purple=DESIGN_TOKENS.material.violetLight;
+    if(kind==='swords'){
+      for(let i=0;i<10;i++){
+        rect(1+i,1+i,4,4,dark);rect(12-i,1+i,4,4,dark);
+        rect(2+i,1+i,2,3,white);rect(13-i,1+i,2,3,0xc6d5f5);
+      }
+      rect(1,11,6,2,gold);rect(10,11,6,2,gold);rect(3,13,2,4,0xb27643);rect(12,13,2,4,0xb27643);
+    }else if(kind==='helmet'){
+      rect(3,2,12,13,dark);rect(5,1,8,3,gold);rect(4,4,10,9,0x7182b6);
+      rect(5,3,8,4,0xdde7ff);rect(2,6,14,3,0xa6b5d7);rect(8,4,2,12,white);
+      rect(4,9,3,3,dark);rect(11,9,3,3,dark);rect(7,14,4,2,0xb6c4e3);
+    }else if(kind==='summon'){
+      rect(6,1,6,13,dark);rect(7,0,4,2,white);rect(5,4,8,7,0x713cce);
+      rect(7,2,3,10,0xd5b0ff);rect(10,3,2,8,purple);rect(7,12,4,3,0x59248f);
+      rect(1,8,3,5,purple);rect(14,7,3,6,0xbe80ff);rect(3,14,12,2,0xc8b1f0);
+    }else if(kind==='merge'){
+      rect(1,2,5,5,dark);rect(2,3,3,3,purple);rect(12,2,5,5,dark);rect(13,3,3,3,FANTASY.ally);
+      rect(4,8,2,2,gold);rect(12,8,2,2,gold);rect(7,7,4,2,white);rect(6,9,6,4,gold);
+      rect(8,8,2,8,gold);rect(5,11,8,2,0xfff3bd);
+    }else if(kind==='growth'){
+      rect(2,11,4,5,0x65429c);rect(7,8,4,8,purple);rect(12,5,4,11,0xcba7ff);
+      rect(7,0,4,3,dark);rect(5,3,8,3,dark);rect(3,6,12,2,dark);
+      rect(8,1,2,11,gold);rect(6,3,6,2,gold);rect(4,5,10,2,gold);rect(8,2,1,5,0xfff3bd);
+    }else if(kind==='relic'){
+      rect(2,3,14,10,dark);rect(3,4,12,6,0xb064ca);rect(4,8,10,3,0xefb8f1);
+      rect(7,11,4,3,gold);rect(4,14,10,2,gold);rect(7,1,4,4,gold);rect(8,0,2,6,white);
+      rect(5,5,2,3,0xf6dbff);
+    }else if(kind==='coin'){
+      rect(4,0,10,2,dark);rect(2,2,14,13,dark);rect(4,15,10,2,dark);
+      rect(4,1,10,14,0xf0a52e);rect(2,4,14,9,gold);rect(5,3,8,11,0xbb741c);
+      rect(6,4,6,9,gold);rect(8,5,2,7,0xfff3bd);rect(4,3,2,2,white);
+    }else if(kind==='skull'){
+      rect(3,1,12,11,dark);rect(5,11,8,5,dark);rect(4,2,10,9,white);rect(6,10,6,5,0xc4c1d8);
+      rect(5,5,3,3,dark);rect(10,5,3,3,dark);rect(8,9,2,2,dark);rect(7,13,1,3,dark);rect(10,13,1,3,dark);
+    }else if(kind==='hourglass'){
+      rect(3,0,12,3,dark);rect(3,14,12,3,dark);rect(4,2,10,13,0x695285);
+      rect(5,3,8,3,0xbddfff);rect(7,6,4,2,FANTASY.ally);rect(8,8,2,4,gold);rect(6,12,6,2,gold);
+      rect(3,1,12,2,gold);rect(3,14,12,2,gold);
+    }else if(kind==='settings'){
+      rect(6,0,6,17,dark);rect(0,6,18,5,dark);rect(2,2,14,13,0x9483b7);
+      rect(7,0,4,17,0xb9b1cd);rect(0,7,18,3,0xb9b1cd);rect(5,5,8,7,dark);rect(7,7,4,3,0x695285);
+    }else if(kind==='check'){
+      rect(1,1,16,15,dark);rect(2,2,14,13,gold);rect(3,3,12,11,0xeaa23c);
+      rect(4,7,2,3,white);rect(6,9,2,3,white);rect(8,7,2,3,white);rect(10,5,2,3,white);rect(12,3,2,3,white);
+    }else if(kind==='lock'){
+      rect(5,0,8,9,dark);rect(6,1,6,7,gold);rect(8,3,2,4,dark);rect(3,7,12,10,dark);
+      rect(4,8,10,8,0xba85e4);rect(8,10,2,4,dark);rect(5,8,2,6,0xe6c9ff);
+    }else if(kind==='bolt'){
+      rect(7,0,6,3,dark);rect(5,3,6,3,dark);rect(3,6,12,5,dark);rect(8,10,4,4,dark);
+      rect(8,1,4,3,gold);rect(6,4,4,3,gold);rect(4,7,10,2,gold);rect(9,9,3,3,gold);rect(8,12,2,3,gold);rect(7,15,2,2,gold);
+    }else if(kind==='sound'){
+      rect(1,6,5,6,0xb49ad4);rect(5,3,4,12,0xe6d5ff);rect(8,1,3,16,0xb28bdf);
+      rect(13,4,2,10,0xe6d5ff);rect(16,6,2,6,0xe6d5ff);
+    }
   }
+}
+
+/** Live component icon: use supplied raster art where a matching asset exists. */
+export function uiIcon(scene: Phaser.Scene, kind: PixelIconKind, x: number, y: number, size = 32): Phaser.GameObjects.Image | Phaser.GameObjects.Graphics {
+  const image=providedIcon(scene,kind,x,y,size);
+  if(image)return image;
+  const g=scene.add.graphics().setPosition(x,y),scale=size/18;
+  pixelIcon(g,kind,-9*scale,-8*scale,scale);return g;
 }
 
 /** Same rectangular hit area; pressed feedback never moves the input target. */
 export function fantasyButton(scene: Phaser.Scene, x: number, y: number, width: number, height: number,
-  label: string, action: () => void, options: { enabled?: boolean; icon?: 'book'; fontSize?: number; primary?: boolean;
+  label: string, action: () => void, options: { enabled?: boolean; icon?: PixelIconKind; fontSize?: number; primary?: boolean;
     hitWidth?: number; hitHeight?: number; selected?: boolean } = {}): Phaser.GameObjects.Container {
   const enabled = options.enabled !== false;
   const container = scene.add.container(x, y);
   const frame = scene.add.graphics();
+  const isTab=options.selected!==undefined&&height<=80&&width>=140;
+  const skin=providedSkin(scene,providedButtonFrame(!!options.primary,enabled,!!options.selected,isTab),-width/2,-height/2,width,height)?.setName('provided-skin');
   const hit = scene.add.rectangle(0, 0, options.hitWidth ?? width, options.hitHeight ?? height, 0, 0).setName('hit');
   const text = scene.add.text(options.icon ? 15 : 0, 0, label, {
     fontFamily: FANTASY.font, fontSize: `${options.fontSize ?? 20}px`, fontStyle: 'bold', resolution: 2,
     color: !enabled ? DESIGN_TOKENS.state.disabledText : options.selected ? DESIGN_TOKENS.text.selected
-      : options.primary ? DESIGN_TOKENS.text.onPrimary : FANTASY.cream, align: 'center'
+      : options.primary ? DESIGN_TOKENS.text.onPrimary : FANTASY.cream, align: 'center',
+    stroke: options.primary&&!options.selected ? '#4b2b18' : '#180e2d', strokeThickness: options.primary&&!options.selected ? 0 : options.selected ? 3 : 2
   }).setOrigin(0.5).setName('label');
   if (text.width > width - (options.icon ? 58 : 24)) text.setFontSize(Math.floor((options.fontSize ?? 20) * (width - (options.icon ? 58 : 24)) / text.width));
+  const iconScale=Math.min(1.5,(height-18)/18),iconWidth=18*iconScale;
+  if(options.icon)text.x=(iconWidth+10)/2;
+  const imageIcon=options.icon?providedIcon(scene,options.icon,-(text.width+10)/2,0,iconWidth):null;
+  if(imageIcon&&!enabled)imageIcon.setAlpha(.55);
   const draw = (pressed: boolean) => {
     frame.clear();
-    paintButton(frame, -width / 2, -height / 2, width, height, options.primary, enabled, pressed, options.selected);
-    if (options.icon) pixelIcon(frame, options.icon, -width / 2 + 13, -12 + (pressed ? 2 : 0), 1.5);
+    if(skin){
+      skin.y=-height/2+(pressed?2:0);skin.setAlpha(pressed?.85:1);
+      if(options.selected&&!isTab)frame.lineStyle(2,FANTASY.gold).strokeRect(-width/2+6,-height/2+6,width-12,height-12);
+    }else paintButton(frame, -width / 2, -height / 2, width, height, options.primary, enabled, pressed, options.selected);
+    if(imageIcon)imageIcon.y=pressed?2:0;
+    else if(options.icon)pixelIcon(frame, options.icon, -(text.width+iconWidth+10)/2, -8*iconScale+(pressed?2:0), iconScale);
     text.y = pressed ? 2 : 0;
   };
   draw(false);
-  container.add([frame, hit, text]);
+  if(skin)container.add(skin);
+  container.add([frame,hit]);if(imageIcon)container.add(imageIcon);container.add(text);
   if (enabled) hit.setInteractive({ useHandCursor: true })
     .on('pointerdown', (_pointer: Phaser.Input.Pointer, _x: number, _y: number, event: Phaser.Types.Input.EventData) => {
       event.stopPropagation(); draw(true); action();
@@ -158,10 +263,16 @@ export function fantasyButton(scene: Phaser.Scene, x: number, y: number, width: 
 }
 
 export function pixelPanel(scene: Phaser.Scene, x: number, y: number, width: number, height: number,
-  fill = FANTASY.panel, edge = FANTASY.edge): Phaser.GameObjects.Graphics {
+  fill = FANTASY.panel, edge = FANTASY.edge): Phaser.GameObjects.Container {
+  const container=scene.add.container(0,0);
+  const skin=providedSkin(scene,height>=280&&width>=400?'popup':'panel',x,y,width,height);
+  if(skin){
+    container.add(scene.add.rectangle(x+width/2,y+height/2,Math.max(1,width-16),Math.max(1,height-16),fill));
+    container.add(skin.setName('provided-panel'));return container;
+  }
   const g = scene.add.graphics();
   paintPanel(g, x, y, width, height, fill, edge);
-  return g;
+  container.add(g);return container;
 }
 
 export function dungeonFloor(g: Phaser.GameObjects.Graphics, x: number, y: number, width: number, height: number,

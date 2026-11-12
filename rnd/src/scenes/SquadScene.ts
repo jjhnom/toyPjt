@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
-import { FANTASY, pixelPanel, fantasyButton, pixelIcon } from '../ui/fantasyTheme';
+import { FANTASY, pixelPanel, fantasyButton, uiIcon } from '../ui/fantasyTheme';
+import { PROVIDED_UI } from '../ui/providedArt';
 import { unitPortrait } from '../ui/pixelCharacters';
 import { recipeIngredientLines } from '../ui/recipePresentation';
 import { DRONE_SPECS, GAME_HEIGHT, GAME_WIDTH } from '../config/gameData';
 import { COMBINATION_RECIPES, SELL_REFUND_PER_TIER, SQUAD_LIMITS, SUMMON_OFFERS, UNIT_MOVEMENT } from '../config/squadData';
 import { SquadRoster, matchesIngredient, quickCraftPlans } from '../systems/SquadRoster';
 import { soundManager } from '../systems/SoundManager';
-import { ELEMENT_NAMES, ELEMENT_COLORS, UNIT_TYPES } from '../config/unitData';
+import { ELEMENT_NAMES, UNIT_TYPES } from '../config/unitData';
+import { squadCard, squadPedestal, squadTierColor } from '../ui/squadArt';
 import { UNIT_SKILL_DESCRIPTIONS } from '../config/skillData';
 import type { CombinationRecipe, DroneTier, QuickCraftPlan } from '../types/game';
 import { UPGRADE_IDS, UPGRADES, upgradeEffectLabel } from '../config/upgradeData';
@@ -40,6 +42,7 @@ export class SquadScene extends Phaser.Scene {
   private confirmation: { detail: string; confirm: () => void } | null = null;
   private quickTier: DroneTier | null = null;
   private quickQuote: QuickCraftPlan | null = null;
+  private selectedUnitId: string | null = null;
 
   constructor() { super('SquadScene'); }
 
@@ -63,6 +66,7 @@ export class SquadScene extends Phaser.Scene {
     this.confirmation = null;
     this.quickTier = null;
     this.quickQuote = null;
+    this.selectedUnitId = null;
     this.render();
   }
 
@@ -73,7 +77,8 @@ export class SquadScene extends Phaser.Scene {
   }
 
   private button(x:number,y:number,width:number,label:string,action:()=>void,enabled=true,height=50):Phaser.GameObjects.Container {
-    return fantasyButton(this,x,y,width,height,label,action,{enabled,fontSize:height>=88?26:20,primary:y>=1190});
+    return fantasyButton(this,x,y,width,height,label,action,{enabled,fontSize:height>=88?26:20,
+      primary:y>=1190,icon:y>=1190?'swords':undefined,hitHeight:height>=88?108:height});
   }
 
   private transact(action: () => boolean, successMessage = '적용 완료', failureMessage = '재료·잔액·공간 또는 출전 제한을 확인하세요'): void {
@@ -91,30 +96,31 @@ export class SquadScene extends Phaser.Scene {
   private render(): void {
     this.children.removeAll(true);
     const roster = this.dataSource.roster;
-    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'art_dungeon').setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x111a20, 0.82).setInteractive();
+    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'art_lobby').setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+    this.add.image(360,356,PROVIDED_UI,'night').setDisplaySize(720,164).setName('provided-night');
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x100c21, 0.8).setInteractive();
     pixelPanel(this, 24, 26, GAME_WIDTH - 48, 172, FANTASY.panel, FANTASY.gold);
-    const seal = this.add.graphics();
-    pixelIcon(seal, 'book', 46, 54, 2);
-    this.text(96,45,this.dataSource.stageSummary??'원정 정비',this.dataSource.stageSummary?23:34,FANTASY.cream).setWordWrapWidth(570);
+    uiIcon(this,'book',64,70,36);
+    this.text(96,45,this.dataSource.stageSummary??'원정 정비',this.dataSource.stageSummary?23:36,'#ffe5a1').setWordWrapWidth(570);
     this.text(96,88,this.dataSource.stageSummary?'다음 원정을 준비하세요':'동료를 모아, 더 멀리 나아가세요',18,FANTASY.muted);
     const deployedCount = roster.units.filter(unit => unit.deployed).length;
-    this.text(44,114,`${roster.minerals} ◆   ·   보유 ${roster.units.length}/${SQUAD_LIMITS.owned}   ·   출전 ${deployedCount}/${SQUAD_LIMITS.deployed}`,25,'#f3c64d');
-    this.text(44,153,this.message,18,'#d5c3e6').setWordWrapWidth(620);
+    uiIcon(this,'gem',56,130,26);
+    this.text(76,114,`${roster.minerals}   ·   보유 ${roster.units.length}/${SQUAD_LIMITS.owned}   ·   출전 ${deployedCount}/${SQUAD_LIMITS.deployed}`,25,'#f3c64d').setName('squad-resource-summary');
+    this.text(44,153,this.message,18,'#d5c3e6').setWordWrapWidth(620).setName('squad-message');
     fantasyButton(this,80,1100,104,88,this.quickMode?'일반\n메뉴':'간편\n제작',()=>{
       this.quickMode = !this.quickMode; this.facilityMode = null; this.upgradeMode = false; this.relicMode = this.talentMode = false; this.quickQuote = null; this.page = 0; this.render();
-    },{fontSize:22,selected:this.quickMode,hitHeight:100}).setName('quick-craft-open');
+    },{fontSize:22,selected:this.quickMode,hitWidth:108,hitHeight:108}).setName('quick-craft-open');
     fantasyButton(this,528,1100,104,88,this.facilityMode?'일반\n메뉴':'각성·\n서비스',()=>{
       this.facilityMode = this.facilityMode ? null : 'awakening'; this.quickMode = this.upgradeMode = this.relicMode = this.talentMode = false;
       this.page = 0; this.render();
-    },{fontSize:20,selected:!!this.facilityMode,hitHeight:100}).setName('facility-open');
+    },{fontSize:20,selected:!!this.facilityMode,hitWidth:108,hitHeight:108}).setName('facility-open');
     fantasyButton(this,192,1100,104,88,this.upgradeMode?'일반\n메뉴':'원정\n강화',()=>{
       this.upgradeMode = !this.upgradeMode; this.facilityMode = null; this.quickMode = false; this.relicMode = this.talentMode = false; this.quickQuote = null; this.render();
-    },{fontSize:22,selected:this.upgradeMode,hitHeight:100}).setName('upgrade-open');
-    const tabs = [['summon', '동료 소환'], ['combine', '조합의 제단'], ['roster', '원정대']] as const;
-    tabs.forEach(([tab,title],i)=>fantasyButton(this,145+i*215,228,195,64,title,()=>{
+    },{fontSize:22,selected:this.upgradeMode,hitWidth:108,hitHeight:108}).setName('upgrade-open');
+    const tabs = [['summon', '소환', 'summon'], ['combine', '조합', 'merge'], ['roster', '편성', 'helmet']] as const;
+    tabs.forEach(([tab,title,icon],i)=>fantasyButton(this,145+i*215,228,195,64,title,()=>{
         this.tab = tab; this.page = 0; this.editingRecipe = null; this.facilityMode = null; this.quickMode = false; this.upgradeMode = false; this.relicMode = this.talentMode = false; this.quickQuote = null; this.render();
-      },{fontSize:28,hitHeight:100,selected:!this.facilityMode&&!this.quickMode&&!this.upgradeMode&&!this.relicMode&&!this.talentMode&&this.tab===tab}).setName(`squad-tab-${tab}`));
+      },{fontSize:30,icon,hitHeight:108,selected:!this.facilityMode&&!this.quickMode&&!this.upgradeMode&&!this.relicMode&&!this.talentMode&&this.tab===tab}).setName(`squad-tab-${tab}`));
 
     if (this.facilityMode) {
       this.renderFacilities();
@@ -127,98 +133,26 @@ export class SquadScene extends Phaser.Scene {
     } else if (this.quickMode) {
       this.renderQuickCraft();
     } else if (this.tab === 'summon') {
-      this.text(44,280,`T1 소환권 ${roster.freeSummons}장 · T3 지정 소환은 STAGE 3부터`,22);
-      SUMMON_OFFERS.slice(this.page*2,this.page*2+2).forEach((offer,i)=>{
-        const spec = DRONE_SPECS[offer.unitTypeId];
-        const y=332+i*286;
-        pixelPanel(this,36,y,648,252);
-        pixelPanel(this,52,y+18,108,142,0x1a1a28,ELEMENT_COLORS[UNIT_TYPES[offer.unitTypeId].elements[0]]);
-        this.add.image(106,y+83,unitPortrait(offer.unitTypeId)).setDisplaySize(104,104);
-        this.text(78,y+131,`T${spec.tier}`,20,'#d5c3e6');
-        this.text(184,y+22,spec.name,32).setWordWrapWidth(470);
-        this.text(184,y+68,`${UNIT_MOVEMENT[offer.unitTypeId].role} · ${UNIT_TYPES[offer.unitTypeId].elements.map(element=>ELEMENT_NAMES[element]).join('/')}`,24);
-        const free = roster.freeSummons > 0 && spec.tier === 1;
-        this.text(184,y+111,UNIT_SKILL_DESCRIPTIONS[offer.unitTypeId],22,'#c5b7d3').setWordWrapWidth(470);
-        const allowed=roster.canSummon(offer.unitTypeId);
-        const reason=roster.units.length>=SQUAD_LIMITS.owned?'보유 한도':spec.tier>=3&&roster.stageIndex<2?'STAGE 3부터':'마력석 부족';
-        this.text(62,y+193,free?'무료 지정 소환권 사용':`소환 비용 ${offer.cost} ◆`,22,'#f3c64d');
-        fantasyButton(this,534,y+197,252,88,allowed?(free?'소환권 사용':`${offer.cost} ◆ 소환`):reason,
-          ()=>this.transact(()=>roster.summon(offer.unitTypeId)),{enabled:allowed,fontSize:26,primary:true,hitHeight:100}).setName(`summon-${offer.unitTypeId}`);
-      });
-      this.pagination(Math.ceil(SUMMON_OFFERS.length/2));
+      this.renderSummons();
     } else if (this.tab === 'combine') {
-      if (this.editingRecipe) {
-        this.renderIngredientPicker(this.editingRecipe);
-      } else {
-      const available = COMBINATION_RECIPES.filter(recipe => roster.canCombine(recipe.id));
-      this.text(44, 280, `지금 가능한 조합 ${available.length}개`, 18);
-      this.button(575,305,200,this.availableOnly?'전체 조합 보기':'가능한 조합만',()=>{
-        this.availableOnly = !this.availableOnly; this.page = 0; this.render();
-      });
-      const recipes = [...(this.availableOnly ? available : COMBINATION_RECIPES)].sort((a, b) => b.priority - a.priority);
-      this.page=Math.min(this.page,Math.max(0,recipes.length-1));
-      recipes.slice(this.page,this.page+1).forEach(recipe=>{
-        const fee = roster.combinationCost(recipe.id);
-        const y=356;
-        const selected = roster.ingredientsFor(recipe.id);
-        const result = DRONE_SPECS[recipe.resultUnitTypeId];
-        pixelPanel(this,36,y-15,648,584);
-        this.add.image(100,y+48,unitPortrait(recipe.resultUnitTypeId)).setDisplaySize(106,106);
-        this.text(176,y+4,`T${result.tier} ${result.name}${recipe.resultStar?` ★${recipe.resultStar}`:''}`,30,'#ffe0a0').setWordWrapWidth(476);
-        recipeIngredientLines(recipe, roster.units).forEach((line, row) => {
-          this.text(60,y+164+row*76,line,25).setWordWrapWidth(590).setName(`recipe-${recipe.id}-ingredient-${row}`);
-        });
-        this.text(60,y+342,selected?`소모: ${selected.map(u=>`#${u.id.split('_')[1]} ★${u.star} ${u.deployed?'출전':'대기'}`).join(', ')}`:'필요한 재료가 부족합니다',21,'#c5b7d3').setWordWrapWidth(590);
-        const fits = !!selected && roster.units.length - selected.length + recipe.resultCount <= SQUAD_LIMITS.owned;
-        this.text(176,y+66,UNIT_SKILL_DESCRIPTIONS[recipe.resultUnitTypeId],22,'#c5b7d3').setWordWrapWidth(476);
-        this.text(60,y+125,'필요 재료 · 보유 / 필요 수량',24,'#e8c98b');
-        this.text(60,y+414,`추가 비용 ${fee} ◆`,28,'#f3c64d');
-        fantasyButton(this,520,y+508,280,88,`조합 (${fee} ◆)`,()=>this.requestCombine(recipe.id),
-          {enabled:fits&&roster.minerals>=fee,fontSize:26,primary:true,hitHeight:100}).setName(`combine-${recipe.id}`);
-        this.button(196,y+508,280,'재료 직접 선택',()=>{
-          this.editingRecipe = recipe; this.selectedIds = selected?.map(unit => unit.id) ?? []; this.pickerPage = 0; this.render();
-        },true,88).setName(`recipe-picker-${recipe.id}`);
-      });
-      this.pagination(Math.max(1,recipes.length));
-      }
+      if (this.editingRecipe) this.renderIngredientPicker(this.editingRecipe);
+      else this.renderRecipes();
     } else {
-      this.text(44, 280, '전투 불능: 12초 후 부활 · 방 이동 시 동료 HP 최소 50%', 18);
-      const synergy=resolveSynergies(roster.units),active=SYNERGY_IDS.filter(id=>synergy.counts[id]>=SYNERGIES[id].required);
-      this.text(44,310,`시너지: ${active.map(id=>SYNERGIES[id].name).join(' · ')||'없음'} · 각성·서비스에서 조건 확인`,15,'#cfb7ff').setName('synergy-summary');
-      const deployed=roster.units.filter(unit=>unit.deployed);
-      for(let i=0;i<SQUAD_LIMITS.deployed;i++){
-        pixelPanel(this,40+i*108,340,98,72,0x211b31,0x655275);
-        if(deployed[i])this.add.image(89+i*108,374,unitPortrait(deployed[i].archetype)).setDisplaySize(66,66);
-      }
-      this.page=Math.min(this.page,Math.max(0,Math.ceil(roster.units.length/2)-1));
-      roster.units.slice(this.page*2,this.page*2+2).forEach((unit,i)=>{
-        const y=440+i*250;
-        pixelPanel(this,36,y,648,234);
-        this.add.image(98,y+69,unitPortrait(unit.archetype)).setDisplaySize(98,98);
-        this.text(166,y+14,`T${unit.tier} ${DRONE_SPECS[unit.archetype].name} ★${unit.star}${unit.awakening?` 각성${unit.awakening}`:''}`,28).setWordWrapWidth(492);
-        this.text(166,y+56,`#${unit.id.split('_')[1]} · ${UNIT_MOVEMENT[unit.archetype].role} · ${unit.deployed?'출전':'대기'}`,24,'#c5b7d3');
-        const allowed = unit.deployed ? deployedCount > 1 : deployedCount < SQUAD_LIMITS.deployed;
-        this.text(166,y+96,UNIT_SKILL_DESCRIPTIONS[unit.archetype],20,'#c5b7d3').setWordWrapWidth(492);
-        fantasyButton(this,200,y+182,280,88,unit.deployed?'출전 → 대기':'대기 → 출전',
-          ()=>this.transact(()=>roster.toggleDeployment(unit.id)),{enabled:allowed,fontSize:26,primary:unit.deployed,hitHeight:100}).setName(`roster-deploy-${unit.id}`);
-        fantasyButton(this,520,y+182,280,88,`판매 +${unit.tier*unit.star*SELL_REFUND_PER_TIER} ◆`,
-          ()=>this.requestSell(unit.id),{enabled:!unit.deployed||deployedCount>1,fontSize:24,hitHeight:100}).setName(`roster-sell-${unit.id}`);
-      });
-      this.pagination(Math.max(1,Math.ceil(roster.units.length/2)));
+      this.renderRoster();
     }
     const ownedRelics = roster.relicIds().length, pendingRelics = roster.relicRewards.filter(reward => reward.relicId === null).length;
     fantasyButton(this,304,1100,104,88,this.relicMode?'일반\n메뉴'
       :`유물\n${pendingRelics?`대기 ${pendingRelics}`:`${ownedRelics}/${RELIC_LIMIT}`}`,()=>{
       this.relicMode = !this.relicMode; this.facilityMode = null; this.talentMode = this.upgradeMode = this.quickMode = false; this.quickQuote = null; this.render();
-    },{fontSize:22,selected:this.relicMode,hitHeight:100}).setName('relic-open');
+    },{fontSize:22,selected:this.relicMode,hitWidth:108,hitHeight:108}).setName('relic-open');
     const hero = this.dataSource.hero, pendingTalents = hero?.pendingTalents() ?? 0;
     fantasyButton(this,416,1100,104,88,this.talentMode?'일반\n메뉴'
       :`재능\n${pendingTalents?`대기 ${pendingTalents}`:`${hero?.talents.length??0}개`}`,()=>{
       this.talentMode = !this.talentMode; this.facilityMode = null; this.relicMode = this.upgradeMode = this.quickMode = false; this.quickQuote = null; this.render();
-    },{enabled:!!hero,fontSize:22,selected:this.talentMode,hitHeight:100}).setName('talent-open');
+    },{enabled:!!hero,fontSize:22,selected:this.talentMode,hitWidth:108,hitHeight:108}).setName('talent-open');
     fantasyButton(this,640,1100,104,88,'원정\n도감',()=>{
       if(!this.closed&&!this.confirmation&&!this.scene.isActive('CodexScene'))this.scene.launch('CodexScene');
-    },{fontSize:22,hitHeight:100}).setName('codex-open');
+    },{fontSize:22,hitWidth:108,hitHeight:108}).setName('codex-open');
     this.button(GAME_WIDTH/2,1210,648,this.dataSource.closeLabel??'정비를 마치고 전장으로',()=>{
       const close = () => {
         if (this.closed) return;
@@ -229,6 +163,157 @@ export class SquadScene extends Phaser.Scene {
       } else close();
     },true,100).setName('squad-close');
     if (this.confirmation) this.renderConfirmation();
+  }
+
+  private renderSummons(): void {
+    const roster = this.dataSource.roster;
+    this.text(36,282,'마법진에 새 동료를 초대하세요',28,'#ffe5a1');
+    this.text(36,324,`지정 소환 · T1 소환권 ${roster.freeSummons}장 · T3는 STAGE 3부터`,20,FANTASY.muted);
+    SUMMON_OFFERS.slice(this.page*2,this.page*2+2).forEach((offer,i)=>{
+      const type=UNIT_TYPES[offer.unitTypeId],x=36+i*330;
+      squadCard(this,x,366,318,552,type.tier).setName(`summon-card-${type.id}`);
+      this.text(x+159,384,type.name,28).setOrigin(.5,0).setWordWrapWidth(286);
+      this.text(x+159,424,`T${type.tier} · ${UNIT_MOVEMENT[type.id].role}`,21,'#d7c2f1').setOrigin(.5,0);
+      squadPedestal(this,x+159,599,224,squadTierColor(type.tier),true);
+      this.add.image(x+159,526,unitPortrait(type.id)).setDisplaySize(184,184).setName(`summon-portrait-${type.id}`);
+      this.text(x+159,628,type.elements.map(e=>ELEMENT_NAMES[e]).join(' / '),23,'#d7c2f1').setOrigin(.5,0);
+      this.text(x+22,674,UNIT_SKILL_DESCRIPTIONS[type.id],22,'#e4d6f0').setWordWrapWidth(274).setName(`summon-skill-${type.id}`);
+      const free=roster.freeSummons>0&&type.tier===1,allowed=roster.canSummon(type.id);
+      const reason=roster.units.length>=SQUAD_LIMITS.owned?'보유 한도 도달':type.tier>=3&&roster.stageIndex<2?'STAGE 3부터':'마력석 부족';
+      this.text(x+159,778,free?'소환권 1장 사용':`소환 비용 ${offer.cost} ◆`,22,'#ffe1a1').setOrigin(.5,0);
+      fantasyButton(this,x+159,858,278,96,allowed?(free?'무료 소환':`${offer.cost} ◆ 소환`):reason,
+        ()=>this.transact(()=>roster.summon(type.id),`${type.name} 소환 완료`),
+        {enabled:allowed,primary:true,icon:allowed?'summon':'lock',fontSize:27,hitHeight:108}).setName(`summon-${type.id}`);
+    });
+    this.pagination(Math.ceil(SUMMON_OFFERS.length/2));
+  }
+
+  private renderRecipes(): void {
+    const roster=this.dataSource.roster,available=COMBINATION_RECIPES.filter(r=>roster.canCombine(r.id));
+    this.text(36,282,`조합의 제단 · 가능 ${available.length}개`,26,'#ffe5a1');
+    fantasyButton(this,578,336,212,48,this.availableOnly?'전체 레시피':'가능한 조합만',()=>{
+      this.availableOnly=!this.availableOnly;this.page=0;this.render();
+    },{fontSize:21,hitHeight:108,selected:this.availableOnly}).setName('recipe-filter');
+    const recipes=[...(this.availableOnly?available:COMBINATION_RECIPES)].sort((a,b)=>b.priority-a.priority);
+    this.page=Math.min(this.page,Math.max(0,recipes.length-1));
+    const recipe=recipes[this.page];
+    if(!recipe){
+      pixelPanel(this,36,366,648,552);
+      this.text(360,540,'지금 가능한 조합이 없습니다',30,'#ffe1a1').setOrigin(.5);
+      this.text(360,600,'동료를 소환하거나 전체 레시피를 확인하세요.',22,FANTASY.muted).setOrigin(.5);
+    }else{
+      const result=UNIT_TYPES[recipe.resultUnitTypeId],selected=roster.ingredientsFor(recipe.id),fee=roster.combinationCost(recipe.id);
+      squadCard(this,36,366,648,552,result.tier);
+      this.text(360,382,`T${result.tier} ${result.name} · ★${recipe.resultStar??1}`,28,'#ffe5a1').setOrigin(.5,0);
+      recipe.ingredients.forEach((item,i)=>{
+        const type=Object.values(UNIT_TYPES).find(type=>matchesIngredient({archetype:type.id},item))!;
+        const cx=recipe.ingredients.length===1?188:116+i*160;
+        squadCard(this,cx-58,430,116,78,type.tier);
+        this.add.image(cx,468,unitPortrait(type.id)).setDisplaySize(74,74);
+        this.text(cx+39,433,`×${item.count}`,19,'#ffe5a1').setOrigin(1,0);
+        if(item.kind==='query')this.text(cx-49,433,'조건',16,'#e0bbff');
+        if(i)this.text(196,463,'+',30,'#d7a7ff').setOrigin(.5);
+      });
+      this.text(386,463,'»',52,'#dbb0ff').setOrigin(.5);
+      squadPedestal(this,540,506,142,squadTierColor(result.tier),true);
+      this.add.image(540,463,unitPortrait(result.id)).setDisplaySize(100,100);
+      this.text(60,514,'필요 재료 · 보유 / 필요 수량',22,'#e8c98b');
+      recipeIngredientLines(recipe,roster.units).forEach((line,row)=>{
+        this.text(60,550+row*76,line,23).setWordWrapWidth(590).setName(`recipe-${recipe.id}-ingredient-${row}`);
+      });
+      this.text(60,704,UNIT_SKILL_DESCRIPTIONS[result.id],21,'#d7c2f1').setWordWrapWidth(590).setName('recipe-result-skill');
+      this.text(60,758,selected?`소모: ${selected.map(u=>`#${u.id.split('_')[1]} ★${u.star} ${u.deployed?'출전':'대기'}`).join(', ')}`
+        :'필요한 재료가 부족합니다',18,selected?'#bce5ba':'#efb5c0').setWordWrapWidth(590).setName('recipe-consumed');
+      const fits=!!selected&&roster.units.length-selected.length+recipe.resultCount<=SQUAD_LIMITS.owned;
+      fantasyButton(this,520,864,280,88,`조합 ${fee} ◆`,()=>this.requestCombine(recipe.id),
+        {enabled:fits&&roster.minerals>=fee,fontSize:26,icon:'merge',primary:true,hitHeight:108}).setName(`combine-${recipe.id}`);
+      fantasyButton(this,196,864,280,88,'재료 직접 선택',()=>{
+        this.editingRecipe=recipe;this.selectedIds=selected?.map(u=>u.id)??[];this.pickerPage=0;this.render();
+      },{fontSize:25,icon:'book',hitHeight:108}).setName(`recipe-picker-${recipe.id}`);
+    }
+    this.pagination(Math.max(1,recipes.length));
+  }
+
+  private renderRoster(): void {
+    const roster=this.dataSource.roster,deployed=roster.units.filter(u=>u.deployed);
+    const label=(x:number,y:number,value:string,size=20,color=FANTASY.cream)=>
+      this.text(x,y,value,size,color).setStroke('#140e24',2);
+    label(360,280,`보유 동료 ${roster.units.length} / ${SQUAD_LIMITS.owned}`,30,'#ffe5a1')
+      .setOrigin(.5,0).setName('roster-heading');
+    label(360,320,'동료를 선택해 편성을 바꾸세요.',20,FANTASY.muted)
+      .setOrigin(.5,0).setName('roster-guide');
+    const synergy=resolveSynergies(roster.units),active=SYNERGY_IDS.filter(id=>synergy.counts[id]>=SYNERGIES[id].required);
+    pixelPanel(this,24,352,672,138,0x21182f,0x725488);
+    for(let i=0;i<SQUAD_LIMITS.deployed;i++){
+      const x=80+i*112,unit=deployed[i];
+      squadPedestal(this,x,451,90,unit?squadTierColor(unit.tier):0x735e89,!!unit);
+      if(unit){
+        this.add.image(x,407,unitPortrait(unit.archetype)).setDisplaySize(94,94).setName(`deployed-portrait-${unit.id}`);
+        this.add.rectangle(x,470,54,24,0x191127,.96);
+        label(x,470,`★${unit.star}`,20,'#ffe5a1').setOrigin(.5).setName(`deployed-stars-${unit.id}`);
+      }else label(x,409,'+',36,'#b9b0d2').setOrigin(.5);
+    }
+    const pages=Math.max(1,Math.ceil(roster.units.length/8));this.page=Math.min(this.page,pages-1);
+    const visible=roster.units.slice(this.page*8,this.page*8+8);
+    if(!visible.some(u=>u.id===this.selectedUnitId))this.selectedUnitId=visible[0]?.id??null;
+    for(const [i,unit] of visible.entries()){
+      const x=36+i%4*168,y=502+Math.floor(i/4)*184,selected=unit.id===this.selectedUnitId;
+      squadCard(this,x,y,144,172,unit.tier,selected).setName(`roster-card-${unit.id}`);
+      // Reserve two lines at a fixed readable size. Wrap Korean by measured glyphs;
+      // cap future longer names with an ellipsis instead of shrinking the font.
+      const title=label(x+72,y+10,'',20).setOrigin(.5,0).setLineSpacing(0).setName(`roster-name-${unit.id}`);
+      const lines:string[]=[''];
+      for(const word of DRONE_SPECS[unit.archetype].name.split(/\s+/)){
+        const index=lines.length-1,candidate=lines[index]?lines[index]+' '+word:word;
+        if(title.context.measureText(candidate).width<=112){lines[index]=candidate;continue;}
+        if(lines[index])lines.push('');
+        for(const char of word){
+          const last=lines.length-1;
+          if(title.context.measureText(lines[last]+char).width>112)lines.push(char);
+          else lines[last]+=char;
+        }
+      }
+      if(lines.length>2){
+        let last=lines[1].trimEnd();
+        while(title.context.measureText(last+'…').width>112)last=last.slice(0,-1);
+        lines[1]=last+'…';
+      }
+      title.setText(lines.slice(0,2).map(line=>line.trim()).join('\n')).setAlign('center');
+      this.add.image(x+72,y+98,unitPortrait(unit.archetype)).setDisplaySize(76,76).setName(`roster-portrait-${unit.id}`);
+      this.add.rectangle(x+72,y+154,126,28,0x171023,.98);
+      label(x+33,y+153,`★${unit.star}`,20,'#ffe5a1').setOrigin(.5).setName(`roster-stars-${unit.id}`);
+      const badge=this.add.container(x+100,y+154).setName(`roster-badge-${unit.id}`);
+      badge.add(this.add.rectangle(0,0,54,24,unit.deployed?0x58412b:0x342847).setStrokeStyle(1,unit.deployed?0xc89e53:0x86749b));
+      badge.add(label(0,0,unit.deployed?'출전':'대기',18,unit.deployed?'#ffe5a1':'#d5cbe4').setOrigin(.5));
+      const control=this.add.container(x+72,y+86).setName(`roster-select-${unit.id}`);
+      control.add(this.add.rectangle(0,0,144,172,0,0).setName('hit').setInteractive({useHandCursor:true})
+        .on('pointerdown',(_p:Phaser.Input.Pointer,_x:number,_y:number,event:Phaser.Types.Input.EventData)=>{
+          event.stopPropagation();this.selectedUnitId=unit.id;this.render();
+        }));
+    }
+    const selected=visible.find(u=>u.id===this.selectedUnitId);
+    pixelPanel(this,36,870,648,170,0x21182f,FANTASY.edge).setName('roster-detail');
+    if(selected){
+      const spec=DRONE_SPECS[selected.archetype],live=this.dataSource.squad?.drones.find(d=>d.id===selected.id);
+      label(54,880,`T${selected.tier} ${spec.name} ★${selected.star}`,24,'#ffe5a1').setWordWrapWidth(612).setName('roster-detail-title');
+      const state=live?`HP ${Math.ceil(live.health.currentHp)}/${live.health.maxHp}${live.health.isDead?' · 전투 불능':''}`:selected.deployed?'출전 중':'대기 중';
+      label(54,910,`#${selected.id.split('_')[1]} · ${UNIT_MOVEMENT[selected.archetype].role} · ${state}${selected.awakening?` · 각성 ${selected.awakening}`:''}`,18,'#d7c2f1').setWordWrapWidth(612).setName('roster-detail-state');
+      label(54,936,UNIT_SKILL_DESCRIPTIONS[selected.archetype],18,'#d7c2f1').setWordWrapWidth(612).setName('roster-detail-skill');
+      const allowed=selected.deployed?deployed.length>1:deployed.length<SQUAD_LIMITS.deployed;
+      fantasyButton(this,200,992,280,64,selected.deployed?'출전 → 대기':'대기 → 출전',
+        ()=>this.transact(()=>roster.toggleDeployment(selected.id)),
+        {enabled:allowed,primary:!selected.deployed,icon:'helmet',fontSize:26,hitHeight:108}).setName(`roster-deploy-${selected.id}`);
+      fantasyButton(this,520,992,280,64,`판매 +${selected.tier*selected.star*SELL_REFUND_PER_TIER} ◆`,()=>this.requestSell(selected.id),
+        {enabled:!selected.deployed||deployed.length>1,fontSize:24,icon:'coin',hitHeight:108}).setName(`roster-sell-${selected.id}`);
+    }else label(360,918,'보유 동료가 없습니다',26,FANTASY.muted).setOrigin(.5);
+    label(666,884,`출전 ${deployed.length}/${SQUAD_LIMITS.deployed} · ${active.length?`시너지 ${active.length}종`:'시너지 대기'}`,16,'#c6e9c0')
+      .setOrigin(1,0).setName('synergy-summary');
+    const turn=(direction:number)=>{this.page+=direction;this.selectedUnitId=null;this.render();};
+    const previous=fantasyButton(this,78,326,84,48,'‹',()=>turn(-1),{enabled:this.page>0,fontSize:32,hitWidth:108,hitHeight:108}).setName('squad-prev');
+    const next=fantasyButton(this,642,326,84,48,'›',()=>turn(1),{enabled:this.page+1<pages,fontSize:32,hitWidth:108,hitHeight:108}).setName('squad-next');
+    // Keep the enlarged touch targets below the tab targets; only the visual is lifted.
+    for(const button of [previous,next])(button.getByName('hit') as Phaser.GameObjects.Rectangle).y=10;
+    label(558,332,`${this.page+1}/${pages}`,18,FANTASY.muted).setOrigin(.5).setName('roster-page');
   }
 
   private requestSell(id: string): void {
@@ -266,7 +351,7 @@ export class SquadScene extends Phaser.Scene {
 
   private renderFacilities(): void {
     const roster = this.dataSource.roster;
-    (['awakening','service','supply','synergy'] as const).forEach((mode, i) => fantasyButton(this,105+i*170,322,154,88,
+    (['awakening','service','supply','synergy'] as const).forEach((mode, i) => fantasyButton(this,105+i*170,326,154,88,
       `${this.facilityMode === mode ? '● ' : ''}${{awakening:'유닛 각성',service:'회복 서비스',supply:'보급 보상',synergy:'편성 시너지'}[mode]}`, () => {
         this.facilityMode = mode; this.page = 0; this.render();
       },{fontSize:21,selected:this.facilityMode===mode}).setName(`facility-${mode}`));
@@ -338,7 +423,7 @@ export class SquadScene extends Phaser.Scene {
       const accent=[0xffd966,0x78d8f5,0xbe96ff][i];
       const frame=this.add.graphics();frame.fillStyle(accent).fillRect(36,y+5,4,180);
       pixelPanel(this,56,y+22,72,72,0x231a31,accent);
-      pixelIcon(this.add.graphics(),i===0?'book':i===1?'heart':'gem',74,y+42,2);
+      uiIcon(this,i===0?'book':i===1?'heart':'gem',92,y+58,36);
       this.text(148,y+16,`${TALENTS[id].name} · ${talentRank(hero.talents,id)}회`,28,'#ffe5a1').setName(`talent-title-${id}`);
       this.text(148,y+58,TALENTS[id].description,23,'#d0c1de').setWordWrapWidth(504).setLineSpacing(5);
       this.text(148,y+150,pending?'이 재능 선택 →':'다음 3레벨에 선택',22,pending?'#f1d08b':'#b6c0c8');
@@ -361,7 +446,7 @@ export class SquadScene extends Phaser.Scene {
       const accent=[0xffd966,0x78d8f5,0xbe96ff][i];
       const frame=this.add.graphics();frame.fillStyle(accent,has?0.5:1).fillRect(36,y+5,4,180);
       pixelPanel(this,56,y+22,72,72,0x231a31,accent);
-      pixelIcon(this.add.graphics(),def.icon,74,y+42,2);
+      uiIcon(this,def.icon,92,y+58,36);
       this.text(148,y+16,def.name,28,'#ffe5a1').setName(`relic-title-${id}`);
       this.text(148,y+58,def.description,22,'#d0c1de').setWordWrapWidth(504).setLineSpacing(5);
       this.text(148,y+154,has?'✓ 보유 중':reward?'이 유물 선택 →':'정예 방에서 획득',22,has||reward?'#f1d08b':'#b6c0c8');
@@ -421,7 +506,7 @@ export class SquadScene extends Phaser.Scene {
       return;
     }
     ([null, 1, 2, 3, 4] as const).forEach((tier, i) => {
-      fantasyButton(this,88+i*136,320,112,64,tier?`T${tier}`:'전체',
+      fantasyButton(this,88+i*136,322,112,64,tier?`T${tier}`:'전체',
         ()=>{this.quickTier=tier;this.page=0;this.render();},{fontSize:24,hitHeight:80,selected:this.quickTier===tier}).setName(`quick-tier-${tier??'all'}`);
     });
     this.text(44,370,'새 재료 비용 포함 · 원하는 유닛을 선택하세요',22,'#d9b969');
@@ -452,22 +537,23 @@ export class SquadScene extends Phaser.Scene {
     const candidates = roster.units.filter(unit => recipe.ingredients.some(item => matchesIngredient(unit, item)) &&
       (!recipe.ingredientStar || unit.star === recipe.ingredientStar));
     this.text(44, 280, `${DRONE_SPECS[recipe.resultUnitTypeId].name} · 재료 ${this.selectedIds.length}/${count} 선택`, 20);
-    candidates.slice(this.pickerPage*4,this.pickerPage*4+4).forEach((unit,i)=>{
+    candidates.slice(this.pickerPage*3,this.pickerPage*3+3).forEach((unit,i)=>{
       const y=350+i*132;
-      pixelPanel(this,36,y-14,648,118);
-      this.text(55, y, `#${unit.id.split('_')[1]} ${DRONE_SPECS[unit.archetype].name} ★${unit.star}${unit.awakening ? ` 각성${unit.awakening}` : ''}`, 19).setWordWrapWidth(420);
-      this.text(55,y+64,unit.deployed?'출전 중':'대기 중',21);
+      squadCard(this,36,y-14,648,118,unit.tier,this.selectedIds.includes(unit.id));
+      this.add.image(94,y+45,unitPortrait(unit.archetype)).setDisplaySize(88,88);
+      this.text(154, y, `#${unit.id.split('_')[1]} ${DRONE_SPECS[unit.archetype].name} ★${unit.star}${unit.awakening ? ` 각성${unit.awakening}` : ''}`, 20).setWordWrapWidth(302);
+      this.text(154,y+66,unit.deployed?'출전 중':'대기 중',20);
       const selected = this.selectedIds.includes(unit.id);
       this.button(570,y+40,180,selected?'선택 해제':'재료로 선택',()=>{
         this.selectedIds = selected ? this.selectedIds.filter(id => id !== unit.id) : [...this.selectedIds, unit.id]; this.render();
-      },selected||this.selectedIds.length<count,88);
+      },selected||this.selectedIds.length<count,88).setName(`ingredient-select-${unit.id}`);
     });
-    const pages=Math.max(1,Math.ceil(candidates.length/4));
-    this.button(150,916,200,'이전 재료',()=>{this.pickerPage--;this.render();},this.pickerPage>0,88);
-    this.button(570,916,200,'다음 재료',()=>{this.pickerPage++;this.render();},this.pickerPage+1<pages,88);
-    this.text(300,902,`${this.pickerPage+1}/${pages}`,24);
-    this.button(180,1004,260,'조합 목록으로',()=>{this.editingRecipe=null;this.render();},true,88);
-    this.button(530,1004,300,`선택 재료로 조합 ${roster.combinationCost(recipe.id)} ◆`,()=>this.requestCombine(recipe.id,this.selectedIds),roster.canCombine(recipe.id,this.selectedIds),88).setName('ingredient-confirm');
+    const pages=Math.max(1,Math.ceil(candidates.length/3));
+    this.button(150,842,200,'이전 재료',()=>{this.pickerPage--;this.render();},this.pickerPage>0,88).setName('ingredient-prev');
+    this.button(570,842,200,'다음 재료',()=>{this.pickerPage++;this.render();},this.pickerPage+1<pages,88).setName('ingredient-next');
+    this.text(300,828,`${this.pickerPage+1}/${pages}`,24);
+    this.button(180,988,260,'조합 목록으로',()=>{this.editingRecipe=null;this.render();},true,88).setName('ingredient-back');
+    this.button(530,988,300,`선택 재료로 조합 ${roster.combinationCost(recipe.id)} ◆`,()=>this.requestCombine(recipe.id,this.selectedIds),roster.canCombine(recipe.id,this.selectedIds),88).setName('ingredient-confirm');
   }
 
   private pagination(pages: number): void {

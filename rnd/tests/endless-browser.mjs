@@ -96,7 +96,7 @@ try{
  assert.deepEqual(sixth.unitHealth.map(d=>d.currentHp),[46,46]);assert.equal(sixth.relicHealRemainingMs,3100);
  await reload("smash.scene.isActive('GameScene')",sixth);await evaluate('gs.scene.pause();undefined;');
  assert.equal(await evaluate('gs.squad.health.currentHp'),sixth.leaderHealth.currentHp);assert.equal(await evaluate('gs.squad.roster.freeSummons'),1);
- assert.deepEqual(await save(),sixth);assert.equal(await evaluate("gs.hudRoomText.text.includes('S6 ∞')"),true);
+ assert.deepEqual(await save(),sixth);assert.equal(await evaluate("gs.hudStageIndex.text.includes('STAGE 6 ∞')"),true);
  const combat=await evaluate(`(()=>{gs.clearEncounter();gs.startRoomLogic(gs.gridManager.getCurrentRoom());
   gs.spawnNextWave(gs.gridManager.getCurrentRoom());gs.processSpawns(10000);
   const spawned=gs.enemies.getChildren().filter(e=>e.active);const health=spawned.map(e=>e.health.maxHp);

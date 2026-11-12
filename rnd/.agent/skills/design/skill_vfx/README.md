@@ -17,4 +17,11 @@
 
 `skillProjectileTexture(unit)`는 UNIT_COMBAT_STYLES 의 유닛 기준 키를 사용하고, `skillGlyphTexture(shape)`·`skillWaveTexture(shape)`는 스킬 모양 기준 키를 사용합니다. 따라서 `config/skillData.ts`의 실제 매핑을 확인한 후 연결하세요.
 
-게임 코드와 GitHub 저장소는 변경하지 않았습니다.
+이 폴더의 원본 이미지는 디자인 참고 자료로 보존합니다.
+
+## 2026-11-12 게임 적용
+
+실제 게임의 `skillEffectPainter.ts`·`skillEffectTextures.ts`가 이 시안의 형태·잔광을 투명32×32/96×96 텍스처로 생성합니다. `EffectParticlePool.ts`에서 기존 공격·회복·보호막·버프·소환 이벤트에 연결합니다. 공격 판정과 게임 수치는 유지합니다.
+
+- [적용 범위·수정 파일·검증 기록](../../../../design/decisions/037-skill-vfx-reference.md)
+- [실제 전후 비교](../../../../artifacts/skill-vfx-20261112/comparison.html)

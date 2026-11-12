@@ -1,0 +1,358 @@
+{
+  "cell": 128,
+  "columns": 6,
+  "frames": [
+    {
+      "id": "BASIC_LASER",
+      "frame": 0,
+      "source": {
+        "left": 92,
+        "top": 79,
+        "width": 951,
+        "height": 1123
+      },
+      "atlas": {
+        "x": 16,
+        "y": 8,
+        "width": 95,
+        "height": 112
+      }
+    },
+    {
+      "id": "GATLING_BOT",
+      "frame": 1,
+      "source": {
+        "left": 80,
+        "top": 15,
+        "width": 1024,
+        "height": 1197
+      },
+      "atlas": {
+        "x": 144,
+        "y": 8,
+        "width": 96,
+        "height": 112
+      }
+    },
+    {
+      "id": "ROCKET_BOT",
+      "frame": 2,
+      "source": {
+        "left": 110,
+        "top": 82,
+        "width": 1047,
+        "height": 1118
+      },
+      "atlas": {
+        "x": 267,
+        "y": 8,
+        "width": 105,
+        "height": 112
+      }
+    },
+    {
+      "id": "STUN_BOT",
+      "frame": 3,
+      "source": {
+        "left": 104,
+        "top": 66,
+        "width": 1047,
+        "height": 1140
+      },
+      "atlas": {
+        "x": 396,
+        "y": 8,
+        "width": 103,
+        "height": 112
+      }
+    },
+    {
+      "id": "PIERCE_BEAM",
+      "frame": 4,
+      "source": {
+        "left": 114,
+        "top": 70,
+        "width": 1015,
+        "height": 1129
+      },
+      "atlas": {
+        "x": 525,
+        "y": 8,
+        "width": 101,
+        "height": 112
+      }
+    },
+    {
+      "id": "BLACKHOLE_MISSILE",
+      "frame": 5,
+      "source": {
+        "left": 126,
+        "top": 92,
+        "width": 1017,
+        "height": 1106
+      },
+      "atlas": {
+        "x": 652,
+        "y": 8,
+        "width": 103,
+        "height": 112
+      }
+    },
+    {
+      "id": "CHAIN_LIGHTNING",
+      "frame": 6,
+      "source": {
+        "left": 159,
+        "top": 24,
+        "width": 961,
+        "height": 1199
+      },
+      "atlas": {
+        "x": 19,
+        "y": 136,
+        "width": 90,
+        "height": 112
+      }
+    },
+    {
+      "id": "STONE_GUARD",
+      "frame": 7,
+      "source": {
+        "left": 126,
+        "top": 49,
+        "width": 1008,
+        "height": 1170
+      },
+      "atlas": {
+        "x": 144,
+        "y": 136,
+        "width": 96,
+        "height": 112
+      }
+    },
+    {
+      "id": "HERBAL_PRIEST",
+      "frame": 8,
+      "source": {
+        "left": 134,
+        "top": 62,
+        "width": 1010,
+        "height": 1148
+      },
+      "atlas": {
+        "x": 270,
+        "y": 136,
+        "width": 99,
+        "height": 112
+      }
+    },
+    {
+      "id": "SPARK_SPIRIT",
+      "frame": 9,
+      "source": {
+        "left": 144,
+        "top": 68,
+        "width": 926,
+        "height": 1121
+      },
+      "atlas": {
+        "x": 401,
+        "y": 136,
+        "width": 93,
+        "height": 112
+      }
+    },
+    {
+      "id": "SHADOW_DAGGER",
+      "frame": 10,
+      "source": {
+        "left": 108,
+        "top": 71,
+        "width": 935,
+        "height": 1149
+      },
+      "atlas": {
+        "x": 530,
+        "y": 136,
+        "width": 91,
+        "height": 112
+      }
+    },
+    {
+      "id": "LAVA_GOLEM",
+      "frame": 11,
+      "source": {
+        "left": 165,
+        "top": 92,
+        "width": 876,
+        "height": 1099
+      },
+      "atlas": {
+        "x": 659,
+        "y": 136,
+        "width": 89,
+        "height": 112
+      }
+    },
+    {
+      "id": "THORN_GUARD",
+      "frame": 12,
+      "source": {
+        "left": 129,
+        "top": 68,
+        "width": 1021,
+        "height": 1127
+      },
+      "atlas": {
+        "x": 13,
+        "y": 264,
+        "width": 101,
+        "height": 112
+      }
+    },
+    {
+      "id": "STORM_ARCHER",
+      "frame": 13,
+      "source": {
+        "left": 126,
+        "top": 81,
+        "width": 927,
+        "height": 1123
+      },
+      "atlas": {
+        "x": 146,
+        "y": 264,
+        "width": 92,
+        "height": 112
+      }
+    },
+    {
+      "id": "MOON_PRIEST",
+      "frame": 14,
+      "source": {
+        "left": 140,
+        "top": 126,
+        "width": 973,
+        "height": 1060
+      },
+      "atlas": {
+        "x": 268,
+        "y": 264,
+        "width": 103,
+        "height": 112
+      }
+    },
+    {
+      "id": "PALADIN",
+      "frame": 15,
+      "source": {
+        "left": 149,
+        "top": 28,
+        "width": 974,
+        "height": 1194
+      },
+      "atlas": {
+        "x": 402,
+        "y": 264,
+        "width": 91,
+        "height": 112
+      }
+    },
+    {
+      "id": "THUNDER_MAGE",
+      "frame": 16,
+      "source": {
+        "left": 146,
+        "top": 70,
+        "width": 974,
+        "height": 1132
+      },
+      "atlas": {
+        "x": 528,
+        "y": 264,
+        "width": 96,
+        "height": 112
+      }
+    },
+    {
+      "id": "SHADOW_ASSASSIN",
+      "frame": 17,
+      "source": {
+        "left": 138,
+        "top": 95,
+        "width": 969,
+        "height": 1094
+      },
+      "atlas": {
+        "x": 654,
+        "y": 264,
+        "width": 99,
+        "height": 112
+      }
+    },
+    {
+      "id": "WORLD_DRUID",
+      "frame": 18,
+      "source": {
+        "left": 133,
+        "top": 66,
+        "width": 991,
+        "height": 1148
+      },
+      "atlas": {
+        "x": 15,
+        "y": 392,
+        "width": 97,
+        "height": 112
+      }
+    },
+    {
+      "id": "PHOENIX_LORD",
+      "frame": 19,
+      "source": {
+        "left": 139,
+        "top": 60,
+        "width": 1003,
+        "height": 1145
+      },
+      "atlas": {
+        "x": 143,
+        "y": 392,
+        "width": 98,
+        "height": 112
+      }
+    },
+    {
+      "id": "STORM_GENERAL",
+      "frame": 20,
+      "source": {
+        "left": 30,
+        "top": 12,
+        "width": 1195,
+        "height": 1218
+      },
+      "atlas": {
+        "x": 265,
+        "y": 392,
+        "width": 110,
+        "height": 112
+      }
+    },
+    {
+      "id": "EARTH_DEITY",
+      "frame": 21,
+      "source": {
+        "left": 127,
+        "top": 45,
+        "width": 1080,
+        "height": 1177
+      },
+      "atlas": {
+        "x": 396,
+        "y": 392,
+        "width": 103,
+        "height": 112
+      }
+    }
+  ]
+}

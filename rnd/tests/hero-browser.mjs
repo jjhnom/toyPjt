@@ -66,20 +66,22 @@ try {
     if(target.receiveDamage(10000,gs.time.now)) gs.handleEnemyKilled(target,gs.squad.drones[0].id);
     gs.refreshHud(); gs.updateHudVitals();
     return { hero:gs.squad.heroSnapshot(),hp:gs.squad.health.currentHp,maxHp:gs.squad.health.maxHp,
-      name:gs.children.getByName('hero-name').text,xpText:gs.children.getByName('hero-xp').text };
+      name:gs.children.getByName('hero-name').text,levelText:gs.children.getByName('hero-level').text,
+      xpText:gs.children.getByName('hero-xp').text };
   })()`);
   assert.equal(level.hero.level, 2); assert.equal(level.hero.xp, 1);
   assert.equal(level.hp, 23); assert.equal(level.maxHp, 105);
-  assert.match(level.name, /견습 소환사 · Lv.2/); assert.equal(level.xpText, 'XP 1/47');
+  assert.equal(level.name, '견습 소환사'); assert.equal(level.levelText, 'Lv.2'); assert.equal(level.xpText, '1 / 47');
 
   await mkdir(output, { recursive: true });
   for (const width of [720,360]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height:width*1280/720, deviceScaleFactor:1, mobile:true });
     await sleep(200);
-    const bounds = await evaluate(`['hero-name','hero-xp'].map(name => {
+    const bounds = await evaluate(`['hero-name','hero-level','hero-xp'].map(name => {
       const t=gs.children.getByName(name),r=t.getBounds(); return {name,x:r.x,y:r.y,right:r.right,bottom:r.bottom}; })`);
-    assert.ok(bounds.every(b => b.x>=12 && b.right<=370 && b.y>=10 && b.bottom<=114));
-    assert.ok(bounds[0].bottom < 36, 'hero name must stay above the HP bar');
+    assert.ok(bounds.every(b => b.x>=146 && b.right<=366 && b.y>=20 && b.bottom<=98));
+    assert.ok(bounds[0].bottom <= 50, 'hero name must stay above the HP bar');
+    assert.ok(bounds[0].right < bounds[1].x, 'hero name and level have separate inline regions');
     const image = await send('Page.captureScreenshot', { format:'png' });
     await writeFile(`${output}/hud-${width}.png`, Buffer.from(image.data,'base64'));
   }

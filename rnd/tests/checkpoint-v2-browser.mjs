@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { browserSession, sleep } from './helpers/browser-session.mjs';
 
 const browser = await browserSession();
-const { send, evaluate, waitFor, tap, attach } = browser;
+const { send, evaluate, waitFor, tap, attach, click } = browser;
 const output = 'artifacts/roadmap-foundations';
 await mkdir(output, { recursive: true });
 const save = () => evaluate("JSON.parse(localStorage.getItem('smash.run-checkpoint.v1'))");
@@ -28,7 +28,7 @@ try {
   assert.equal(first.version, 2); assert.equal(first.phase, 'room-cleared');
   assert.equal(first.roster.minerals, 55); assert.equal(first.unitHealth[0].currentHp, 0);
   assert.equal(first.unitHealth[0].reviveRemainingMs, 9000);
-  await tap(534, 529); // Successful paid summon; leave management open.
+  await click('SquadScene', 'summon-BASIC_LASER'); // Successful paid summon; leave management open.
   const purchased = await save();
   assert.equal(purchased.roster.minerals, 40); assert.equal(purchased.roster.units.length, 3);
   const live = await evaluate('gs.squad.roster.economy.report()');

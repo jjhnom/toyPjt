@@ -1,0 +1,15 @@
+{
+  "size": 160,
+  "anchor": [80, 140],
+  "columns": 4,
+  "rows": 3,
+  "scale": 0.4,
+  "motions": ["walk", "cast", "release"],
+  "bosses": {
+    "forest_guardian": {"feetY": [316, 316, 318], "rowBounds": [[0,330],[350,350],[720,366]]},
+    "swamp_lord": {"feetY": [316, 316, 318], "rowBounds": [[0,330],[350,350],[730,356]]},
+    "lava_colossus": {"feetY": [320, 320, 324], "rowBounds": [[0,330],[335,365],[705,381]]},
+    "frost_queen": {"feetY": [315, 315, 316], "rowBounds": [[0,330],[330,360],[695,391]]},
+    "twilight_king": {"feetY": [324, 326, 328], "rowBounds": [[0,340],[350,355],[730,356]]}
+  }
+}

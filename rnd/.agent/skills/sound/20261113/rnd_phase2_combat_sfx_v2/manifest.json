@@ -1,0 +1,122 @@
+[
+  {
+    "id": "attack_sword_light",
+    "duration_s": 0.25,
+    "peak": 0.62,
+    "rms": 0.096,
+    "wav": "assets/audio/sfx/attack_sword_light.wav",
+    "ogg": "assets/audio/sfx/attack_sword_light.ogg"
+  },
+  {
+    "id": "attack_sword_heavy",
+    "duration_s": 0.47,
+    "peak": 0.79,
+    "rms": 0.223,
+    "wav": "assets/audio/sfx/attack_sword_heavy.wav",
+    "ogg": "assets/audio/sfx/attack_sword_heavy.ogg"
+  },
+  {
+    "id": "attack_arrow",
+    "duration_s": 0.29,
+    "peak": 0.61,
+    "rms": 0.087,
+    "wav": "assets/audio/sfx/attack_arrow.wav",
+    "ogg": "assets/audio/sfx/attack_arrow.ogg"
+  },
+  {
+    "id": "attack_gun_burst",
+    "duration_s": 0.28,
+    "peak": 0.67,
+    "rms": 0.132,
+    "wav": "assets/audio/sfx/attack_gun_burst.wav",
+    "ogg": "assets/audio/sfx/attack_gun_burst.ogg"
+  },
+  {
+    "id": "attack_fire_magic",
+    "duration_s": 0.52,
+    "peak": 0.72,
+    "rms": 0.148,
+    "wav": "assets/audio/sfx/attack_fire_magic.wav",
+    "ogg": "assets/audio/sfx/attack_fire_magic.ogg"
+  },
+  {
+    "id": "attack_ice_magic",
+    "duration_s": 0.57,
+    "peak": 0.68,
+    "rms": 0.137,
+    "wav": "assets/audio/sfx/attack_ice_magic.wav",
+    "ogg": "assets/audio/sfx/attack_ice_magic.ogg"
+  },
+  {
+    "id": "attack_lightning",
+    "duration_s": 0.48,
+    "peak": 0.76,
+    "rms": 0.097,
+    "wav": "assets/audio/sfx/attack_lightning.wav",
+    "ogg": "assets/audio/sfx/attack_lightning.ogg"
+  },
+  {
+    "id": "hit_flesh_light",
+    "duration_s": 0.18,
+    "peak": 0.57,
+    "rms": 0.169,
+    "wav": "assets/audio/sfx/hit_flesh_light.wav",
+    "ogg": "assets/audio/sfx/hit_flesh_light.ogg"
+  },
+  {
+    "id": "hit_armor",
+    "duration_s": 0.38,
+    "peak": 0.72,
+    "rms": 0.133,
+    "wav": "assets/audio/sfx/hit_armor.wav",
+    "ogg": "assets/audio/sfx/hit_armor.ogg"
+  },
+  {
+    "id": "hit_critical",
+    "duration_s": 0.54,
+    "peak": 0.83,
+    "rms": 0.184,
+    "wav": "assets/audio/sfx/hit_critical.wav",
+    "ogg": "assets/audio/sfx/hit_critical.ogg"
+  },
+  {
+    "id": "hit_shield_block",
+    "duration_s": 0.34,
+    "peak": 0.67,
+    "rms": 0.11,
+    "wav": "assets/audio/sfx/hit_shield_block.wav",
+    "ogg": "assets/audio/sfx/hit_shield_block.ogg"
+  },
+  {
+    "id": "death_enemy_small",
+    "duration_s": 0.32,
+    "peak": 0.56,
+    "rms": 0.123,
+    "wav": "assets/audio/sfx/death_enemy_small.wav",
+    "ogg": "assets/audio/sfx/death_enemy_small.ogg"
+  },
+  {
+    "id": "death_enemy_medium",
+    "duration_s": 0.57,
+    "peak": 0.72,
+    "rms": 0.177,
+    "wav": "assets/audio/sfx/death_enemy_medium.wav",
+    "ogg": "assets/audio/sfx/death_enemy_medium.ogg"
+  },
+  {
+    "id": "death_enemy_elite",
+    "duration_s": 0.88,
+    "peak": 0.86,
+    "rms": 0.234,
+    "wav": "assets/audio/sfx/death_enemy_elite.wav",
+    "ogg": "assets/audio/sfx/death_enemy_elite.ogg"
+  },
+  {
+    "id": "death_enemy_magic",
+    "duration_s": 0.78,
+    "peak": 0.69,
+    "rms": 0.109,
+    "wav": "assets/audio/sfx/death_enemy_magic.wav",
+    "ogg": "assets/audio/sfx/death_enemy_magic.ogg"
+  }
+]

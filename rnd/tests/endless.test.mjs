@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import {load} from '../scripts/lib/load-typescript.mjs';
 
@@ -15,10 +15,10 @@ class Storage {
  values=new Map();getItem(k){return this.values.get(k)??null;}setItem(k,v){this.values.set(k,v);}removeItem(k){this.values.delete(k);}
 }
 
-test('endless definitions rotate five themes without mutating story data or sharing writable arrays',()=>{
+test('endless definitions rotate six themes including the desert without mutating story data or sharing writable arrays',()=>{
  const before=structuredClone(STAGES);
  for(const index of [5,6,9,10,14,99,999]){
-  const stage=generateEndlessStage(index),theme=STAGES[(index-5)%5];
+  const stage=generateEndlessStage(index),theme=(index-5)%6===0?{name:'황금 사막',bossId:'desert_emperor',bossPatterns:['POISON','SPIKES']}:STAGES[(index-5)%6-1];
   assert.equal(stage.index,index);assert.equal(stage.name,theme.name);assert.equal(stage.bossId,theme.bossId);
   assert.deepEqual(stage.bossPatterns,theme.bossPatterns);assert.equal(stage.isFinal,false);
   assert.equal(stage.gridWidth,5);assert.equal(stage.gridHeight,5);assert.equal(stage.roomCount,15);
@@ -152,3 +152,4 @@ test('highest reached record is monotonic, separate from run deletion, strict ab
  assert.equal(blocked.highestStage(),0);assert.equal(blocked.recordReached(5),false);
  for(const bad of[-1,1.5,1000,NaN,Infinity])assert.equal(records.recordReached(bad),false);
 });
+

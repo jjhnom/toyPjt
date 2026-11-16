@@ -37,7 +37,8 @@
       }
       canvas {
         display: block;
-        image-rendering: pixelated;
+        /* Phaser pixelArt adds an inline pixelated style; texture sampling stays independent. */
+        image-rendering: auto !important;
         touch-action: none;
       }
     </style>

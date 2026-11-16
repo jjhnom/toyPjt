@@ -1,0 +1,122 @@
+{
+  "sampleRate": 32000,
+  "channels": 2,
+  "files": [
+    {
+      "name": "boss_forest_charge",
+      "duration": 1.15,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_forest_slam",
+      "duration": 1.3,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_swamp_poison_cast",
+      "duration": 1.18,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_swamp_charge",
+      "duration": 1.12,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_lava_meteor",
+      "duration": 1.85,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_frost_eruption",
+      "duration": 1.34,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_frost_summon",
+      "duration": 1.47,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_twilight_meteor",
+      "duration": 1.86,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_twilight_poison_cast",
+      "duration": 1.22,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_twilight_charge",
+      "duration": 1.04,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_twilight_binding",
+      "duration": 1.46,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_twilight_summon",
+      "duration": 1.51,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_desert_sandstorm_cast",
+      "duration": 1.39,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_swamp_poison_loop",
+      "duration": 2.4,
+      "type": "loop"
+    },
+    {
+      "name": "boss_frost_field_loop",
+      "duration": 2.2,
+      "type": "loop"
+    },
+    {
+      "name": "boss_twilight_poison_loop",
+      "duration": 2.4,
+      "type": "loop"
+    },
+    {
+      "name": "boss_twilight_binding_loop",
+      "duration": 2.2,
+      "type": "loop"
+    },
+    {
+      "name": "boss_desert_sandstorm_loop",
+      "duration": 2.4,
+      "type": "loop"
+    },
+    {
+      "name": "boss_encounter_start",
+      "duration": 1.83,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_attack_warning",
+      "duration": 0.43,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_phase_change",
+      "duration": 1.58,
+      "type": "one-shot"
+    },
+    {
+      "name": "boss_death",
+      "duration": 2.45,
+      "type": "one-shot"
+    }
+  ],
+  "extras": [
+    "boss_lava_meteor_fall",
+    "boss_lava_meteor_impact",
+    "boss_twilight_meteor_fall",
+    "boss_twilight_meteor_impact"
+  ]
+}

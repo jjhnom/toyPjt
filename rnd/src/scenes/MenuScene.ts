@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameData';
 import { soundManager } from '../systems/SoundManager';
+import { bgmManager } from '../systems/BgmManager';
 import { FANTASY, pixelPanel, fantasyButton } from '../ui/fantasyTheme';
 import { lobbyCharacterPortrait } from '../ui/lobbyCharacters';
 import { lobbyCrest, lobbyIcon, lobbyNavButton, lobbyPlatform } from '../ui/lobbyArt';
@@ -85,7 +86,8 @@ export class MenuScene extends Phaser.Scene {
       16, '#e0cfee').setWordWrapWidth(640).setStroke('#130e22',3).setName('save-caption');
     const sound = fantasyButton(this,638,450,116,100,this.getSoundLabel(),()=>{
       if(!this.canOpenPanel())return;
-      soundManager.enabled = !soundManager.enabled;
+      soundManager.setEnabled(!soundManager.isEnabled());
+      if(soundManager.isEnabled())void soundManager.unlockFromUserGesture();
       this.soundBtnText.setText(this.getSoundLabel());
     },{fontSize:20,hitWidth:116,hitHeight:108}).setName('sound-toggle');
     sound.add(lobbyIcon(this,'sound',0,-22,36));
@@ -102,6 +104,7 @@ export class MenuScene extends Phaser.Scene {
     const highest = endlessRecordManager.highestStage();
     this.label(cx,1252,highest?`무한 원정 최고 도달 · STAGE ${highest}`:'작은 동료들이 모여, 위대한 모험이 됩니다.',17,'#d2bfe2')
       .setStroke('#130e22',3).setName('endless-record');
+    bgmManager.play(this, 'bgm_lobby');
   }
 
   private canOpenPanel(): boolean {
@@ -117,7 +120,7 @@ export class MenuScene extends Phaser.Scene {
     if (this.starting) return;
     this.starting = true;
     this.input.enabled = false;
-    soundManager.playPowerup();
+    void soundManager.unlockFromUserGesture().then(ready=>{if(ready)soundManager.playPowerup();});
     this.scene.start('GameScene', { resume });
   }
 
@@ -136,5 +139,5 @@ export class MenuScene extends Phaser.Scene {
   private label(x: number, y: number, text: string, size: number, color: string): Phaser.GameObjects.Text {
     return this.add.text(x, y, text, { fontFamily: FANTASY.font, fontSize: `${size}px`, resolution: 2, fontStyle: 'bold', color, align: 'center' }).setOrigin(0.5);
   }
-  private getSoundLabel(): string { return `\n소리 ${soundManager.enabled ? '켜짐' : '꺼짐'}`; }
+  private getSoundLabel(): string { return `\n소리 ${soundManager.isEnabled() ? '켜짐' : '꺼짐'}`; }
 }

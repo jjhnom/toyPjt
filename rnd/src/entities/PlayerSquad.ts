@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import {soundManager} from '../systems/SoundManager';
 import { ARENA_BOUNDS } from '../config/gameData';
 import { HealthComponent } from '../components/HealthComponent';
 import { MovementComponent } from '../components/MovementComponent';
@@ -230,8 +231,10 @@ export class PlayerSquad {
       }
       amount -= absorbed;
     }
+    const shielded=this.health.shieldHp>0&&time<=this.health.shieldUntil;
     const damaged = this.health.takeDamage(amount, time, 650);
     if (damaged) {
+      soundManager.playCombat(shielded?'hit_shield_block':'hit_flesh_light');
       this.leader.setTintFill(0xff4d4d);
       this.flashUntil = time + 160;
     }

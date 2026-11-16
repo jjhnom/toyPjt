@@ -1,4 +1,8 @@
 import Phaser from 'phaser';
+import {REGIONAL_MONSTER_ART} from '../ui/monsterArt';
+import {MONSTER_ATLAS} from '../config/monsterData';
+import {soundManager} from '../systems/SoundManager';
+import { BGM_TRACKS } from '../config/bgmData';
 import { DRONE_SPECS, ENEMY_SPECS } from '../config/gameData';
 import type { DroneArchetype, EnemyArchetype } from '../types/game';
 import { drawCharacter, unitTexture, unitPortrait, unitAnimation, enemyTexture, enemyAnimation } from '../ui/pixelCharacters';
@@ -8,6 +12,11 @@ import { HUD_ART, REFERENCE_HUD } from '../ui/hudArt';
 import { BOTTOM_HUD, BOTTOM_HUD_ART } from '../ui/bottomHudArt';
 import { UNIT_ART_CELL, UNIT_ART_COLUMNS, UNIT_ART_FRAMES } from '../ui/unitArt';
 import { createSkillEffectTextures } from '../ui/skillEffectTextures';
+import { BOSS_ATLAS } from '../config/bossVisualData';
+import { BOSS_ART,BOSS_MOTION_ART,BOSS_VFX_ART,DESERT_MOTION_ART,SANDSTORM_ART } from '../ui/bossArt';
+import {SANDSTORM_SOURCE} from '../ui/bossSandstorm';
+import {BOSS_VFX_ATLAS} from '../config/bossVfxMotionData';
+import {BOSS_MOTION_ATLAS,DESERT_MOTION_ATLAS} from '../ui/BossMotion';
 import { LOBBY_CHARACTER_CELL, LOBBY_CHARACTER_COLUMNS, LOBBY_CHARACTER_FRAMES, lobbyCharacterPortrait } from '../ui/lobbyCharacters';
 import type { LobbyCharacter } from '../ui/lobbyCharacters';
 
@@ -18,10 +27,19 @@ export class BootScene extends Phaser.Scene {
   }
 
   public preload(): void {
+    this.load.atlas(MONSTER_ATLAS,REGIONAL_MONSTER_ART.image,REGIONAL_MONSTER_ART.data);
+    void soundManager.preloadCombatSounds();
+    void soundManager.preloadBossSounds();
+    for (const [key, track] of Object.entries(BGM_TRACKS)) this.load.audio(key, `audio/bgm/${track.file}`);
     for (const [key, url] of Object.entries(ART_ASSETS)) this.load.image(key, url);
     this.load.atlas(PROVIDED_UI,PROVIDED_ATLAS.image,PROVIDED_ATLAS.data);
     this.load.atlas(REFERENCE_HUD,HUD_ART.image,HUD_ART.data);
     this.load.atlas(BOTTOM_HUD,BOTTOM_HUD_ART.image,BOTTOM_HUD_ART.data);
+    this.load.atlas(BOSS_ATLAS,BOSS_ART.image,BOSS_ART.data);
+    this.load.atlas(BOSS_MOTION_ATLAS,BOSS_MOTION_ART.image,BOSS_MOTION_ART.data);
+    this.load.atlas(DESERT_MOTION_ATLAS,DESERT_MOTION_ART.image,DESERT_MOTION_ART.data);
+    this.load.atlas(SANDSTORM_SOURCE,SANDSTORM_ART.image,SANDSTORM_ART.data);
+    this.load.atlas(BOSS_VFX_ATLAS,BOSS_VFX_ART.image,BOSS_VFX_ART.data);
   }
 
   public create(): void {

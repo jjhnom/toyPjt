@@ -1,0 +1,866 @@
+[
+  {
+    "key": "forest_guardian_melee_0",
+    "sourceBounds": [
+      88,
+      6,
+      333,
+      223
+    ],
+    "opaque": 1176,
+    "transparent": 1481,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_melee_1",
+    "sourceBounds": [
+      88,
+      6,
+      333,
+      223
+    ],
+    "opaque": 1176,
+    "transparent": 1481,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_melee_2",
+    "sourceBounds": [
+      88,
+      6,
+      333,
+      223
+    ],
+    "opaque": 1176,
+    "transparent": 1481,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_melee_3",
+    "sourceBounds": [
+      88,
+      6,
+      333,
+      223
+    ],
+    "opaque": 1176,
+    "transparent": 1481,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_ranged_0",
+    "sourceBounds": [
+      56,
+      8,
+      320,
+      221
+    ],
+    "opaque": 959,
+    "transparent": 1688,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_ranged_1",
+    "sourceBounds": [
+      56,
+      8,
+      320,
+      221
+    ],
+    "opaque": 959,
+    "transparent": 1688,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_ranged_2",
+    "sourceBounds": [
+      56,
+      8,
+      320,
+      221
+    ],
+    "opaque": 959,
+    "transparent": 1688,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_ranged_3",
+    "sourceBounds": [
+      56,
+      8,
+      320,
+      221
+    ],
+    "opaque": 959,
+    "transparent": 1688,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_caster_0",
+    "sourceBounds": [
+      50,
+      4,
+      333,
+      223
+    ],
+    "opaque": 908,
+    "transparent": 1732,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_caster_1",
+    "sourceBounds": [
+      50,
+      4,
+      333,
+      223
+    ],
+    "opaque": 908,
+    "transparent": 1732,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_caster_2",
+    "sourceBounds": [
+      50,
+      4,
+      333,
+      223
+    ],
+    "opaque": 908,
+    "transparent": 1732,
+    "edge": 0
+  },
+  {
+    "key": "forest_guardian_caster_3",
+    "sourceBounds": [
+      50,
+      4,
+      333,
+      223
+    ],
+    "opaque": 908,
+    "transparent": 1732,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_melee_0",
+    "sourceBounds": [
+      70,
+      20,
+      333,
+      216
+    ],
+    "opaque": 1089,
+    "transparent": 1590,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_melee_1",
+    "sourceBounds": [
+      70,
+      20,
+      333,
+      216
+    ],
+    "opaque": 1089,
+    "transparent": 1590,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_melee_2",
+    "sourceBounds": [
+      70,
+      20,
+      333,
+      216
+    ],
+    "opaque": 1089,
+    "transparent": 1590,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_melee_3",
+    "sourceBounds": [
+      70,
+      20,
+      333,
+      216
+    ],
+    "opaque": 1089,
+    "transparent": 1590,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_ranged_0",
+    "sourceBounds": [
+      52,
+      14,
+      298,
+      215
+    ],
+    "opaque": 1150,
+    "transparent": 1508,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_ranged_1",
+    "sourceBounds": [
+      52,
+      14,
+      298,
+      215
+    ],
+    "opaque": 1150,
+    "transparent": 1508,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_ranged_2",
+    "sourceBounds": [
+      52,
+      14,
+      298,
+      215
+    ],
+    "opaque": 1150,
+    "transparent": 1508,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_ranged_3",
+    "sourceBounds": [
+      52,
+      14,
+      298,
+      215
+    ],
+    "opaque": 1150,
+    "transparent": 1508,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_caster_0",
+    "sourceBounds": [
+      33,
+      4,
+      329,
+      217
+    ],
+    "opaque": 1008,
+    "transparent": 1646,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_caster_1",
+    "sourceBounds": [
+      33,
+      4,
+      329,
+      217
+    ],
+    "opaque": 1008,
+    "transparent": 1646,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_caster_2",
+    "sourceBounds": [
+      33,
+      4,
+      329,
+      217
+    ],
+    "opaque": 1008,
+    "transparent": 1646,
+    "edge": 0
+  },
+  {
+    "key": "swamp_lord_caster_3",
+    "sourceBounds": [
+      33,
+      4,
+      329,
+      217
+    ],
+    "opaque": 1008,
+    "transparent": 1646,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_melee_0",
+    "sourceBounds": [
+      76,
+      4,
+      308,
+      220
+    ],
+    "opaque": 1185,
+    "transparent": 1453,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_melee_1",
+    "sourceBounds": [
+      76,
+      4,
+      308,
+      220
+    ],
+    "opaque": 1185,
+    "transparent": 1453,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_melee_2",
+    "sourceBounds": [
+      76,
+      4,
+      308,
+      220
+    ],
+    "opaque": 1185,
+    "transparent": 1453,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_melee_3",
+    "sourceBounds": [
+      76,
+      4,
+      308,
+      220
+    ],
+    "opaque": 1185,
+    "transparent": 1453,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_ranged_0",
+    "sourceBounds": [
+      52,
+      8,
+      299,
+      220
+    ],
+    "opaque": 1097,
+    "transparent": 1563,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_ranged_1",
+    "sourceBounds": [
+      52,
+      8,
+      299,
+      220
+    ],
+    "opaque": 1097,
+    "transparent": 1563,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_ranged_2",
+    "sourceBounds": [
+      52,
+      8,
+      299,
+      220
+    ],
+    "opaque": 1097,
+    "transparent": 1563,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_ranged_3",
+    "sourceBounds": [
+      52,
+      8,
+      299,
+      220
+    ],
+    "opaque": 1097,
+    "transparent": 1563,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_caster_0",
+    "sourceBounds": [
+      28,
+      0,
+      323,
+      219
+    ],
+    "opaque": 886,
+    "transparent": 1787,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_caster_1",
+    "sourceBounds": [
+      28,
+      0,
+      323,
+      219
+    ],
+    "opaque": 886,
+    "transparent": 1787,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_caster_2",
+    "sourceBounds": [
+      28,
+      0,
+      323,
+      219
+    ],
+    "opaque": 886,
+    "transparent": 1787,
+    "edge": 0
+  },
+  {
+    "key": "lava_colossus_caster_3",
+    "sourceBounds": [
+      28,
+      0,
+      323,
+      219
+    ],
+    "opaque": 886,
+    "transparent": 1787,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_melee_0",
+    "sourceBounds": [
+      56,
+      10,
+      329,
+      216
+    ],
+    "opaque": 1042,
+    "transparent": 1627,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_melee_1",
+    "sourceBounds": [
+      56,
+      10,
+      329,
+      216
+    ],
+    "opaque": 1042,
+    "transparent": 1627,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_melee_2",
+    "sourceBounds": [
+      56,
+      10,
+      329,
+      216
+    ],
+    "opaque": 1042,
+    "transparent": 1627,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_melee_3",
+    "sourceBounds": [
+      56,
+      10,
+      329,
+      216
+    ],
+    "opaque": 1042,
+    "transparent": 1627,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_ranged_0",
+    "sourceBounds": [
+      42,
+      3,
+      319,
+      217
+    ],
+    "opaque": 899,
+    "transparent": 1765,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_ranged_1",
+    "sourceBounds": [
+      42,
+      3,
+      319,
+      217
+    ],
+    "opaque": 899,
+    "transparent": 1765,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_ranged_2",
+    "sourceBounds": [
+      42,
+      3,
+      319,
+      217
+    ],
+    "opaque": 899,
+    "transparent": 1765,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_ranged_3",
+    "sourceBounds": [
+      42,
+      3,
+      319,
+      217
+    ],
+    "opaque": 899,
+    "transparent": 1765,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_caster_0",
+    "sourceBounds": [
+      21,
+      0,
+      321,
+      220
+    ],
+    "opaque": 790,
+    "transparent": 1851,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_caster_1",
+    "sourceBounds": [
+      21,
+      0,
+      321,
+      220
+    ],
+    "opaque": 790,
+    "transparent": 1851,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_caster_2",
+    "sourceBounds": [
+      21,
+      0,
+      321,
+      220
+    ],
+    "opaque": 790,
+    "transparent": 1851,
+    "edge": 0
+  },
+  {
+    "key": "frost_queen_caster_3",
+    "sourceBounds": [
+      21,
+      0,
+      321,
+      220
+    ],
+    "opaque": 790,
+    "transparent": 1851,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_melee_0",
+    "sourceBounds": [
+      52,
+      2,
+      347,
+      216
+    ],
+    "opaque": 753,
+    "transparent": 1917,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_melee_1",
+    "sourceBounds": [
+      52,
+      2,
+      347,
+      216
+    ],
+    "opaque": 753,
+    "transparent": 1917,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_melee_2",
+    "sourceBounds": [
+      52,
+      2,
+      347,
+      216
+    ],
+    "opaque": 753,
+    "transparent": 1917,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_melee_3",
+    "sourceBounds": [
+      52,
+      2,
+      347,
+      216
+    ],
+    "opaque": 753,
+    "transparent": 1917,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_ranged_0",
+    "sourceBounds": [
+      23,
+      10,
+      329,
+      215
+    ],
+    "opaque": 772,
+    "transparent": 1897,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_ranged_1",
+    "sourceBounds": [
+      23,
+      10,
+      329,
+      215
+    ],
+    "opaque": 772,
+    "transparent": 1897,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_ranged_2",
+    "sourceBounds": [
+      23,
+      10,
+      329,
+      215
+    ],
+    "opaque": 772,
+    "transparent": 1897,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_ranged_3",
+    "sourceBounds": [
+      23,
+      10,
+      329,
+      215
+    ],
+    "opaque": 772,
+    "transparent": 1897,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_caster_0",
+    "sourceBounds": [
+      18,
+      0,
+      329,
+      218
+    ],
+    "opaque": 888,
+    "transparent": 1775,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_caster_1",
+    "sourceBounds": [
+      18,
+      0,
+      329,
+      218
+    ],
+    "opaque": 888,
+    "transparent": 1775,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_caster_2",
+    "sourceBounds": [
+      18,
+      0,
+      329,
+      218
+    ],
+    "opaque": 888,
+    "transparent": 1775,
+    "edge": 0
+  },
+  {
+    "key": "twilight_king_caster_3",
+    "sourceBounds": [
+      18,
+      0,
+      329,
+      218
+    ],
+    "opaque": 888,
+    "transparent": 1775,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_melee_0",
+    "sourceBounds": [
+      55,
+      4,
+      335,
+      216
+    ],
+    "opaque": 805,
+    "transparent": 1850,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_melee_1",
+    "sourceBounds": [
+      55,
+      4,
+      335,
+      216
+    ],
+    "opaque": 805,
+    "transparent": 1850,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_melee_2",
+    "sourceBounds": [
+      55,
+      4,
+      335,
+      216
+    ],
+    "opaque": 805,
+    "transparent": 1850,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_melee_3",
+    "sourceBounds": [
+      55,
+      4,
+      335,
+      216
+    ],
+    "opaque": 805,
+    "transparent": 1850,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_ranged_0",
+    "sourceBounds": [
+      31,
+      0,
+      303,
+      216
+    ],
+    "opaque": 843,
+    "transparent": 1807,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_ranged_1",
+    "sourceBounds": [
+      31,
+      0,
+      303,
+      216
+    ],
+    "opaque": 843,
+    "transparent": 1807,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_ranged_2",
+    "sourceBounds": [
+      31,
+      0,
+      303,
+      216
+    ],
+    "opaque": 843,
+    "transparent": 1807,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_ranged_3",
+    "sourceBounds": [
+      31,
+      0,
+      303,
+      216
+    ],
+    "opaque": 843,
+    "transparent": 1807,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_caster_0",
+    "sourceBounds": [
+      35,
+      0,
+      340,
+      216
+    ],
+    "opaque": 884,
+    "transparent": 1763,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_caster_1",
+    "sourceBounds": [
+      35,
+      0,
+      340,
+      216
+    ],
+    "opaque": 884,
+    "transparent": 1763,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_caster_2",
+    "sourceBounds": [
+      35,
+      0,
+      340,
+      216
+    ],
+    "opaque": 884,
+    "transparent": 1763,
+    "edge": 0
+  },
+  {
+    "key": "desert_emperor_caster_3",
+    "sourceBounds": [
+      35,
+      0,
+      340,
+      216
+    ],
+    "opaque": 884,
+    "transparent": 1763,
+    "edge": 0
+  }
+]

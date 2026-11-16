@@ -18,7 +18,7 @@ class Storage {
 test('endless definitions rotate six themes including the desert without mutating story data or sharing writable arrays',()=>{
  const before=structuredClone(STAGES);
  for(const index of [5,6,9,10,14,99,999]){
-  const stage=generateEndlessStage(index),theme=(index-5)%6===0?{name:'황금 사막',bossId:'desert_emperor',bossPatterns:['POISON']}:STAGES[(index-5)%6-1];
+  const stage=generateEndlessStage(index),theme=(index-5)%6===0?{name:'황금 사막',bossId:'desert_emperor',bossPatterns:['POISON','SPIKES']}:STAGES[(index-5)%6-1];
   assert.equal(stage.index,index);assert.equal(stage.name,theme.name);assert.equal(stage.bossId,theme.bossId);
   assert.deepEqual(stage.bossPatterns,theme.bossPatterns);assert.equal(stage.isFinal,false);
   assert.equal(stage.gridWidth,5);assert.equal(stage.gridHeight,5);assert.equal(stage.roomCount,15);

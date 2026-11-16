@@ -10,8 +10,9 @@ import {BossVfxController} from '../../src/ui/BossVfxController.ts';
 import {EncounterHazards} from '../../src/entities/EncounterHazards.ts';
 
 const $=id=>document.getElementById(id);
-const labels={CHARGE:'돌진',METEOR:'낙하 · 강타',POISON:'독 장판',FROST:'빙결 장판',SUMMON:'소환'};
+const labels={CHARGE:'돌진',METEOR:'낙하 · 강타',POISON:'독 장판',FROST:'빙결 장판',SUMMON:'소환',FISSURE:'지각 분쇄 · 6연속',SPIKES:'사막의 송곳니 · 5연속',SPORES:'맹독 포자탄 · 5발',ROOTS:'가시뿌리 포위',SLASH:'황혼의 참격 · 교차 2연격'};
 const selection={id:'twilight_king',sequence:3,phase:2};
+const previewTarget={x:360,y:630};
 const requested=new URLSearchParams(location.search);
 if(BOSS_IDS.includes(requested.get('boss'))){
   selection.id=requested.get('boss');selection.sequence=Math.max(0,BOSS_PROFILES[selection.id].patterns.indexOf(requested.get('pattern')));
@@ -21,7 +22,7 @@ const refreshControls=()=>{
   for(const button of $('boss-list').children)button.setAttribute('aria-pressed',String(button.dataset.boss===selection.id));
   $('hint').textContent=BOSS_PROFILES[selection.id].hint;
   $('patterns').replaceChildren(...BOSS_PROFILES[selection.id].patterns.map((kind,i)=>{
-    const button=document.createElement('button');button.textContent=selection.id==='desert_emperor'?'사막의 폭풍':selection.id==='twilight_king'&&kind==='FROST'?'암흑 구속':labels[kind];
+    const button=document.createElement('button');button.textContent=selection.id==='frost_queen'&&kind==='METEOR'?'빙하 폭격 · 10연속':selection.id==='desert_emperor'&&kind==='POISON'?'사막의 폭풍':selection.id==='twilight_king'&&kind==='FROST'?'암흑 구속':labels[kind];
     button.dataset.pattern=kind;button.setAttribute('aria-pressed',String(i===selection.sequence));
     button.onclick=()=>{selection.sequence=i;refreshControls();restart();};return button;
   }));
@@ -32,14 +33,14 @@ for(const id of BOSS_IDS){
 }
 function sync(){
   $('timeline').value=String(elapsed);$('clock').textContent=`${(elapsed/1000).toFixed(2)} / ${(total/1000).toFixed(2)} s`;
-  const warning=attacks[0]?.warningMs??0,end=warning+(attacks[0]?.durationMs??0),persistent=['POISON','FROST'].includes(attacks[0]?.kind);
-  $('state').textContent=elapsed<warning?'범위 예고':elapsed<warning+320?'스킬 발동':elapsed<end&&persistent?'장판 유지':elapsed<end+600?'잔상 · 소멸':'종료';
+  const warning=attacks[0]?.warningMs??0,end=Math.max(...attacks.map(a=>a.warningMs+a.durationMs)),persistent=['POISON','FROST','ROOTS'].includes(attacks[0]?.kind);
+  $('state').textContent=elapsed<warning?'범위 예고':elapsed<warning+320?'스킬 발동':elapsed<end?(persistent?'장판 유지':attacks[0]?.kind==='SLASH'?'교차 참격':attacks[0]?.kind==='SPORES'?'포자탄 비행':attacks[0]?.kind==='FISSURE'||attacks[0]?.kind==='SPIKES'?'연속 분출':'연속 낙하'):elapsed<end+600?'잔상 · 소멸':'종료';
   $('play').textContent=playing?'일시정지':'재생';
 }
 function restart(){
   if(!scene)return;
   scene.hazards.clear();scene.motion.reset(360,360);scene.source.x=360;scene.source.y=360;
-  const plan=planBossAttack(selection.id,selection.phase,selection.sequence,{x:360,y:360,speed:ENEMY_SPECS.BOSS_CORE.speed},{x:360,y:630});
+  const plan=planBossAttack(selection.id,selection.phase,selection.sequence,{x:360,y:360,speed:ENEMY_SPECS.BOSS_CORE.speed},previewTarget);
   attacks=plan.attacks;elapsed=0;total=Math.max(...attacks.map(a=>a.warningMs+a.durationMs))+1000;
   for(const a of attacks)scene.hazards.add(a.kind,a.x,a.y,0,1,{...a,bossId:selection.id});
   scene.source.bossId=selection.id;scene.motion.cast(attacks[0].warningMs);
@@ -60,7 +61,7 @@ function step(delta){
     const u=Math.min(1,after/600);scene.source.x=a.fromX+(a.x-a.fromX)*u;scene.source.y=a.fromY+(a.y-a.fromY)*u;
   }
   scene.motion.advance(selection.id,dt,scene.source.x,scene.source.y,a.kind==='CHARGE'&&after>=0&&after<600,a.x<(a.fromX??a.x),true);
-  scene.vfx.update(dt);scene.hazards.update(dt);
+  scene.vfx.update(dt);scene.hazards.update(dt,previewTarget);
   scene.actor.setTexture(bossMotionAtlas(selection.id),bossMotionFrame(selection.id,scene.motion.frameIndex)).setPosition(scene.source.x,scene.source.y).setFlipX(scene.motion.facingLeft);
   elapsed=next;sync();
 }

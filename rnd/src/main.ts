@@ -12,6 +12,7 @@ import { CodexScene } from './scenes/CodexScene';
 import { LegacyScene } from './scenes/LegacyScene';
 import {soundManager} from './systems/SoundManager';
 import {installSoundLifecycle} from './systems/soundLifecycle';
+import {bgmManager} from './systems/BgmManager';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -21,7 +22,7 @@ const config: Phaser.Types.Core.GameConfig = {
   pixelArt: true,
   roundPixels: true,
   backgroundColor: '#090b10',
-  audio:{noAudio:true},
+  audio:{disableWebAudio:true},
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
@@ -40,4 +41,4 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 export const game = new Phaser.Game(config);
-installSoundLifecycle(soundManager,game.events);
+installSoundLifecycle(soundManager,game.events,document,window,bgmManager);

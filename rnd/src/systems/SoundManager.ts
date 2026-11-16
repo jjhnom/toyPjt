@@ -41,6 +41,7 @@ export class SoundManager {
     private sampleLoad:Promise<void>|null=null;
     private bossSampleLoad: Promise<void> | null = null;
     private readonly bossVolumes: Record<BossSoundBus, number> = { bossCast: 1, bossLoop: 1, bossUI: 1 };
+    private readonly settingsListeners = new Set<(settings: Readonly<SoundSettings>) => void>();
     private readonly backgrounds = new Set<string>();
     private unlocked = false;
     private disposed = false;
@@ -53,6 +54,17 @@ export class SoundManager {
     constructor(private readonly options: SoundOptions = {}) { }
     public isEnabled(): boolean { return this.settings.enabled; }
     public getSettings(): Readonly<SoundSettings> { return { ...this.settings }; }
+    public subscribeSettings(listener: (settings: Readonly<SoundSettings>) => void): () => void {
+        this.settingsListeners.add(listener);
+        listener(this.getSettings());
+        return () => { this.settingsListeners.delete(listener); };
+    }
+    private notifySettings(): void {
+        const settings = this.getSettings();
+        for (const listener of this.settingsListeners) {
+            try { listener(settings); } catch { this.counters.audioErrors++; }
+        }
+    }
     public getDiagnostics() {
         const activeBySound = Object.fromEntries(Object.keys(SOUND_DEFINITIONS).map(id=>[id,0])) as Record<SoundId,number>;
         for (const voice of this.voices)
@@ -85,12 +97,14 @@ export class SoundManager {
     }
     public setEnabled(enabled: boolean): void {
         this.settings.enabled = enabled;
+        this.notifySettings();
         this.applyMix();
         if (!enabled)
             this.stopVoices(true);
     }
     public setMasterVolume(value: number): void {
         this.settings.masterVolume = volume(value);
+        this.notifySettings();
         this.applyMix();
         if (this.settings.masterVolume === 0)
             this.stopVoices(true);
@@ -487,6 +501,7 @@ export class SoundManager {
         const ctx = this.ctx;
         this.releaseGraph();
         this.encoded.clear();
+        this.settingsListeners.clear();
         let close: Promise<void> | undefined;
         try {
             if (ctx && ctx.state !== 'closed')

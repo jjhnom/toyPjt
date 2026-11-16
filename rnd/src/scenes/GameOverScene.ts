@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { FANTASY, fantasyButton, pixelPanel, fantasyRibbon } from '../ui/fantasyTheme';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameData';
 import { soundManager } from '../systems/SoundManager';
+import { bgmManager } from '../systems/BgmManager';
 import { RunStats, HeroSnapshot } from '../types/game';
 import { HERO_CLASSES } from '../config/heroClassData';
 import { legacyProfile } from '../systems/LegacyProfile';
@@ -21,6 +22,7 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   public create(data: GameOverSceneData): void {
+    bgmManager.stop();
     const cx = GAME_WIDTH / 2;
 
     this.add.image(cx, GAME_HEIGHT / 2, 'art_title').setDisplaySize(GAME_WIDTH, GAME_HEIGHT);

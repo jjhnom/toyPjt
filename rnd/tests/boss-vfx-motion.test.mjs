@@ -51,11 +51,41 @@ test('poison spreads from intro frames while dark binding assembles then locks, 
  assert.equal(poison.vfx.slots[0].floor.texture.key,'boss_ground_hd_poison');assert.equal(binding.vfx.slots[0].floor.texture.key,'boss_ground_hd_binding');
 });
 
+test('both poison bosses splash once, sustain mist and release without changing damage or lifetime',()=>{
+ for(const bossId of ['swamp_lord','twilight_king']){
+  const hd=harness(true,true),baseline=harness(true,false);
+  for(const h of [hd,baseline])h.hazards.add('POISON',360,630,10,7,{bossId,radius:75,warningMs:1000,durationMs:2400});
+  const steps=[999,1,180,180,1080,600,180,180];
+  const expected=[null,'motes_0','motes_2','motes_4','motes_4','release_0','release_2',null];
+  for(const [i,dt]of steps.entries()){
+   for(const h of [hd,baseline])h.step(dt);
+   assert.deepEqual(hd.damage,baseline.damage);
+   const slot=hd.vfx.slots[0];
+   if(expected[i])assert.equal(slot.flare.frame.name,expected[i]);
+   if(i===1)assert.equal(slot.flare.alpha,1);
+  }
+  assert.equal(hd.vfx.activeCount,0);assert.equal(hd.vfx.slots[0].floor.visible,false);
+ }
+});
+
 test('reference impacts play once and frost erupts once before switching to its low sustained crown',()=>{
  const meteor=harness(true,true);meteor.hazards.add('METEOR',360,630,10,7,{bossId:'twilight_king',radius:65,warningMs:1000,durationMs:250});
  meteor.step(1000);assert.equal(meteor.vfx.slots[0].flare.frame.name,'motes_0');meteor.step(70);assert.equal(meteor.vfx.slots[0].flare.frame.name,'motes_2');meteor.step(120);assert.equal(meteor.vfx.slots[0].flare.frame.name,'motes_4');meteor.step(450);assert.equal(meteor.vfx.slots[0].flare.frame.name,'motes_7');assert.equal(meteor.damage.length,1);
  const frost=harness(true,true);frost.hazards.add('FROST',360,630,10,7,{bossId:'frost_queen',radius:85,warningMs:1100,durationMs:2200});
  frost.step(1100);assert.equal(frost.vfx.slots[0].flare.frame.name,'motes_0');frost.step(180);assert.equal(frost.vfx.slots[0].flare.frame.name,'motes_2');frost.step(180);assert.equal(frost.vfx.slots[0].flare.frame.name,'motes_4');frost.step(720);assert.equal(frost.vfx.slots[0].flare.frame.name,'motes_4');assert.equal(frost.vfx.slots[0].floor.texture.key,'boss_ground_hd_frost');
+});
+
+test('frost queen spreads frost before damage and shatters within the existing lifetime',()=>{
+ const h=harness(true,true);
+ h.hazards.add('FROST',360,630,10,7,{bossId:'frost_queen',radius:85,warningMs:1100,durationMs:2200});
+ h.step(400);const slot=h.vfx.slots[0];assert.equal(slot.floor.frame.name,'intro_0');assert.equal(h.damage.length,0);
+ h.step(600);assert.equal(slot.floor.frame.name,'intro_3');assert.equal(h.damage.length,0);
+ h.step(100);assert.equal(slot.flare.frame.name,'motes_0');assert.equal(slot.flare.alpha,1);assert.equal(h.damage.length,1);
+ h.step(1840);assert.equal(slot.flare.frame.name,'release_0');
+ const frozen=slot.flare.frame.name;h.step(0);assert.equal(slot.flare.frame.name,frozen);
+ h.step(180);assert.equal(slot.flare.frame.name,'release_2');
+ assert.equal(slot.floor.displayWidth,170);assert.equal(slot.floor.x,360);assert.equal(slot.flare.mask,slot.mask);
+ h.step(180);assert.equal(h.vfx.activeCount,0);assert.equal(slot.flare.visible,false);
 });
 
 test('dark binding erupts once, holds its chained cage and releases within the original hazard lifetime',()=>{

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import {segmentCircleEntry} from '../systems/sporeGeometry';
 import {UNIT_TYPES} from '../config/unitData';
 import { PROVIDED_UI, providedFloor } from '../ui/providedArt';
 import { paintBattleEnvironment } from '../ui/battleEnvironment';
@@ -23,9 +24,12 @@ import { Bullet, BulletGroup } from '../entities/Bullet';
 import { DamageTextGroup } from '../entities/DamageTextPool';
 import { EffectParticleGroup } from '../entities/EffectParticlePool';
 import { Enemy, EnemyGroup } from '../entities/Enemy';
+import type {EnemySpecialKind} from '../entities/Enemy';
+import {regionalMonster,REGIONAL_MONSTERS} from '../config/monsterData';
 import { PlayerSquad } from '../entities/PlayerSquad';
 import { RoomGridManager } from '../systems/RoomGridManager';
 import { soundManager } from '../systems/SoundManager';
+import { bgmManager } from '../systems/BgmManager';
 import { BossAudioController } from '../systems/BossAudioController';
 import {
   BulletFireConfig,
@@ -188,6 +192,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     const checkpoint = loaded?.status === 'ready' ? loaded.checkpoint : null;
+    bgmManager.play(this, 'bgm_battle');
     this.runId = checkpoint?.version === 2 ? checkpoint.runId : `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
     if (!data.resume) runSaveManager.clear();
     this.stats = checkpoint ? { ...checkpoint.stats } : {
@@ -293,8 +298,8 @@ export class GameScene extends Phaser.Scene {
     this.particles = new EffectParticleGroup(this);
     this.bossVfx=new BossVfxController(this,life=>(this.enemies.getChildren() as Enemy[]).find(e=>e.active&&e.lifeId===life));
     this.bossAudio = new BossAudioController(soundManager);
-    this.hazards = new EncounterHazards(this, (kind, x, y, radius, damage, sourceLife) =>
-      this.resolveHazard(kind, x, y, radius, damage, sourceLife),this.bossVfx,this.bossAudio);
+    this.hazards = new EncounterHazards(this, (kind, x, y, radius, damage, sourceLife,previousX,previousY) =>
+      this.resolveHazard(kind, x, y, radius, damage, sourceLife,previousX,previousY),this.bossVfx,this.bossAudio);
 
     // 사방 문(Door) 및 다음 방 타입 뱃지 생성
     this.createDoors();
@@ -769,9 +774,12 @@ export class GameScene extends Phaser.Scene {
     const spawn = this.pendingSpawns[0];
     const enemy = this.enemies.spawnEnemy(spawn.archetype, spawn.x, spawn.y, spawn.hp, spawn.damage, spawn.speed);
     if (!enemy) return; // Required spawns remain queued when the pool is exhausted.
+    const monster=regionalMonster(this.progression.current.bossId,spawn.archetype);
+    if(monster)enemy.applyRegionalMonster(monster);
     if (spawn.archetype === 'BOSS_CORE' && isBossId(this.progression.current.bossId)) {
       enemy.applyBossProfile(this.progression.current.bossId);
       this.bossAudio.encounterStarted(enemy.lifeId);
+      if (enemy.bossId === 'twilight_king') bgmManager.play(this, 'bgm_twilight');
     }
     enemy.onSpecial = (source, kind) => this.onEnemySpecial(source, kind);
     this.pendingSpawns.shift();
@@ -779,16 +787,42 @@ export class GameScene extends Phaser.Scene {
     this.spawnTimerMs = SPAWN_INTERVAL_MS * scaling.spawnIntervalMult;
   }
 
-  private onEnemySpecial(enemy: Enemy, kind: 'SHOT' | 'EXPLODE' | 'SUMMON'): void {
+  private onEnemySpecial(enemy: Enemy, kind: EnemySpecialKind): void {
     if (this.runEnded || this.rewardModalOpen || this.progression.state !== 'PLAYING') return;
     const target = this.squad.drones.find(drone => drone.id === enemy.targetUnitId);
     this.hazards.add(kind, kind === 'EXPLODE' || kind === 'SUMMON' ? enemy.x : target?.x ?? this.squad.leader.x,
       kind === 'EXPLODE' || kind === 'SUMMON' ? enemy.y : target?.y ?? this.squad.leader.y,
-      enemy.spec.contactDamage, enemy.lifeId);
+      enemy.spec.contactDamage, enemy.lifeId,enemy.monster?.skill&&kind===enemy.monster.skill.kind?{
+        radius:enemy.monster.skill.radius,warningMs:enemy.monster.skill.warningMs,durationMs:enemy.monster.skill.durationMs,color:enemy.monster.color,
+        ...(kind==='SHOT'?{shotX:enemy.x,shotY:enemy.y}:{})
+      }:{});
   }
 
-  private resolveHazard(kind: HazardKind, x: number, y: number, radius: number, damage: number, sourceLife: number): void {
+  private resolveHazard(kind: HazardKind, x: number, y: number, radius: number, damage: number, sourceLife: number,previousX=x,previousY=y): number|void {
     if (this.runEnded || this.rewardModalOpen || this.progression.state !== 'PLAYING') return;
+    if(kind==='SLASH'){
+      if(!this.squad.health.isDead&&Number.isFinite(segmentCircleEntry(previousX,previousY,x,y,this.squad.leader.x,this.squad.leader.y,radius+18))){
+        this.squad.receiveContactDamage(damage,this.time.now);if(this.runEnded)return;
+      }
+      for(const drone of this.squad.drones){
+        if(drone.active&&!drone.health.isDead&&Number.isFinite(segmentCircleEntry(previousX,previousY,x,y,drone.x,drone.y,radius+14)))
+          drone.health.takeDamage(damage,this.time.now,650);
+      }
+      return;
+    }
+    if(kind==='SPORES'){
+      let first=this.squad.health.isDead?Infinity:segmentCircleEntry(previousX,previousY,x,y,this.squad.leader.x,this.squad.leader.y,radius+18);
+      let target=-1;
+      for(let i=0;i<this.squad.drones.length;i++){
+        const drone=this.squad.drones[i];if(!drone.active||drone.health.isDead)continue;
+        const t=segmentCircleEntry(previousX,previousY,x,y,drone.x,drone.y,radius+14);
+        if(t<first){first=t;target=i;}
+      }
+      if(!Number.isFinite(first))return;
+      if(target<0)this.squad.receiveContactDamage(damage,this.time.now);
+      else this.squad.drones[target].health.takeDamage(damage,this.time.now,650);
+      return first;
+    }
     if (kind === 'CHARGE') {
       const boss = (this.enemies.getChildren() as Enemy[]).find(enemy => enemy.active && enemy.lifeId === sourceLife);
       boss?.beginCharge(x, y, this.time.now);
@@ -830,7 +864,7 @@ export class GameScene extends Phaser.Scene {
     this.bossPatternLeft=plan.intervalMs;
     for(const attack of plan.attacks) {
       const added=this.hazards.add(attack.kind,attack.x,attack.y,boss.spec.contactDamage,boss.lifeId,{...attack,bossId:stage.bossId,patternId:this.bossPatternNumber});
-      if(added)boss.windUpBossCast(attack.warningMs);
+      if(added)boss.windUpBossCast(attack.kind==='SLASH'||attack.kind==='ROOTS'||attack.kind==='SPIKES'?1000:attack.kind==='FISSURE'?1100:stage.bossId==='frost_queen'&&attack.kind==='METEOR'?BOSS_PROFILES.frost_queen.warningMs:attack.warningMs);
       if(added&&attack.kind==='CHARGE')boss.windUpCharge(attack.warningMs);
     }
     this.stageBanner.setStatus(`${stage.bossName} · PHASE ${phase}/${stage.bossPhases}`);
@@ -1189,7 +1223,7 @@ export class GameScene extends Phaser.Scene {
     this.scene.launch('SummoningCircleScene', {
       reward: Math.round(ROOM_REWARD.combat * getStageScaling(this.progression.index, this.progression.mutation).rewardMult),
       guardianName: ENEMY_SPECS[SUMMONING_CIRCLE.guardian].name,
-      escortName: ENEMY_SPECS[this.progression.current.enemyPoolIds[0]].name,
+      escortName: regionalMonster(this.progression.current.bossId,this.progression.current.enemyPoolIds[0])?.name??ENEMY_SPECS[this.progression.current.enemyPoolIds[0]].name,
       onChoose: (choice: CircleChoice) => this.chooseSummoningCircle(room, choice)
     });
     this.scene.pause();
@@ -1282,6 +1316,7 @@ export class GameScene extends Phaser.Scene {
     }
     const result = this.progression.clearBoss();
     if (!result) return;
+    bgmManager.play(this, 'bgm_battle');
     if(isBossId(this.progression.current.bossId))codexManager.recordBoss(this.progression.current.bossId);
     this.clearEncounter();
     this.roomState = 'CLEARED';
@@ -1432,7 +1467,7 @@ export class GameScene extends Phaser.Scene {
 
   private showStageBanner(): void {
     const stage = this.progression.current;
-    const newEnemies = stage.newEnemyIds.map(id => ENEMY_SPECS[id].name).join(' · ');
+    const newEnemies = REGIONAL_MONSTERS.filter(m=>m.region===stage.bossId).map(m=>m.name).join(' · ');
     this.showBanner(`STAGE ${stage.index + 1} — ${stage.name}${newEnemies ? `\n새로운 적: ${newEnemies}` : ''}`);
   }
 
@@ -1622,7 +1657,7 @@ export class GameScene extends Phaser.Scene {
       enemy.setTargetPosition(target?.x ?? this.squad.leader.x, target?.y ?? this.squad.leader.y);
     }
     this.bossVfx.update(delta);
-    this.hazards.update(delta);
+    this.hazards.update(delta,this.squad.leader);
     if (this.runEnded) return;
 
     // 적군 체력바 오버레이 렌더링

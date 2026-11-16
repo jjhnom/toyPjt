@@ -10,6 +10,12 @@ import {prepareForestSlamTextures,forestSlamVisual,forestSlamFrameIndex,forestSl
 import {LAVA_METEOR,prepareLavaMeteorTextures,renderLavaMeteor} from './lavaMeteorVfx';
 import {TWILIGHT_METEOR_ATLAS,prepareTwilightMeteorTextures} from './twilightMeteorVfx';
 import {prepareBossAreaQuality,bossAreaQualityReady,renderBossAreaQuality} from './bossAreaQuality';
+import {prepareIceBarrageTextures,renderIceBarrage} from './iceBarrageVfx';
+import {prepareLavaFissureTextures,renderLavaFissure} from './lavaFissureVfx';
+import {prepareDesertFangTextures,renderDesertFangs} from './desertFangVfx';
+import {prepareSporeTextures,renderSpores} from './sporeVfx';
+import {prepareForestRootTextures,renderForestRoots} from './forestRootVfx';
+import {prepareTwilightSlashTextures,renderTwilightSlash} from './twilightSlashVfx';
 
 interface VisualSlot {
   active:boolean;released:boolean;elapsed:number;state:HazardView;source:Enemy;
@@ -34,6 +40,12 @@ export class BossVfxController implements HazardVisualSink {
   constructor(private readonly scene:Phaser.Scene,private readonly findSource:(life:number)=>Enemy|undefined){
     this.animated=scene.textures.exists(BOSS_VFX_ATLAS);
     prepareBossAreaQuality(scene);
+    prepareIceBarrageTextures(scene);
+    prepareLavaFissureTextures(scene);
+    prepareDesertFangTextures(scene);
+    prepareSporeTextures(scene);
+    prepareForestRootTextures(scene);
+    prepareTwilightSlashTextures(scene);
     if(!bossAreaQualityReady(scene)){
       prepareBossGroundTextures(scene);
       prepareForestSlamTextures(scene);
@@ -61,12 +73,12 @@ export class BossVfxController implements HazardVisualSink {
         floor:this.image('boss-vfx-floor',19),flare:this.image('boss-vfx-impact',34)};
       slot.floor.setMask(mask);slot.flare.setMask(mask);this.slots[index]=slot;
     }
-    if(state.bossId==='desert_emperor'&&this.scene.textures.exists('boss_ground_hd_sand')&&!slot.swirls)
+    if(state.bossId==='desert_emperor'&&state.kind==='POISON'&&this.scene.textures.exists('boss_ground_hd_sand')&&!slot.swirls)
       slot.swirls=[slot.flare,this.image('boss-sand-swirl-1',34),this.image('boss-sand-swirl-2',34)];
     slot.flare.setDepth(34);
     slot.active=true;slot.released=false;slot.elapsed=0;slot.state=state;slot.source=source;
     slot.floor.setVisible(false).setMask(slot.mask);slot.flare.setVisible(false).setMask(slot.mask);slot.shape.clear().fillStyle(0xffffff);
-    if(state.fromX!==null&&state.fromY!==null){
+    if((state.kind==='CHARGE'||state.kind==='SLASH')&&state.fromX!==null&&state.fromY!==null){
       slot.shape.lineStyle(state.radius*2,0xffffff).lineBetween(state.fromX,state.fromY,state.x,state.y)
         .fillCircle(state.fromX,state.fromY,state.radius).fillCircle(state.x,state.y,state.radius);
     }else slot.shape.fillCircle(state.x,state.y,state.radius);
@@ -87,6 +99,8 @@ export class BossVfxController implements HazardVisualSink {
 
   public draw(index:number,state:HazardView,impact:boolean):void {
     const slot=this.slots[index];if(!slot?.active)return;
+    if((state.bossId==='desert_emperor'&&state.kind==='POISON')||state.kind==='SPORES')
+      slot.shape.clear().fillStyle(0xffffff).fillCircle(state.x,state.y,state.radius);
     if(impact)slot.source.showBossImpact();
     this.render(slot,state.age);
   }
@@ -99,6 +113,12 @@ export class BossVfxController implements HazardVisualSink {
     if(slot.swirls)for(const swirl of slot.swirls)swirl.setVisible(false);
     slot.detail.clear().setVisible(false);
     const qualityAlpha=slot.released?bossVfxFade(slot.elapsed,this.slotTailMs(slot)):1;
+    if(id==='twilight_king'&&state.kind==='SLASH'&&renderTwilightSlash(this.scene,slot,state,age))return;
+    if(id==='forest_guardian'&&state.kind==='ROOTS'&&renderForestRoots(this.scene,slot,state,age))return;
+    if(id==='swamp_lord'&&state.kind==='SPORES'&&renderSpores(this.scene,slot,state,age))return;
+    if(id==='desert_emperor'&&state.kind==='SPIKES'&&renderDesertFangs(this.scene,slot,state,age,qualityAlpha))return;
+    if(id==='lava_colossus'&&state.kind==='FISSURE'&&renderLavaFissure(this.scene,slot,state,age,qualityAlpha))return;
+    if(id==='frost_queen'&&state.kind==='METEOR'&&renderIceBarrage(this.scene,slot,state,age,qualityAlpha))return;
     if(renderBossAreaQuality(this.scene,slot,state,age,qualityAlpha))return;
     if(id==='lava_colossus'&&state.kind==='METEOR'&&renderLavaMeteor(this.scene,floor,flare,state,age))return;
     if(id==='twilight_king'&&state.kind==='METEOR'&&renderLavaMeteor(this.scene,floor,flare,state,age,TWILIGHT_METEOR_ATLAS))return;
@@ -175,7 +195,7 @@ export class BossVfxController implements HazardVisualSink {
 
   public end(index:number,state:HazardView):void {
     const slot=this.slots[index];if(!slot?.active)return;
-    if(state.kind==='POISON'||state.kind==='FROST'){this.hide(slot);return;}
+    if(state.kind==='POISON'||state.kind==='FROST'||state.kind==='SPORES'||state.kind==='ROOTS'){this.hide(slot);return;}
     slot.released=true;slot.elapsed=0;
   }
 
@@ -185,6 +205,8 @@ export class BossVfxController implements HazardVisualSink {
   }
   private tailMs(kind:string):number{return kind==='CHARGE'?600:this.animated&&kind==='SUMMON'?420:260;}
   private slotTailMs(slot:VisualSlot):number {
+    if(slot.state.kind==='SLASH')return Math.max(0,500-(slot.state.age-slot.state.warningMs));
+    if(slot.state.kind==='FISSURE'||slot.state.kind==='SPIKES')return Math.max(0,600-(slot.state.age-slot.state.warningMs));
     return (slot.state.bossId==='lava_colossus'||slot.state.bossId==='twilight_king')&&slot.state.kind==='METEOR'
       ?Math.max(0,LAVA_METEOR.endMs-(slot.state.age-slot.state.warningMs)):this.tailMs(slot.state.kind);
   }

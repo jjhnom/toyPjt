@@ -33,24 +33,27 @@ export const BOSS_SOUNDS = Object.fromEntries(BOSS_SOUND_IDS.map(id => {
 
 export interface BossSkillSound { cast: BossSoundId; fall?: BossSoundId; loop?: BossLoopId }
 const SKILLS: Record<BossId, Partial<Record<BossPattern, BossSkillSound>>> = {
-    forest_guardian: { CHARGE: { cast: 'boss_forest_charge' }, METEOR: { cast: 'boss_forest_slam' } },
+    forest_guardian: { CHARGE: { cast: 'boss_forest_charge' }, METEOR: { cast: 'boss_forest_slam' }, ROOTS: {cast:'boss_forest_slam'} },
     swamp_lord: {
+        SPORES: {cast:'boss_swamp_poison_cast'},
         CHARGE: { cast: 'boss_swamp_charge' },
         POISON: { cast: 'boss_swamp_poison_cast', loop: 'boss_swamp_poison_loop' }
     },
-    lava_colossus: { METEOR: { fall: 'boss_lava_meteor_fall', cast: 'boss_lava_meteor_impact' } },
+    lava_colossus: { METEOR: { fall: 'boss_lava_meteor_fall', cast: 'boss_lava_meteor_impact' }, FISSURE: {cast:'boss_lava_meteor_impact'} },
     frost_queen: {
+        METEOR: { cast: 'boss_frost_eruption' },
         FROST: { cast: 'boss_frost_eruption', loop: 'boss_frost_field_loop' },
         SUMMON: { cast: 'boss_frost_summon' }
     },
     twilight_king: {
+        SLASH: {cast:'boss_twilight_charge'},
         METEOR: { fall: 'boss_twilight_meteor_fall', cast: 'boss_twilight_meteor_impact' },
         POISON: { cast: 'boss_twilight_poison_cast', loop: 'boss_twilight_poison_loop' },
         CHARGE: { cast: 'boss_twilight_charge' },
         FROST: { cast: 'boss_twilight_binding', loop: 'boss_twilight_binding_loop' },
         SUMMON: { cast: 'boss_twilight_summon' }
     },
-    desert_emperor: { POISON: { cast: 'boss_desert_sandstorm_cast', loop: 'boss_desert_sandstorm_loop' } }
+    desert_emperor: { POISON: { cast: 'boss_desert_sandstorm_cast', loop: 'boss_desert_sandstorm_loop' }, SPIKES: {cast:'boss_desert_sandstorm_cast'} }
 };
 export function bossSkillSound(id: BossId, kind: BossPattern): BossSkillSound | undefined {
     return SKILLS[id]?.[kind];

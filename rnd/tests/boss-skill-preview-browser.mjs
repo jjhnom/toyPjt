@@ -31,7 +31,7 @@ try{
  await evaluate(`document.querySelector('[data-boss="twilight_king"]').click();document.querySelector('[data-pattern="FROST"]').click();document.querySelector('[data-jump="field"]').click()`);
  assert.equal(await evaluate("document.getElementById('play').textContent"),'재생');
  const counts=await evaluate(`['earth','poison','ice','fire','dark','binding','frost','void','sand'].map(k=>bossPreview.scene.textures.get('boss_ground_hd_'+k).getFrameNames().length)`);
- assert.deepEqual(counts,[17,20,16,17,17,24,17,17,20]);report.materialFrames=counts;
+ assert.deepEqual(counts,[17,24,16,17,17,24,25,17,20]);report.materialFrames=counts;
  for(const width of [1280,390]){
   await send('Emulation.setDeviceMetricsOverride',{width,height:width===1280?1000:1500,deviceScaleFactor:1,mobile:width===390});await sleep(200);
   assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth'),false,'page fits viewport');

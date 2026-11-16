@@ -18,7 +18,7 @@ test('sandstorm locks bounded circular targets, phases add one zone and do not i
   for(const a of p.attacks){assert.equal(a.kind,'POISON');assert.equal(a.radius,90);assert.equal(a.warningMs,1200);assert.equal(a.durationMs,2400);assert.equal(bossAreaStyle({bossId:'desert_emperor',kind:a.kind}),'sand');}
   target.x+=1;assert.notEqual(p.attacks[0].x,target.x);target.x-=1;
  }
- assert.deepEqual(BOSS_PROFILES.desert_emperor.patterns,['POISON']);
+ assert.deepEqual(BOSS_PROFILES.desert_emperor.patterns,['POISON','SPIKES']);
 });
 test('all twelve desert motion frames and static fallback poses exist within mobile atlas limits',()=>{
  for(const [dir,size,names]of [['boss-motion-v2',160,Array.from({length:12},(_,i)=>'motion_'+i)],['bosses-v1',192,['idle','cast','charge']]]){

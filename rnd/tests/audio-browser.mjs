@@ -18,7 +18,7 @@ try{
   Native.prototype.createOscillator=function(){audioTrace.oscillators++;return osc.call(this);};
   Native.prototype.createGain=function(){audioTrace.gains++;return gain.call(this);};
   Native.prototype.resume=function(){audioTrace.resumeGestures.push(navigator.userActivation.isActive);return resume.call(this);};undefined;})()`);
- assert.equal(await evaluate('smash.config.audio.noAudio'),true);assert.equal(await evaluate('audio.getDiagnostics().contextState'),'uninitialized');
+ assert.equal(await evaluate('smash.config.audio.disableWebAudio'),true);assert.equal(await evaluate('audio.getDiagnostics().contextState'),'uninitialized');
  const menuListeners=await evaluate('smash.events.listenerCount("hidden")');
  await click('MenuScene','sound-toggle');assert.equal(await evaluate('audio.isEnabled()'),false);
  assert.equal(await evaluate('audioTrace.contexts.length'),0,'muting as the first touch must not allocate an audio graph');

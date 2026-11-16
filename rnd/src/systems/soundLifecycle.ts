@@ -4,21 +4,34 @@ interface GameEvents {
     off(event: string, callback: () => void): unknown;
     once(event: string, callback: () => void): unknown;
 }
+interface MusicLifecycle {
+    unlockFromUserGesture(): void;
+    suspendForBackground(reason: string): void;
+    resumeAfterForeground(reason: string): void;
+    syncSettings(settings: ReturnType<SoundManager['getSettings']>): void;
+    dispose(): void;
+}
 const bindings = new WeakMap<SoundManager, () => void>();
 /** One application binding, kept across Scenes and removed when the Game is destroyed. */
-export function installSoundLifecycle(manager: SoundManager, events: GameEvents, doc: Document = document, win: Window = window): () => void {
+export function installSoundLifecycle(manager: SoundManager, events: GameEvents, doc: Document = document, win: Window = window, music?: MusicLifecycle): () => void {
     const existing = bindings.get(manager);
     if (existing)
         return existing;
-    const gesture = () => { void manager.unlockFromUserGesture(); };
-    const hidden = () => { void manager.suspendForBackground('game'); };
-    const visible = () => { void manager.resumeAfterForeground('game'); };
-    const visibility = () => { if (doc.hidden)
-        void manager.suspendForBackground('document');
-    else
-        void manager.resumeAfterForeground('document'); };
-    const pagehide = () => { void manager.suspendForBackground('page'); };
-    const pageshow = () => { void manager.resumeAfterForeground('page'); };
+    const unsubscribe = music ? manager.subscribeSettings(settings => music.syncSettings(settings)) : undefined;
+    const gesture = () => { music?.unlockFromUserGesture(); void manager.unlockFromUserGesture(); };
+    const hidden = () => { music?.suspendForBackground('game'); void manager.suspendForBackground('game'); };
+    const visible = () => { music?.resumeAfterForeground('game'); void manager.resumeAfterForeground('game'); };
+    const visibility = () => {
+        if (doc.hidden) {
+            music?.suspendForBackground('document');
+            void manager.suspendForBackground('document');
+        } else {
+            music?.resumeAfterForeground('document');
+            void manager.resumeAfterForeground('document');
+        }
+    };
+    const pagehide = () => { music?.suspendForBackground('page'); void manager.suspendForBackground('page'); };
+    const pageshow = () => { music?.resumeAfterForeground('page'); void manager.resumeAfterForeground('page'); };
     let released = false;
     const cleanup = () => {
         if (released)
@@ -33,6 +46,8 @@ export function installSoundLifecycle(manager: SoundManager, events: GameEvents,
         events.off('hidden', hidden);
         events.off('visible', visible);
         events.off('destroy', cleanup);
+        unsubscribe?.();
+        music?.dispose();
         void manager.dispose();
     };
     // Phaser touchstart actions run before pointerup, so a first mute tap never creates an unused graph.

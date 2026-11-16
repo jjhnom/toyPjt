@@ -13,9 +13,12 @@ import type { BossId } from '../types/game';
 import { BOSS_ATLAS,BOSS_VISUALS,bossPoseFrame } from '../config/bossVisualData';
 import type { BossPose } from '../config/bossVisualData';
 import {BOSS_MOTION_ATLAS,BOSS_MOTION_ORIGIN_Y,BossMotion,bossMotionFrame,bossMotionAtlas} from '../ui/BossMotion';
+import {MONSTER_ATLAS} from '../config/monsterData';
+import type {RegionalMonster,MonsterSpecial} from '../config/monsterData';
 
 export type EnemyAttackCallback = (enemy: Enemy, damage: number) => void;
-export type EnemySpecialCallback = (enemy: Enemy, kind: 'SHOT' | 'EXPLODE' | 'SUMMON') => void;
+export type EnemySpecialKind = MonsterSpecial|'EXPLODE';
+export type EnemySpecialCallback = (enemy: Enemy, kind: EnemySpecialKind) => void;
 export type BurnTickCallback = (enemy: Enemy, damage: number, sourceUnitId?: string) => void;
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
@@ -23,6 +26,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   public lifeId = 0;
   public rewardsClaimed = false;
   public spec: EnemySpec = ENEMY_SPECS.SWARMER;
+  public monster:RegionalMonster|null=null;
+  private regionalArt=false;
   public health!: HealthComponent;
   public movement!: MovementComponent;
   public readonly burn = new BurnComponent();
@@ -72,6 +77,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.burn.clear();
     this.poison.clear();
     this.onSpecial = undefined;
+    this.monster=null;this.regionalArt=false;
     this.bossId = null; this.chargeWindupMs = this.bossChargeMs = 0;
     this.bossCastVisualMs=this.bossAttackVisualMs=0;
     this.bossVisualFailed=false;
@@ -127,6 +133,15 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.targetUnitId = null;
     this.chargeAngle = 0;
     arcadeBody.setVelocity(0, 0);
+  }
+
+  public applyRegionalMonster(monster:RegionalMonster):void {
+    if(this.spec.archetype==='BOSS_CORE'||this.spec.archetype==='ELITE_BRUTE')return;
+    this.monster=monster;
+    const suffix=this.spec.archetype==='TANK'?' · 중갑':this.spec.archetype==='CHASER'?' · 돌진':this.spec.archetype==='EXPLODER'?' · 자폭':'';
+    this.spec={...this.spec,name:monster.name+suffix};
+    this.regionalArt=!!this.scene.textures?.exists(MONSTER_ATLAS);
+    if(this.regionalArt){this.anims.stop();this.setTexture(MONSTER_ATLAS,monster.id+'_0');}
   }
 
   public setTargetPosition(x: number, y: number): void {
@@ -278,7 +293,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setFlipX(dx < 0);
 
     if (time >= this.nextSpecialAt && this.onSpecial) {
-      if (this.spec.archetype === 'SPORE_SHOOTER' && dist < 450) {
+      if(this.monster?.skill){
+        const skill=this.monster.skill;
+        if(dist<skill.range){this.nextSpecialAt=time+skill.cooldownMs;this.attackAnimUntil=time+180;this.onSpecial(this,skill.kind);}
+      }else if (this.spec.archetype === 'SPORE_SHOOTER' && dist < 450) {
         this.nextSpecialAt = time + 2200;
         this.onSpecial(this, 'SHOT');
       } else if (this.spec.archetype === 'EXPLODER' && dist < 140) {
@@ -299,6 +317,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.onAttackPlayer(this, this.spec.contactDamage);
       }
     }
+    if(this.regionalArt&&this.monster){const frame=this.monster.id+'_'+Math.floor(time/160)%4;if(this.frame.name!==frame)this.setFrame(frame);}
     this.updateBossVisual(delta,time);
   }
 

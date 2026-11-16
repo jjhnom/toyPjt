@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameData';
 import { soundManager } from '../systems/SoundManager';
+import { bgmManager } from '../systems/BgmManager';
 import { FANTASY, pixelPanel, fantasyButton } from '../ui/fantasyTheme';
 import { lobbyCharacterPortrait } from '../ui/lobbyCharacters';
 import { lobbyCrest, lobbyIcon, lobbyNavButton, lobbyPlatform } from '../ui/lobbyArt';
@@ -103,6 +104,7 @@ export class MenuScene extends Phaser.Scene {
     const highest = endlessRecordManager.highestStage();
     this.label(cx,1252,highest?`무한 원정 최고 도달 · STAGE ${highest}`:'작은 동료들이 모여, 위대한 모험이 됩니다.',17,'#d2bfe2')
       .setStroke('#130e22',3).setName('endless-record');
+    bgmManager.play(this, 'bgm_lobby');
   }
 
   private canOpenPanel(): boolean {

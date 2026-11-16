@@ -1,8 +1,9 @@
 import type Phaser from 'phaser';
 import type {HazardView} from '../entities/EncounterHazards';
-import {paintPoison,paintBinding,paintBindingRelease} from './bossAreaIdentities';
+import {paintPoison,paintPoisonPower,paintPoisonRelease,paintBinding,paintBindingRelease} from './bossAreaIdentities';
 import {paintReferenceEffect,paintReferenceWarning,paintReferenceFall,referenceImpactIndex} from './bossReferenceEffects';
 import {paintSandstorm,paintSandstormAir} from './bossSandstorm';
+import {paintFrostQueen} from './frostQueenVfx';
 
 export type BossAreaStyle='earth'|'poison'|'ice'|'fire'|'dark'|'binding'|'frost'|'void'|'sand';
 export const BOSS_AREA_QUALITY={size:192,frames:8,filter:0,maxUpscale:1.1} as const; // Phaser LINEAR=0.
@@ -49,8 +50,8 @@ export function prepareBossAreaQuality(scene:Phaser.Scene):void {
   for(const style of STYLES_LIST){
     const key=bossAreaAtlas(style);if(scene.textures.exists(key))continue;
     try{
-      const hasFall=style==='fire'||style==='dark'||style==='void',hasIntro=style==='poison'||style==='binding',hasWarning=style==='earth'||style==='frost';
-      const columns=style==='binding'?5:4,texture=scene.textures.createCanvas(key,columns*196,hasFall||hasIntro||hasWarning||style==='sand'?980:784);if(!texture)continue;
+      const hasFall=style==='fire'||style==='dark'||style==='void',hasIntro=style==='poison'||style==='binding'||style==='frost',hasWarning=style==='earth'||style==='frost';
+      const columns=style==='binding'||style==='frost'||style==='poison'?5:4,texture=scene.textures.createCanvas(key,columns*196,hasFall||hasIntro||hasWarning||style==='sand'?980:784);if(!texture)continue;
       const c=texture.getContext();c.imageSmoothingEnabled=true;const colors=STYLES[style];let cell=0;
       const frame=(name:string,draw:()=>void)=>{
         const x=cell%columns*196+2,y=Math.floor(cell/columns)*196+2;cell++;c.save();c.translate(x,y);draw();c.restore();texture.add(name,0,x,y,192,192);
@@ -58,10 +59,11 @@ export function prepareBossAreaQuality(scene:Phaser.Scene):void {
       for(let i=0;i<8;i++){
         const phase=i*Math.PI/4;
         frame(GROUND[i],()=>{
+          if(style==='frost'){paintFrostQueen(c,'ground',i);return;}
           if(style==='sand'){paintSandstorm(c,'ground',i);return;}
           if(style==='poison'){paintPoison(c,phase,'ground');return;}
           if(style==='binding'){paintBinding(c,phase,'ground');return;}
-          if(style==='earth'||style==='fire'||style==='void'||style==='frost'){paintReferenceEffect(c,style,'ground',i);return;}
+          if(style==='earth'||style==='fire'||style==='void'){paintReferenceEffect(c,style,'ground',i);return;}
           c.beginPath();c.arc(96,96,95.5,0,Math.PI*2);c.clip();
           const fill=c.createRadialGradient(96,96,10,96,96,96);fill.addColorStop(0,rgba(colors.ink,.55));fill.addColorStop(.7,rgba(colors.ink,.74));fill.addColorStop(1,rgba(colors.ink,0));c.fillStyle=fill;c.fillRect(0,0,192,192);
           glow(c,96,96,94,colors.glow,.16);
@@ -85,10 +87,11 @@ export function prepareBossAreaQuality(scene:Phaser.Scene):void {
           }
         });
         frame(MOTES[i],()=>{
+          if(style==='frost'){paintFrostQueen(c,'motes',i);return;}
           if(style==='sand'){paintSandstormAir(scene,c,i);return;}
-          if(style==='poison'){paintPoison(c,phase,'motes');return;}
+          if(style==='poison'){paintPoisonPower(c,i);return;}
           if(style==='binding'){paintBinding(c,phase,'motes');return;}
-          if(style==='earth'||style==='fire'||style==='void'||style==='frost'){paintReferenceEffect(c,style,'motes',i);return;}
+          if(style==='earth'||style==='fire'||style==='void'){paintReferenceEffect(c,style,'motes',i);return;}
           c.beginPath();c.arc(96,96,94,0,Math.PI*2);c.clip();
           for(let n=0;n<18;n++){
             const a=n*2.399+phase*.18,dist=36+(n%5)*10+Math.sin(phase+n)*4,x=96+Math.cos(a)*dist,y=96+Math.sin(a)*dist;
@@ -98,10 +101,13 @@ export function prepareBossAreaQuality(scene:Phaser.Scene):void {
         });
       }
       if(hasIntro)for(let i=0;i<4;i++)frame(INTRO[i],()=>{
-        if(style==='poison')paintPoison(c,0,'ground',(i+1)/4);
+        if(style==='frost')paintFrostQueen(c,'intro',i);
+        else if(style==='poison')paintPoison(c,0,'ground',(i+1)/4);
         else paintBinding(c,0,'ground',(i+1)/4);
       });
       if(style==='binding')for(let i=0;i<4;i++)frame(RELEASE[i],()=>paintBindingRelease(c,i));
+      if(style==='poison')for(let i=0;i<4;i++)frame(RELEASE[i],()=>paintPoisonRelease(c,i));
+      if(style==='frost')for(let i=0;i<4;i++)frame(RELEASE[i],()=>paintFrostQueen(c,'release',i));
       if(style==='sand')for(let i=0;i<4;i++)frame(RELEASE[i],()=>paintSandstormAir(scene,c,8+i));
       if(style==='earth'||style==='frost')frame('warn',()=>paintReferenceWarning(c,style));
       if(hasFall)frame('fall',()=>{
@@ -137,8 +143,14 @@ export function renderBossAreaQuality(scene:Phaser.Scene,layers:BossAreaLayers,s
   const after=age-state.warningMs,r=state.radius,meteor=state.kind==='METEOR',falling=meteor&&(style==='fire'||style==='void');
   const {floor,flare,detail}=layers,color=STYLES[style].edge;
   if(after<0){
+    if(style==='frost'){
+      const p=age/state.warningMs;
+      if(p>.2)image(floor,key,INTRO[Math.min(3,Math.floor((p-.2)/.8*4))],state,.25+.4*p);
+      if(p>.65)image(flare,key,'warn',state,(p-.65)*1.2);
+      return true;
+    }
     if(style==='sand'){if(age/state.warningMs>.65)image(floor,key,GROUND[0],state,.3);return true;}
-    if(style==='earth'||style==='frost'){
+    if(style==='earth'){
       const progress=age/state.warningMs;if(progress>.65)image(floor,key,'warn',state,.15+.35*(progress-.65)/.35);return true;
     }
     if(style==='poison'||style==='binding'){
@@ -155,15 +167,16 @@ export function renderBossAreaQuality(scene:Phaser.Scene,layers:BossAreaLayers,s
   const index=meteor?referenceImpactIndex(after):Math.floor(after/90)%8;
   let alpha=tailAlpha;
   if(persistent)alpha=Math.min(1,.25+after/120)*Math.min(1,Math.max(0,(state.duration-after)/150));
+  if((style==='frost'||style==='poison')&&after<360)alpha=tailAlpha;
   if(falling)alpha=after<350?1:Math.max(0,(650-after)/300)*.5;
-  const moteIndex=style==='frost'||style==='binding'||style==='sand'?(after<360?Math.min(3,Math.floor(after/90)):4+Math.floor((after-360)/90)%4):index;
+  const moteIndex=style==='frost'||style==='binding'||style==='sand'||style==='poison'?(after<360?Math.min(3,Math.floor(after/90)):4+Math.floor((after-360)/90)%4):index;
   image(floor,key,style==='poison'&&after<240?INTRO[Math.min(3,Math.floor(after/60))]:GROUND[style==='sand'?moteIndex:index],state,.8*alpha);
   if(style==='poison')floor.setRotation((Math.abs(Math.floor(state.x/110)+Math.floor(state.y/110))%4)*Math.PI/2);
-  const releaseMs=style==='sand'?360:280;
-  const releasing=(style==='binding'||style==='sand')&&state.duration-after<=releaseMs;
+  const releaseMs=style==='sand'||style==='frost'||style==='poison'?360:280;
+  const releasing=(style==='binding'||style==='sand'||style==='frost'||style==='poison')&&state.duration-after<=releaseMs;
   const airFrame=releasing?RELEASE[Math.min(3,Math.floor((releaseMs-Math.max(0,state.duration-after))/(releaseMs/4)))]:MOTES[moteIndex];
   if(style==='sand'&&releasing)floor.setAlpha(.8*alpha*Math.max(0,(state.duration-after)/releaseMs));
-  image(flare,key,airFrame,state,.8*alpha);flare.setMask(layers.mask);
+  image(flare,key,airFrame,state,((style==='frost'||style==='poison')&&after<360?1:.8)*alpha);flare.setMask(layers.mask);
   if(style==='sand'&&layers.swirls){
     const seed=state.x*.013+state.y*.007;
     for(let i=0;i<3;i++){
@@ -181,7 +194,32 @@ export function renderBossAreaQuality(scene:Phaser.Scene,layers:BossAreaLayers,s
     }
   }
   detail.setVisible(true);
-  if(meteor&&style!=='earth'){
+  if(style==='frost'){
+    detail.lineStyle(1.8,color,.8*alpha).strokeCircle(state.x,state.y,r-1);
+    if(after<480){
+      const u=after/480;
+      // Staggered rings and fast radial shards are clipped to the existing damage circle.
+      for(let n=0;n<3;n++){
+        const wave=u*1.5-n*.18;
+        if(wave>=0&&wave<1)detail.lineStyle(4-n*.8,color,(1-wave)*.8)
+          .strokeCircle(state.x,state.y,r*(.14+.82*wave));
+      }
+      for(let n=0;n<12;n++){
+        const a=n*Math.PI/6+.12,inner=r*(.18+.55*u),outer=Math.min(r*.95,inner+r*.2);
+        detail.lineStyle(2,0xecfdff,(1-u)*.8).lineBetween(state.x+Math.cos(a)*inner,state.y+Math.sin(a)*inner,state.x+Math.cos(a)*outer,state.y+Math.sin(a)*outer);
+      }
+      detail.fillStyle(0xe4fcff,(1-u)**4*.65).fillCircle(state.x,state.y,r*.46);
+    }
+  }else if(style==='poison'){
+    if(after<360){
+      const u=after/360;
+      for(let n=0;n<8;n++){
+        const a=n*Math.PI/4+.2;
+        detail.lineStyle(3,color,(1-u)*.8).beginPath()
+          .arc(state.x,state.y,r*(.2+.72*u),a,a+.42).strokePath();
+      }
+    }
+  }else if(meteor&&style!=='earth'){
     const progress=Math.min(1,Math.max(0,(after-40)/150)),wave=r*progress,fade=after<=190?1:Math.max(0,1-(after-190)/150);
     if(wave>2&&fade>0)detail.lineStyle(2.6,color,fade).strokeCircle(state.x,state.y,Math.max(0,wave-1.3));
   }else if(style==='sand'){
@@ -195,7 +233,7 @@ export function renderBossAreaQuality(scene:Phaser.Scene,layers:BossAreaLayers,s
     const distance=r*(.62-.48*Math.min(1,after/240));
     detail.lineStyle(1.2,color,.45*alpha);
     for(let n=0;n<4;n++){const a=n*Math.PI/2;detail.lineBetween(state.x+Math.cos(a)*r*.78,state.y+Math.sin(a)*r*.78,state.x+Math.cos(a)*distance,state.y+Math.sin(a)*distance);}
-  }else if(style!=='poison')detail.lineStyle(2,color,.8*alpha).strokeCircle(state.x,state.y,r-1);
+  }else detail.lineStyle(2,color,.8*alpha).strokeCircle(state.x,state.y,r-1);
   if(meteor&&after<70){
     detail.fillStyle(color,(1-after/70)*.28).fillCircle(state.x,state.y,r*.22);
     detail.fillStyle(0xfff4ed,1-after/70).fillCircle(state.x,state.y,r*.08);

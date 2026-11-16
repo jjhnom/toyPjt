@@ -17,7 +17,7 @@ const mixer=async()=>{
  return{ctx,sound,advance(ms){time+=ms;ctx.advance(ms);}};
 };
 
-test('26 shipped boss files match supplied assets, and all 13 real skills use the correct identities',()=>{
+test('26 shipped boss files match supplied assets, and all 19 real skills use the correct identities',()=>{
  assert.equal(BOSS_SOUND_IDS.length,26);
  for(const id of BOSS_SOUND_IDS){
   const bytes=readFileSync(`public/audio/boss/${id}.ogg`),folder=id.endsWith('_fall')||id.endsWith('_impact')?'extras':'ogg';
@@ -26,7 +26,7 @@ test('26 shipped boss files match supplied assets, and all 13 real skills use th
  }
  let count=0;
  for(const id of BOSS_IDS)for(const pattern of BOSS_PROFILES[id].patterns){assert.ok(bossSkillSound(id,pattern));count++;}
- assert.equal(count,13);
+ assert.equal(count,19);
  assert.equal(bossSkillSound('desert_emperor','POISON').cast,'boss_desert_sandstorm_cast');
  assert.equal(bossSkillSound('twilight_king','FROST').cast,'boss_twilight_binding');
  assert.equal(bossSkillSound('forest_guardian','FROST'),undefined);

@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
+import {REGIONAL_MONSTER_ART} from '../ui/monsterArt';
+import {MONSTER_ATLAS} from '../config/monsterData';
 import {soundManager} from '../systems/SoundManager';
+import { BGM_TRACKS } from '../config/bgmData';
 import { DRONE_SPECS, ENEMY_SPECS } from '../config/gameData';
 import type { DroneArchetype, EnemyArchetype } from '../types/game';
 import { drawCharacter, unitTexture, unitPortrait, unitAnimation, enemyTexture, enemyAnimation } from '../ui/pixelCharacters';
@@ -24,8 +27,10 @@ export class BootScene extends Phaser.Scene {
   }
 
   public preload(): void {
+    this.load.atlas(MONSTER_ATLAS,REGIONAL_MONSTER_ART.image,REGIONAL_MONSTER_ART.data);
     void soundManager.preloadCombatSounds();
     void soundManager.preloadBossSounds();
+    for (const [key, track] of Object.entries(BGM_TRACKS)) this.load.audio(key, `audio/bgm/${track.file}`);
     for (const [key, url] of Object.entries(ART_ASSETS)) this.load.image(key, url);
     this.load.atlas(PROVIDED_UI,PROVIDED_ATLAS.image,PROVIDED_ATLAS.data);
     this.load.atlas(REFERENCE_HUD,HUD_ART.image,HUD_ART.data);

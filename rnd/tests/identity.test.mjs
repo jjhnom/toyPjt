@@ -44,7 +44,7 @@ test('six boss plans have distinct formations, bounded targets, frozen coordinat
   const profile=BOSS_PROFILES[id],first=planBossAttack(id,1,0,boss,target);counts.push(first.attacks.length);
   assert.ok(first.attacks.every(a=>a.warningMs>=1000));
   for(let phase=1;phase<=3;phase++)for(let sequence=0;sequence<profile.patterns.length;sequence++){
-   const plan=planBossAttack(id,phase,sequence,boss,{x:0,y:9999});assert.ok(plan.attacks.length<=4&&plan.intervalMs>=2000);
+   const plan=planBossAttack(id,phase,sequence,boss,{x:0,y:9999});assert.ok(plan.attacks.length<=(profile.patterns[sequence]==='ROOTS'?7:profile.patterns[sequence]==='SPIKES'||profile.patterns[sequence]==='SPORES'?5:profile.patterns[sequence]==='FISSURE'?6:id==='frost_queen'&&profile.patterns[sequence]==='METEOR'?10:4)&&plan.intervalMs>=2000);
    for(const a of plan.attacks){assert.ok(Number.isFinite(a.x)&&Number.isFinite(a.y));assert.ok(a.x>=ARENA_BOUNDS.left&&a.x<=ARENA_BOUNDS.right);
     assert.ok(a.y>=ARENA_BOUNDS.top&&a.y<=ARENA_BOUNDS.bottom);}
   }

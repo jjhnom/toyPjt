@@ -268,7 +268,7 @@ export type ServiceId = 'HEAL' | 'REVIVE';
 export interface AwakeningQuote { unitId: string; level: number; cost: number }
 export interface ServiceQuote { id: ServiceId; cost: number; stateKey: string }
 export type BossPattern = 'CHARGE' | 'POISON' | 'METEOR' | 'FROST' | 'SUMMON';
-export type BossId = 'forest_guardian' | 'swamp_lord' | 'lava_colossus' | 'frost_queen' | 'twilight_king';
+export type BossId = 'forest_guardian' | 'swamp_lord' | 'lava_colossus' | 'frost_queen' | 'twilight_king' | 'desert_emperor';
 export type SynergyId = 'FOREST_BOND' | 'RANGED_LINE' | 'VANGUARD_LINE';
 export type HeroClassId = 'APPRENTICE_SUMMONER' | 'KNIGHT' | 'ELEMENTALIST';
 export type PermanentId = 'vitality' | 'power';

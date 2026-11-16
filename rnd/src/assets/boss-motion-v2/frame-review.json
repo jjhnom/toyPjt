@@ -1,0 +1,1562 @@
+[
+  {
+    "key": "forest_guardian_motion_0",
+    "motion": "walk",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      0,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      27,
+      24,
+      135,
+      138
+    ],
+    "opaque": 8799,
+    "transparent": 14094,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_1",
+    "motion": "walk",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      362,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      32,
+      25,
+      134,
+      138
+    ],
+    "opaque": 8177,
+    "transparent": 14627,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_2",
+    "motion": "walk",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      724,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      28,
+      28,
+      137,
+      138
+    ],
+    "opaque": 7924,
+    "transparent": 14910,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_3",
+    "motion": "walk",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1086,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      31,
+      26,
+      135,
+      137
+    ],
+    "opaque": 8354,
+    "transparent": 14878,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_4",
+    "motion": "cast",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      0,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      27,
+      27,
+      139,
+      138
+    ],
+    "opaque": 8589,
+    "transparent": 13597,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_5",
+    "motion": "cast",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      362,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      27,
+      26,
+      138,
+      138
+    ],
+    "opaque": 8408,
+    "transparent": 12906,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_6",
+    "motion": "cast",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      724,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      22,
+      24,
+      142,
+      138
+    ],
+    "opaque": 8350,
+    "transparent": 12757,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_7",
+    "motion": "cast",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1086,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      21,
+      25,
+      144,
+      138
+    ],
+    "opaque": 8397,
+    "transparent": 12532,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_8",
+    "motion": "release",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      0,
+      720,
+      362,
+      366
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      19,
+      31,
+      148,
+      137
+    ],
+    "opaque": 8803,
+    "transparent": 12485,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_9",
+    "motion": "release",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      362,
+      720,
+      362,
+      366
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      18,
+      34,
+      146,
+      138
+    ],
+    "opaque": 8432,
+    "transparent": 11371,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_10",
+    "motion": "release",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      724,
+      720,
+      362,
+      366
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      21,
+      27,
+      137,
+      137
+    ],
+    "opaque": 8572,
+    "transparent": 12683,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "forest_guardian_motion_11",
+    "motion": "release",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1086,
+      720,
+      362,
+      366
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      28,
+      25,
+      136,
+      136
+    ],
+    "opaque": 8714,
+    "transparent": 14150,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_0",
+    "motion": "walk",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      0,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      20,
+      37,
+      143,
+      140
+    ],
+    "opaque": 8736,
+    "transparent": 15079,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_1",
+    "motion": "walk",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      362,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      18,
+      38,
+      141,
+      139
+    ],
+    "opaque": 8386,
+    "transparent": 15397,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_2",
+    "motion": "walk",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      724,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      18,
+      38,
+      145,
+      140
+    ],
+    "opaque": 8402,
+    "transparent": 15274,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_3",
+    "motion": "walk",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1086,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      17,
+      42,
+      139,
+      137
+    ],
+    "opaque": 8010,
+    "transparent": 15571,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_4",
+    "motion": "cast",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      0,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      20,
+      37,
+      141,
+      139
+    ],
+    "opaque": 8523,
+    "transparent": 14896,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_5",
+    "motion": "cast",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      362,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      15,
+      41,
+      145,
+      139
+    ],
+    "opaque": 8388,
+    "transparent": 14560,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_6",
+    "motion": "cast",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      724,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      15,
+      35,
+      147,
+      138
+    ],
+    "opaque": 9016,
+    "transparent": 14113,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_7",
+    "motion": "cast",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1086,
+      350,
+      362,
+      350
+    ],
+    "placement": [
+      8,
+      9,
+      145,
+      140
+    ],
+    "bodyBounds": [
+      14,
+      29,
+      144,
+      137
+    ],
+    "opaque": 9431,
+    "transparent": 12940,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_8",
+    "motion": "release",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      0,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      15,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      16,
+      38,
+      150,
+      136
+    ],
+    "opaque": 8554,
+    "transparent": 14466,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_9",
+    "motion": "release",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      362,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      15,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      21,
+      38,
+      146,
+      136
+    ],
+    "opaque": 8283,
+    "transparent": 15135,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_10",
+    "motion": "release",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      724,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      15,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      20,
+      36,
+      142,
+      137
+    ],
+    "opaque": 8504,
+    "transparent": 15043,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "swamp_lord_motion_11",
+    "motion": "release",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1086,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      15,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      19,
+      35,
+      142,
+      137
+    ],
+    "opaque": 8603,
+    "transparent": 15019,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_0",
+    "motion": "walk",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      0,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      12,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      28,
+      18,
+      129,
+      139
+    ],
+    "opaque": 8235,
+    "transparent": 14235,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_1",
+    "motion": "walk",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      362,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      12,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      27,
+      18,
+      132,
+      139
+    ],
+    "opaque": 7385,
+    "transparent": 13872,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_2",
+    "motion": "walk",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      724,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      12,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      28,
+      18,
+      132,
+      140
+    ],
+    "opaque": 7427,
+    "transparent": 14618,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_3",
+    "motion": "walk",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1086,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      12,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      30,
+      18,
+      132,
+      139
+    ],
+    "opaque": 7996,
+    "transparent": 15255,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_4",
+    "motion": "cast",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      0,
+      335,
+      362,
+      365
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      30,
+      18,
+      132,
+      139
+    ],
+    "opaque": 7853,
+    "transparent": 14148,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_5",
+    "motion": "cast",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      362,
+      335,
+      362,
+      365
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      29,
+      18,
+      132,
+      139
+    ],
+    "opaque": 7477,
+    "transparent": 14187,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_6",
+    "motion": "cast",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      724,
+      335,
+      362,
+      365
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      29,
+      17,
+      134,
+      139
+    ],
+    "opaque": 7715,
+    "transparent": 14222,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_7",
+    "motion": "cast",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1086,
+      335,
+      362,
+      365
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      146
+    ],
+    "bodyBounds": [
+      29,
+      16,
+      132,
+      139
+    ],
+    "opaque": 7670,
+    "transparent": 14125,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_8",
+    "motion": "release",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      0,
+      705,
+      362,
+      381
+    ],
+    "placement": [
+      8,
+      3,
+      145,
+      152
+    ],
+    "bodyBounds": [
+      25,
+      18,
+      136,
+      137
+    ],
+    "opaque": 7894,
+    "transparent": 12412,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_9",
+    "motion": "release",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      362,
+      705,
+      362,
+      381
+    ],
+    "placement": [
+      8,
+      3,
+      145,
+      152
+    ],
+    "bodyBounds": [
+      29,
+      20,
+      132,
+      137
+    ],
+    "opaque": 8088,
+    "transparent": 12483,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_10",
+    "motion": "release",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      724,
+      705,
+      362,
+      381
+    ],
+    "placement": [
+      8,
+      3,
+      145,
+      152
+    ],
+    "bodyBounds": [
+      24,
+      17,
+      137,
+      138
+    ],
+    "opaque": 8329,
+    "transparent": 13832,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "lava_colossus_motion_11",
+    "motion": "release",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1086,
+      705,
+      362,
+      381
+    ],
+    "placement": [
+      8,
+      3,
+      145,
+      152
+    ],
+    "bodyBounds": [
+      27,
+      17,
+      130,
+      138
+    ],
+    "opaque": 8310,
+    "transparent": 14253,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_0",
+    "motion": "walk",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      0,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      38,
+      20,
+      129,
+      139
+    ],
+    "opaque": 6848,
+    "transparent": 15878,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_1",
+    "motion": "walk",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      362,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      40,
+      20,
+      127,
+      139
+    ],
+    "opaque": 6642,
+    "transparent": 16349,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_2",
+    "motion": "walk",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      724,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      41,
+      19,
+      128,
+      139
+    ],
+    "opaque": 6583,
+    "transparent": 16265,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_3",
+    "motion": "walk",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1086,
+      0,
+      362,
+      330
+    ],
+    "placement": [
+      8,
+      14,
+      145,
+      132
+    ],
+    "bodyBounds": [
+      38,
+      20,
+      128,
+      139
+    ],
+    "opaque": 6749,
+    "transparent": 16040,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_4",
+    "motion": "cast",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      0,
+      330,
+      362,
+      360
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      144
+    ],
+    "bodyBounds": [
+      40,
+      20,
+      128,
+      138
+    ],
+    "opaque": 6710,
+    "transparent": 15783,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_5",
+    "motion": "cast",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      362,
+      330,
+      362,
+      360
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      144
+    ],
+    "bodyBounds": [
+      36,
+      21,
+      129,
+      138
+    ],
+    "opaque": 6699,
+    "transparent": 14473,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_6",
+    "motion": "cast",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      724,
+      330,
+      362,
+      360
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      144
+    ],
+    "bodyBounds": [
+      34,
+      17,
+      128,
+      138
+    ],
+    "opaque": 6928,
+    "transparent": 13789,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_7",
+    "motion": "cast",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1086,
+      330,
+      362,
+      360
+    ],
+    "placement": [
+      8,
+      1,
+      145,
+      144
+    ],
+    "bodyBounds": [
+      35,
+      13,
+      129,
+      139
+    ],
+    "opaque": 7007,
+    "transparent": 13823,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_8",
+    "motion": "release",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      0,
+      695,
+      362,
+      391
+    ],
+    "placement": [
+      8,
+      2,
+      145,
+      156
+    ],
+    "bodyBounds": [
+      31,
+      13,
+      140,
+      139
+    ],
+    "opaque": 7324,
+    "transparent": 12624,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_9",
+    "motion": "release",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      362,
+      695,
+      362,
+      391
+    ],
+    "placement": [
+      8,
+      2,
+      145,
+      156
+    ],
+    "bodyBounds": [
+      31,
+      18,
+      136,
+      138
+    ],
+    "opaque": 7005,
+    "transparent": 12802,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_10",
+    "motion": "release",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      724,
+      695,
+      362,
+      391
+    ],
+    "placement": [
+      8,
+      2,
+      145,
+      156
+    ],
+    "bodyBounds": [
+      35,
+      21,
+      131,
+      138
+    ],
+    "opaque": 6822,
+    "transparent": 14774,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "frost_queen_motion_11",
+    "motion": "release",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1086,
+      695,
+      362,
+      391
+    ],
+    "placement": [
+      8,
+      2,
+      145,
+      156
+    ],
+    "bodyBounds": [
+      40,
+      20,
+      128,
+      138
+    ],
+    "opaque": 6764,
+    "transparent": 16092,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_0",
+    "motion": "walk",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      0,
+      0,
+      362,
+      340
+    ],
+    "placement": [
+      8,
+      10,
+      145,
+      136
+    ],
+    "bodyBounds": [
+      24,
+      28,
+      131,
+      139
+    ],
+    "opaque": 7656,
+    "transparent": 15622,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_1",
+    "motion": "walk",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      362,
+      0,
+      362,
+      340
+    ],
+    "placement": [
+      8,
+      10,
+      145,
+      136
+    ],
+    "bodyBounds": [
+      24,
+      27,
+      131,
+      139
+    ],
+    "opaque": 7354,
+    "transparent": 15945,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_2",
+    "motion": "walk",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      724,
+      0,
+      362,
+      340
+    ],
+    "placement": [
+      8,
+      10,
+      145,
+      136
+    ],
+    "bodyBounds": [
+      24,
+      27,
+      131,
+      139
+    ],
+    "opaque": 7379,
+    "transparent": 15782,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_3",
+    "motion": "walk",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1086,
+      0,
+      362,
+      340
+    ],
+    "placement": [
+      8,
+      10,
+      145,
+      136
+    ],
+    "bodyBounds": [
+      29,
+      26,
+      132,
+      139
+    ],
+    "opaque": 7060,
+    "transparent": 16028,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_4",
+    "motion": "cast",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      0,
+      350,
+      362,
+      355
+    ],
+    "placement": [
+      8,
+      5,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      26,
+      27,
+      131,
+      139
+    ],
+    "opaque": 7556,
+    "transparent": 15084,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_5",
+    "motion": "cast",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      362,
+      350,
+      362,
+      355
+    ],
+    "placement": [
+      8,
+      5,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      27,
+      25,
+      134,
+      139
+    ],
+    "opaque": 7584,
+    "transparent": 15028,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_6",
+    "motion": "cast",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      724,
+      350,
+      362,
+      355
+    ],
+    "placement": [
+      8,
+      5,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      26,
+      20,
+      136,
+      139
+    ],
+    "opaque": 7527,
+    "transparent": 14853,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_7",
+    "motion": "cast",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1086,
+      350,
+      362,
+      355
+    ],
+    "placement": [
+      8,
+      5,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      24,
+      17,
+      140,
+      139
+    ],
+    "opaque": 7895,
+    "transparent": 13118,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_8",
+    "motion": "release",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      0,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      15,
+      31,
+      151,
+      138
+    ],
+    "opaque": 8123,
+    "transparent": 13965,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_9",
+    "motion": "release",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      362,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      17,
+      30,
+      144,
+      138
+    ],
+    "opaque": 7751,
+    "transparent": 13716,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_10",
+    "motion": "release",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      724,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      23,
+      22,
+      134,
+      138
+    ],
+    "opaque": 7879,
+    "transparent": 14940,
+    "clippedFaintPixels": 0
+  },
+  {
+    "key": "twilight_king_motion_11",
+    "motion": "release",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1086,
+      730,
+      362,
+      356
+    ],
+    "placement": [
+      8,
+      11,
+      145,
+      142
+    ],
+    "bodyBounds": [
+      24,
+      26,
+      131,
+      138
+    ],
+    "opaque": 7648,
+    "transparent": 15689,
+    "clippedFaintPixels": 0
+  }
+]

@@ -10,6 +10,9 @@ import { PoisonComponent } from '../components/PoisonComponent';
 import type { DamageObserver } from '../systems/CombatMeasurements';
 import { BOSS_PROFILES } from '../config/bossData';
 import type { BossId } from '../types/game';
+import { BOSS_ATLAS,BOSS_VISUALS,bossPoseFrame } from '../config/bossVisualData';
+import type { BossPose } from '../config/bossVisualData';
+import {BOSS_MOTION_ATLAS,BOSS_MOTION_ORIGIN_Y,BossMotion,bossMotionFrame,bossMotionAtlas} from '../ui/BossMotion';
 
 export type EnemyAttackCallback = (enemy: Enemy, damage: number) => void;
 export type EnemySpecialCallback = (enemy: Enemy, kind: 'SHOT' | 'EXPLODE' | 'SUMMON') => void;
@@ -43,6 +46,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   public bossId: BossId | null = null;
   private chargeWindupMs = 0;
   private bossChargeMs = 0;
+  public bossVisual?: Phaser.GameObjects.Image;
+  private bossCastVisualMs = 0;
+  private bossAttackVisualMs = 0;
+  private bossVisualFailed = false;
+  private readonly bossMotion=new BossMotion();
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, enemyTexture('SWARMER'), 0);
@@ -65,6 +73,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.poison.clear();
     this.onSpecial = undefined;
     this.bossId = null; this.chargeWindupMs = this.bossChargeMs = 0;
+    this.bossCastVisualMs=this.bossAttackVisualMs=0;
+    this.bossVisualFailed=false;
+    this.bossMotion.reset(x,y);
+    this.bossVisual?.setVisible(false);
     const base = ENEMY_SPECS[archetype];
     this.spec = { ...base, speed: base.speed * speedMultiplier, contactDamage: Math.round(base.contactDamage * damageMultiplier) };
     this.onAttackPlayer = onAttackPlayer;
@@ -122,12 +134,50 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.targetY = y;
   }
 
-  public applyBossProfile(id: BossId): void { this.bossId = id; this.setTint(BOSS_PROFILES[id].color); }
-  public windUpCharge(warningMs: number): void { this.chargeWindupMs = warningMs; this.movement.stop(); }
+  public applyBossProfile(id: BossId): void {
+    this.bossId=id;this.setTint(BOSS_PROFILES[id].color);
+    // The visual image never owns physics. Keep the original sprite/body/scale contract intact.
+    if(this.scene.textures?.exists(BOSS_ATLAS)){
+      try{
+        if(!this.bossVisual)this.bossVisual=this.scene.add.image(this.x,this.y,BOSS_ATLAS,bossPoseFrame(id,'idle'))
+          .setOrigin(.5,2/3).setDepth(20.5).setName('boss-visual');
+        this.setAlpha(0);this.updateBossVisual(0,this.scene.time.now);
+      }catch{this.bossVisualFailed=true;this.setAlpha(1);this.bossVisual?.setVisible(false);}
+    }
+  }
+  public windUpBossCast(warningMs:number):void {this.bossCastVisualMs=Math.max(this.bossCastVisualMs,warningMs);this.bossMotion.cast(warningMs);this.updateBossVisual(0,this.scene.time.now);}
+  public showBossImpact():void {this.bossAttackVisualMs=180;this.bossMotion.impact(this.bossId==='desert_emperor'&&this.scene.textures.exists(bossMotionAtlas(this.bossId)));this.updateBossVisual(0,this.scene.time.now);}
+  public get isBossCharging():boolean {return this.bossChargeMs>0;}
+  public windUpCharge(warningMs: number): void { this.chargeWindupMs = warningMs; this.movement.stop();this.windUpBossCast(warningMs); }
+
+  private updateBossVisual(delta:number,time:number):void {
+    this.bossCastVisualMs=Math.max(0,this.bossCastVisualMs-delta);this.bossAttackVisualMs=Math.max(0,this.bossAttackVisualMs-delta);
+    if(!this.bossVisual||!this.bossId||this.bossVisualFailed)return;
+    try{
+    // The king's third pose fires a spell; use idle plus the real dash/trail for his charge.
+    const pose:BossPose=this.bossChargeMs>0?(this.bossId==='twilight_king'?'idle':'charge')
+      :this.bossAttackVisualMs>0?'charge':this.chargeWindupMs>0||this.bossCastVisualMs>0?'cast':'idle';
+    const expanded=this.bossId==='desert_emperor'&&this.scene.textures.exists(bossMotionAtlas(this.bossId));
+    const animated=expanded||this.scene.textures.exists(BOSS_MOTION_ATLAS);
+    this.bossMotion.advance(this.bossId,delta,this.x,this.y,this.bossChargeMs>0,Math.cos(this.chargeAngle)<0,expanded);
+    const texture=expanded?bossMotionAtlas(this.bossId):animated?BOSS_MOTION_ATLAS:BOSS_ATLAS;
+    const frame=animated?bossMotionFrame(this.bossId,this.bossMotion.frameIndex):bossPoseFrame(this.bossId,pose);
+    if(this.bossVisual.texture.key!==texture||this.bossVisual.frame.name!==frame)this.bossVisual.setTexture(texture,frame);
+    this.bossVisual.setPosition(this.x,this.y).setVisible(this.active).setAlpha(1)
+      .setOrigin(.5,animated?BOSS_MOTION_ORIGIN_Y:2/3)
+      .setDisplaySize(BOSS_VISUALS[this.bossId].displaySize,BOSS_VISUALS[this.bossId].displaySize)
+      .setFlipX(animated?this.bossMotion.facingLeft:this.bossChargeMs>0?Math.cos(this.chargeAngle)<0:this.flipX);
+    if(!animated&&this.attackAnimUntil>time)this.bossVisual.setScale(this.bossVisual.scaleX*1.1,this.bossVisual.scaleY*1.1);
+    if(this.flashUntil>time)this.bossVisual.setTintFill(0xffffff);
+    else if(this.movement.slowFactor<1)this.bossVisual.setTint(0xc8eeff);
+    else this.bossVisual.clearTint();
+    }catch{this.bossVisualFailed=true;this.setAlpha(1);this.bossVisual.setVisible(false);}
+  }
 
   public beginCharge(x: number, y: number, _time: number): void {
     this.chargeAngle = Math.atan2(y - this.y, x - this.x);
     this.chargeWindupMs = 0; this.bossChargeMs = 600;
+    this.updateBossVisual(0,this.scene.time.now);
   }
 
   public receiveDamage(
@@ -144,6 +194,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     this.health.takeDamage(amount, time, 0);
     this.setTintFill(0xffffff);
+    this.bossVisual?.setTintFill(0xffffff);
     this.flashUntil = time + 65;
 
     if (this.health.isDead) {
@@ -161,6 +212,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     this.clearTint();
     this.disableBody(true, true);
+    this.bossVisual?.setVisible(false);
   }
 
   public override update(time: number, delta: number): void {
@@ -247,6 +299,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.onAttackPlayer(this, this.spec.contactDamage);
       }
     }
+    this.updateBossVisual(delta,time);
+  }
+
+  public override destroy(fromScene?:boolean):void {
+    this.bossVisual?.destroy();this.bossVisual=undefined;super.destroy(fromScene);
   }
 }
 

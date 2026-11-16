@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import {UNIT_TYPES} from '../config/unitData';
 import { PROVIDED_UI, providedFloor } from '../ui/providedArt';
 import { paintBattleEnvironment } from '../ui/battleEnvironment';
 import { pixelPanel, fantasyButton, FANTASY, BATTLE_UI } from '../ui/fantasyTheme';
@@ -25,6 +26,7 @@ import { Enemy, EnemyGroup } from '../entities/Enemy';
 import { PlayerSquad } from '../entities/PlayerSquad';
 import { RoomGridManager } from '../systems/RoomGridManager';
 import { soundManager } from '../systems/SoundManager';
+import { BossAudioController } from '../systems/BossAudioController';
 import {
   BulletFireConfig,
   DoorDirection,
@@ -44,8 +46,9 @@ import { VirtualJoystick } from '../ui/VirtualJoystick';
 import { ActiveSkillButton } from '../ui/ActiveSkillButton';
 import { MUTATIONS } from '../config/mutationData';
 import type { MutationId } from '../types/game';
-import type { ServiceQuote, SupplyChoice } from '../types/game';
+import type { ServiceQuote, SupplyChoice,BossId } from '../types/game';
 import { BOSS_IDS, BOSS_PROFILES, isBossId, planBossAttack } from '../config/bossData';
+import { BossVfxController } from '../ui/BossVfxController';
 import { codexManager } from '../systems/CodexManager';
 import { resolveSynergies, SYNERGY_IDS } from '../config/synergyData';
 import { STAGES, getStageScaling, SPAWN_INTERVAL_MS, STAGE_RECOVERY_RATIO, SUMMONING_CIRCLE } from '../config/stageData';
@@ -57,7 +60,7 @@ import { killReward, roomClearReward, waveEnemyTypes } from '../systems/Encounte
 import { CombatMeasurements } from '../systems/CombatMeasurements';
 import { RevivalPause } from '../systems/RevivalPause';
 
-interface SpawnRequest { archetype: EnemyArchetype; x: number; y: number; hp: number; damage: number; speed: number }
+interface SpawnRequest { archetype: EnemyArchetype; x: number; y: number; hp: number; damage: number; speed: number;visualBossId?:BossId }
 
 interface DoorVisual {
   direction: DoorDirection;
@@ -151,6 +154,8 @@ export class GameScene extends Phaser.Scene {
   private pendingSpawns: SpawnRequest[] = [];
   private spawnTimerMs = 0;
   private hazards!: EncounterHazards;
+  private bossVfx!:BossVfxController;
+  private bossAudio!: BossAudioController;
   private bossPatternLeft = 0;
   private bossPatternNumber = 0;
   private saveStatusText!: Phaser.GameObjects.Text;
@@ -251,7 +256,9 @@ export class GameScene extends Phaser.Scene {
       if (enemy.targetUnitId) {
         const target = this.squad.drones.find(drone => drone.id === enemy.targetUnitId);
         if (target && !target.health.isDead) {
+          const shielded=target.health.shieldHp>0&&this.time.now<=target.health.shieldUntil;
           const damaged = target.health.takeDamage(damage, this.time.now, 650);
+          if(damaged)soundManager.playCombat(shielded?'hit_shield_block':UNIT_TYPES[target.archetype].role==='VANGUARD'?'hit_armor':'hit_flesh_light');
           if (damaged && target.archetype === 'THORN_GUARD') {
             this.particles.emitSkill('reflect', target.x, target.y, target.archetype);
             if (enemy.receiveDamage(Math.round(damage * 0.4), this.time.now)) this.handleEnemyKilled(enemy, target.id);
@@ -268,7 +275,6 @@ export class GameScene extends Phaser.Scene {
           6,
           150
         );
-        soundManager.playHit();
       }
     }, (enemy, damage, sourceUnitId) => {
       if (this.runEnded || this.rewardModalOpen || this.backgroundPaused || this.progression.state !== 'PLAYING'
@@ -285,8 +291,10 @@ export class GameScene extends Phaser.Scene {
     });
     this.damageTexts = new DamageTextGroup(this);
     this.particles = new EffectParticleGroup(this);
+    this.bossVfx=new BossVfxController(this,life=>(this.enemies.getChildren() as Enemy[]).find(e=>e.active&&e.lifeId===life));
+    this.bossAudio = new BossAudioController(soundManager);
     this.hazards = new EncounterHazards(this, (kind, x, y, radius, damage, sourceLife) =>
-      this.resolveHazard(kind, x, y, radius, damage, sourceLife));
+      this.resolveHazard(kind, x, y, radius, damage, sourceLife),this.bossVfx,this.bossAudio);
 
     // 사방 문(Door) 및 다음 방 타입 뱃지 생성
     this.createDoors();
@@ -381,7 +389,7 @@ export class GameScene extends Phaser.Scene {
     };
     this.game.events.on(Phaser.Core.Events.HIDDEN, onHidden);
     this.game.events.on(Phaser.Core.Events.VISIBLE, onVisible);
-    const onPaused = () => { this.activeSkillButton.cancel(); this.revivalPause.capture(this.squad.drones, this.time.now); };
+    const onPaused = () => { this.bossAudio.pause(); this.activeSkillButton.cancel(); this.revivalPause.capture(this.squad.drones, this.time.now); };
     const onResumed = () => this.revivalPause.queueResume();
     this.events.on(Phaser.Scenes.Events.PAUSE, onPaused);
     this.events.on(Phaser.Scenes.Events.RESUME, onResumed);
@@ -393,6 +401,8 @@ export class GameScene extends Phaser.Scene {
       this.revivalPause.clear();
       this.joystick.destroy();
       this.activeSkillButton.destroy();
+      this.bossVfx.destroy();
+      this.bossAudio.clear();
       this.tweens.killTweensOf(this.bannerContainer);
       this.scene.stop('SquadScene');
       this.scene.stop('SummoningCircleScene');
@@ -740,7 +750,7 @@ export class GameScene extends Phaser.Scene {
     this.refreshHud();
   }
 
-  private queueEnemy(archetype: EnemyArchetype, x: number, y: number): void {
+  private queueEnemy(archetype: EnemyArchetype, x: number, y: number,visualBossId?:BossId): void {
     const scaling = getStageScaling(this.progression.index, this.progression.mutation);
     const room = this.gridManager.getCurrentRoom();
     const local = (1 + 0.4 * this.gridManager.getDepth(room)) * (1 + 0.05 * Math.max(0, this.currentWave - 1));
@@ -748,7 +758,7 @@ export class GameScene extends Phaser.Scene {
     this.pendingSpawns.push({ archetype, x, y,
       hp: (boss ? scaling.bossHpMult : scaling.enemyHpMult) * local,
       damage: boss ? scaling.bossDamageMult : scaling.enemyDamageMult,
-      speed: scaling.enemySpeedMult });
+      speed: scaling.enemySpeedMult,...(visualBossId?{visualBossId}:{}) });
   }
 
   private processSpawns(delta: number): void {
@@ -759,9 +769,13 @@ export class GameScene extends Phaser.Scene {
     const spawn = this.pendingSpawns[0];
     const enemy = this.enemies.spawnEnemy(spawn.archetype, spawn.x, spawn.y, spawn.hp, spawn.damage, spawn.speed);
     if (!enemy) return; // Required spawns remain queued when the pool is exhausted.
-    if (spawn.archetype === 'BOSS_CORE' && isBossId(this.progression.current.bossId)) enemy.applyBossProfile(this.progression.current.bossId);
+    if (spawn.archetype === 'BOSS_CORE' && isBossId(this.progression.current.bossId)) {
+      enemy.applyBossProfile(this.progression.current.bossId);
+      this.bossAudio.encounterStarted(enemy.lifeId);
+    }
     enemy.onSpecial = (source, kind) => this.onEnemySpecial(source, kind);
     this.pendingSpawns.shift();
+    if(spawn.visualBossId){try{this.bossVfx.spawnArrived(spawn.visualBossId,enemy.x,enemy.y);}catch{/* The successful spawn stays committed if its visual fails. */}}
     this.spawnTimerMs = SPAWN_INTERVAL_MS * scaling.spawnIntervalMult;
   }
 
@@ -783,8 +797,8 @@ export class GameScene extends Phaser.Scene {
     if (kind === 'SUMMON') {
       const source = (this.enemies.getChildren() as Enemy[]).find(enemy => enemy.active && enemy.lifeId === sourceLife);
       if (!source || this.pendingSpawns.length >= 12) return;
-      this.queueEnemy('SWARMER', x - 30, y);
-      this.queueEnemy('SWARMER', x + 30, y);
+      this.queueEnemy('SWARMER', x - 30, y,source.bossId??undefined);
+      this.queueEnemy('SWARMER', x + 30, y,source.bossId??undefined);
       return;
     }
     if ((this.squad.leader.x - x) ** 2 + (this.squad.leader.y - y) ** 2 < radius ** 2) {
@@ -806,11 +820,17 @@ export class GameScene extends Phaser.Scene {
     const stage = this.progression.current;
     const phase = Math.min(stage.bossPhases, 1 + Math.floor((1 - boss.health.ratio) * stage.bossPhases));
     if(!isBossId(stage.bossId))return;
+    const pattern=BOSS_PROFILES[stage.bossId].patterns[this.bossPatternNumber%BOSS_PROFILES[stage.bossId].patterns.length];
+    const targetsSquad=stage.bossId==='frost_queen'||(stage.bossId==='twilight_king'&&pattern==='FROST');
+    const target=targetsSquad
+      ? this.squad.findEnemyTarget(boss.x,boss.y)??this.squad.leader
+      : this.squad.leader;
     const plan=planBossAttack(stage.bossId,phase,this.bossPatternNumber++,
-      {x:boss.x,y:boss.y,speed:boss.spec.speed},this.squad.leader);
+      {x:boss.x,y:boss.y,speed:boss.spec.speed},target);
     this.bossPatternLeft=plan.intervalMs;
     for(const attack of plan.attacks) {
-      const added=this.hazards.add(attack.kind,attack.x,attack.y,boss.spec.contactDamage,boss.lifeId,attack);
+      const added=this.hazards.add(attack.kind,attack.x,attack.y,boss.spec.contactDamage,boss.lifeId,{...attack,bossId:stage.bossId,patternId:this.bossPatternNumber});
+      if(added)boss.windUpBossCast(attack.warningMs);
       if(added&&attack.kind==='CHARGE')boss.windUpCharge(attack.warningMs);
     }
     this.stageBanner.setStatus(`${stage.bossName} · PHASE ${phase}/${stage.bossPhases}`);
@@ -914,7 +934,7 @@ export class GameScene extends Phaser.Scene {
     const now = this.time.now;
     const sourceUnitId = bullet.sourceUnitId;
     const sourceKind = bullet.sourceKind;
-    soundManager.playHit();
+    soundManager.playCombat(enemy.health.shieldHp>0&&now<=enemy.health.shieldUntil?'hit_shield_block':enemy.spec.archetype==='TANK'||enemy.spec.archetype==='ELITE_BRUTE'?'hit_armor':'hit_flesh_light');
 
     // 1. 주 타겟 대미지 적용
     const killed = enemy.receiveDamage(
@@ -1097,11 +1117,13 @@ export class GameScene extends Phaser.Scene {
     }
     this.squad.roster.grantReward(killReward(enemy.spec.archetype, this.progression.index, undefined, this.progression.mutation), 0, 'kill', enemy.spec.archetype);
     this.particles.emitBurst(enemy.x, enemy.y, 0xf2c17c, 8, 190);
-    soundManager.playExplosion();
     if (enemy.spec.archetype === 'BOSS_CORE') {
+      this.bossAudio.clear();
+      soundManager.playBoss('boss_death');
       this.finishRoom(this.gridManager.getCurrentRoom());
       return;
     }
+    soundManager.playEnemyDeath(enemy.spec.archetype);
     this.refreshHud();
   }
 
@@ -1545,6 +1567,8 @@ export class GameScene extends Phaser.Scene {
     this.bossHudLastHp=boss.health.currentHp;
     const stage=this.progression.current,ratio=boss.health.ratio;
     const phase=Math.min(stage.bossPhases,1+Math.floor((1-ratio)*stage.bossPhases));
+    this.bossAudio.phaseChanged(boss.lifeId,phase);
+    try{this.bossVfx.phaseChanged(boss,phase);}catch{/* Phase art cannot block combat/HUD updates. */}
     const bossWidth=BATTLE_UI.stagePanel.width-40;
     setHudText(this.bossHudLabel,`S${stage.index+1} · ${stage.bossName}\nPHASE ${phase}/${stage.bossPhases} · WAVE ${this.currentWave}/${this.totalWavesInRoom} · HP ${Math.ceil(ratio*100)}%`,bossWidth-8);
     this.bossHudBar.clear().fillStyle(0x160f20).fillRect(20,51,bossWidth,3)
@@ -1597,6 +1621,7 @@ export class GameScene extends Phaser.Scene {
       enemy.targetUnitId = target?.id ?? null;
       enemy.setTargetPosition(target?.x ?? this.squad.leader.x, target?.y ?? this.squad.leader.y);
     }
+    this.bossVfx.update(delta);
     this.hazards.update(delta);
     if (this.runEnded) return;
 
@@ -1674,29 +1699,31 @@ export class GameScene extends Phaser.Scene {
     for (let i = 0; i < enemyChildren.length; i++) {
       const enemy = enemyChildren[i] as Enemy;
       if (!enemy.active) continue;
+      const visualRadius=enemy.bossVisual?.visible?78:enemy.spec.radius;
+      if(enemy.bossVisual?.visible)ground.fillStyle(0x080b1c,.6).fillEllipse(enemy.x,enemy.y+34,100,26);
       if (enemy.burn.damage > 0 && this.time.now <= enemy.burn.until) {
-        this.unitOverlayGraphics.fillStyle(0xff8a2a).fillRect(enemy.x - 4, enemy.y - enemy.spec.radius - 27, 8, 8);
-        this.unitOverlayGraphics.fillStyle(0xffd05a).fillRect(enemy.x - 2, enemy.y - enemy.spec.radius - 30, 4, 9);
+        this.unitOverlayGraphics.fillStyle(0xff8a2a).fillRect(enemy.x - 4, enemy.y - visualRadius - 27, 8, 8);
+        this.unitOverlayGraphics.fillStyle(0xffd05a).fillRect(enemy.x - 2, enemy.y - visualRadius - 30, 4, 9);
       }
       if (enemy.poison.damage > 0 && this.time.now <= enemy.poison.until) {
         this.unitOverlayGraphics.fillStyle(0x79d842)
-          .fillCircle(enemy.x - 15, enemy.y - enemy.spec.radius - 24, 4)
-          .fillRect(enemy.x - 18, enemy.y - enemy.spec.radius - 22, 6, 5);
+          .fillCircle(enemy.x - 15, enemy.y - visualRadius - 24, 4)
+          .fillRect(enemy.x - 18, enemy.y - visualRadius - 22, 6, 5);
       }
       if (enemy.movement.slowFactor < 1 && this.time.now <= enemy.movement.slowUntil) {
         this.unitOverlayGraphics.lineStyle(2, 0x67d8ff)
-          .lineBetween(enemy.x + 11, enemy.y - enemy.spec.radius - 22, enemy.x + 21, enemy.y - enemy.spec.radius - 22)
-          .lineBetween(enemy.x + 16, enemy.y - enemy.spec.radius - 27, enemy.x + 16, enemy.y - enemy.spec.radius - 17);
+          .lineBetween(enemy.x + 11, enemy.y - visualRadius - 22, enemy.x + 21, enemy.y - visualRadius - 22)
+          .lineBetween(enemy.x + 16, enemy.y - visualRadius - 27, enemy.x + 16, enemy.y - visualRadius - 17);
       }
 
       const isSpecial =
         enemy.spec.archetype === 'BOSS_CORE' || enemy.spec.archetype === 'ELITE_BRUTE';
       if (!isSpecial && enemy.health.ratio >= 0.999) continue;
 
-      const barW = enemy.spec.archetype === 'BOSS_CORE' ? 76 : isSpecial ? 48 : 32;
+      const barW = enemy.spec.archetype === 'BOSS_CORE' ? enemy.bossVisual?.visible?110:76 : isSpecial ? 48 : 32;
       const barH = enemy.spec.archetype === 'BOSS_CORE' ? 7 : 5;
       const bx = enemy.x - barW * 0.5;
-      const by = enemy.y - enemy.spec.radius - 14;
+      const by = enemy.y - visualRadius - 14;
 
       this.unitOverlayGraphics.fillStyle(0x0f172a, 0.85);
       this.unitOverlayGraphics.fillRect(bx - 1, by - 1, barW + 2, barH + 2);

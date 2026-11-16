@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fixture,load} from './helpers/skill-fixture.mjs';
 const {resolveSynergies}=load('src/config/synergyData.ts');
@@ -38,7 +38,7 @@ test('real squad weapon receives forest damage and ranged cadence while hero att
  f.update(1000+interval-1);assert.equal(f.shots.filter(s=>s.sourceUnitId===unit.id).length,first);
  f.update(1000+interval+0.001);assert.equal(f.shots.filter(s=>s.sourceUnitId===unit.id).length,first+1);
 });
-test('five boss plans have distinct formations, bounded targets, frozen coordinates and finite phase cadence',()=>{
+test('six boss plans have distinct formations, bounded targets, frozen coordinates and finite phase cadence',()=>{
  const boss={x:360,y:300,speed:105},target={x:360,y:630},counts=[];
  for(const id of BOSS_IDS){
   const profile=BOSS_PROFILES[id],first=planBossAttack(id,1,0,boss,target);counts.push(first.attacks.length);
@@ -50,7 +50,7 @@ test('five boss plans have distinct formations, bounded targets, frozen coordina
   }
   target.x=10;assert.notEqual(first.attacks[0].x,10);target.x=360;
  }
- assert.deepEqual(counts,[1,2,3,4,4]);assert.equal(new Set(BOSS_IDS.map(id=>BOSS_PROFILES[id].color)).size,5);
+ assert.deepEqual(counts,[1,2,3,4,4,1]);assert.equal(new Set(BOSS_IDS.map(id=>BOSS_PROFILES[id].color)).size,6);
  const cross=planBossAttack('twilight_king',1,0,boss,target);
  assert.ok(cross.attacks.every(a=>Math.hypot(a.x-target.x,a.y-target.y)>a.radius));
  for(const x of[ARENA_BOUNDS.left+24,ARENA_BOUNDS.right-24])for(const y of[ARENA_BOUNDS.top+24,ARENA_BOUNDS.bottom-24]){
@@ -105,3 +105,4 @@ test('stale codex instances merge later discoveries and refuse a new corrupt or 
  const raw=JSON.stringify({version:2,units:[],bosses:[]});s.values.set(CODEX_KEY,raw);
  assert.equal(first.recordUnits(['STONE_GUARD']),false);assert.equal(s.values.get(CODEX_KEY),raw);
 });
+

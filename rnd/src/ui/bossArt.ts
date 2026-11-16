@@ -1,0 +1,15 @@
+import image from '../assets/bosses-v1/atlas.png';
+import data from '../assets/bosses-v1/atlas.json?url';
+import motionImage from '../assets/boss-motion-v2/atlas.png';
+import motionData from '../assets/boss-motion-v2/atlas.json?url';
+import vfxImage from '../assets/boss-vfx-v2/atlas.png';
+import vfxData from '../assets/boss-vfx-v2/atlas.json?url';
+import desertImage from '../assets/desert-motion-v3/atlas.png';
+import desertData from '../assets/desert-motion-v3/atlas.json?url';
+import sandImage from '../assets/sandstorm-v1/atlas.png';
+import sandData from '../assets/sandstorm-v1/atlas.json?url';
+export const BOSS_ART={image,data};
+export const BOSS_MOTION_ART={image:motionImage,data:motionData};
+export const BOSS_VFX_ART={image:vfxImage,data:vfxData};
+export const DESERT_MOTION_ART={image:desertImage,data:desertData};
+export const SANDSTORM_ART={image:sandImage,data:sandData};

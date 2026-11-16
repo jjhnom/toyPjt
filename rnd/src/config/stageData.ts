@@ -40,7 +40,11 @@ export function isSupportedStageIndex(value: unknown): value is number {
 
 export function generateEndlessStage(index: number): StageDef {
   if (!isSupportedStageIndex(index) || index < STAGES.length) throw new RangeError('Invalid endless stage index');
-  const theme = STAGES[(index - STAGES.length) % STAGES.length];
+  // Preserve the five story regions; the new ruler opens each six-region endless cycle.
+  const cycle = (index - STAGES.length) % (STAGES.length + 1);
+  const theme: StageDef = cycle === 0 ? { ...STAGES[4], name:'황금 사막', bossId:'desert_emperor',
+    bossName:BOSS_PROFILES.desert_emperor.name, bossPatterns:[...BOSS_PROFILES.desert_emperor.patterns],
+    palette:{background:0x2b211c,floor:0x574431,moss:0xc29a55,wall:0x8d704a} } : STAGES[cycle - 1];
   return { ...theme, index, gridWidth: 5, gridHeight: 5, roomCount: 15,
     eliteCount: Math.min(4 + Math.floor((index - 5) / 2), 6), isFinal: false,
     palette: { ...theme.palette }, enemyPoolIds: [...STAGES[4].enemyPoolIds], newEnemyIds: [],

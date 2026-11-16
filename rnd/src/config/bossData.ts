@@ -1,8 +1,10 @@
 import type { BossId, BossPattern } from '../types/game';
 import { ARENA_BOUNDS } from './gameData';
-export const BOSS_IDS: readonly BossId[] = ['forest_guardian','swamp_lord','lava_colossus','frost_queen','twilight_king'];
+export const BOSS_IDS: readonly BossId[] = ['forest_guardian','swamp_lord','lava_colossus','frost_queen','twilight_king','desert_emperor'];
 interface BossProfile { name: string; color: number; patterns: readonly BossPattern[]; intervalMs: number; warningMs: number; hint: string }
 export const BOSS_PROFILES: Record<BossId, BossProfile> = {
+  desert_emperor: {name:'사막의 제왕',color:0xffcd66,patterns:['POISON'],intervalMs:3600,warningMs:1200,
+    hint:'사막의 폭풍이 예고된 자리를 벗어나세요. 모래 회오리는 잠시 남습니다.'},
   forest_guardian: {name:'숲의 수호자',color:0x8bce85,patterns:['CHARGE','METEOR'],intervalMs:3200,warningMs:1000,
     hint:'돌진 띠에서 옆으로 피하고, 수호자 주변 강타 범위를 벗어나세요.'},
   swamp_lord: {name:'독 늪의 군주',color:0xb9d36e,patterns:['POISON','CHARGE'],intervalMs:3400,warningMs:1000,
@@ -10,9 +12,9 @@ export const BOSS_PROFILES: Record<BossId, BossProfile> = {
   lava_colossus: {name:'용암 거신',color:0xffa66a,patterns:['METEOR'],intervalMs:3300,warningMs:1100,
     hint:'가로로 떨어지는 세 운석을 위나 아래로 피하세요.'},
   frost_queen: {name:'서리 여왕',color:0x9bddff,patterns:['FROST','SUMMON'],intervalMs:3500,warningMs:1100,
-    hint:'네 방향 빙결 고리의 중앙이나 바깥이 안전합니다. 소환도 경계하세요.'},
+    hint:'본체나 출전 유닛 주변에 빙결 고리가 생깁니다. 예고된 범위를 피하고 소환도 경계하세요.'},
   twilight_king: {name:'황혼의 마왕',color:0xd3a4ff,patterns:['METEOR','POISON','CHARGE','FROST','SUMMON'],intervalMs:3000,warningMs:1000,
-    hint:'십자 낙하의 중심은 안전하지만, 다음 독 공격에는 자리를 옮기세요.'}
+    hint:'십자 낙하의 중심은 안전하지만, 독 공격과 본체·출전 유닛 주변의 속박 예고는 피하세요.'}
 };
 export function isBossId(id: unknown): id is BossId {
   return typeof id === 'string' && Object.prototype.hasOwnProperty.call(BOSS_PROFILES,id);
@@ -33,13 +35,16 @@ export function planBossAttack(id: BossId, phase: number, sequence: number, boss
     else if(dy< -0.0001)distance=Math.min(distance,(ARENA_BOUNDS.top+46-boss.y)/dy);
     distance=Math.max(1,distance);
     attacks.push({kind,x:boss.x+dx*distance,y:boss.y+dy*distance,radius:70,warningMs:profile.warningMs,durationMs:250,fromX:boss.x,fromY:boss.y});
+  } else if(id==='desert_emperor') {
+    add(kind,target.x,target.y,90,2400);
+    if(phase>=2)add(kind,target.x+(target.x>ARENA_BOUNDS.centerX?-200:200),target.y,90,2400);
   } else if(id==='forest_guardian') add('METEOR',boss.x,boss.y,105);
   else if(id==='swamp_lord'&&kind==='POISON') {
     add(kind,target.x-110,target.y,75,2400);add(kind,target.x+110,target.y,75,2400);
   } else if(id==='lava_colossus') {
     for(const offset of[-150,0,150])add(kind,target.x+offset,target.y,70+Math.min(2,phase-1)*5);
   } else if((id==='frost_queen'||id==='twilight_king')&&kind==='FROST') {
-    for(const [dx,dy]of[[0,-170],[0,170],[-170,0],[170,0]])add(kind,ARENA_BOUNDS.centerX+dx,ARENA_BOUNDS.centerY+dy,85,2200);
+    for(const [dx,dy]of[[0,-170],[0,170],[-170,0],[170,0]])add(kind,target.x+dx,target.y+dy,85,2200);
   } else if(id==='twilight_king'&&kind==='METEOR') {
     // Omit arms outside the arena instead of pushing them into the advertised safe center.
     for(const [dx,dy]of[[0,-150],[0,150],[-150,0],[150,0]]) {

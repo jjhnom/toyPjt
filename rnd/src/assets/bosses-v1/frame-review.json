@@ -1,0 +1,1614 @@
+[
+  {
+    "key": "forest_guardian_idle",
+    "source": "숲의_수호자_보스_스프라이트_시트.png",
+    "rect": [
+      80,
+      40,
+      530,
+      530
+    ],
+    "foot": [
+      350,
+      562
+    ],
+    "placement": [
+      26,
+      42,
+      138,
+      138
+    ]
+  },
+  {
+    "key": "forest_guardian_cast",
+    "source": "숲의_수호자_보스_스프라이트_시트.png",
+    "rect": [
+      700,
+      55,
+      700,
+      548
+    ],
+    "foot": [
+      1060,
+      555
+    ],
+    "placement": [
+      2,
+      48,
+      182,
+      142
+    ]
+  },
+  {
+    "key": "forest_guardian_charge",
+    "source": "숲의_수호자_보스_스프라이트_시트.png",
+    "rect": [
+      580,
+      620,
+      560,
+      430
+    ],
+    "foot": [
+      925,
+      1025
+    ],
+    "placement": [
+      6,
+      73,
+      146,
+      112
+    ]
+  },
+  {
+    "key": "forest_guardian_charge_0",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      195,
+      170,
+      150
+    ],
+    "placement": [
+      9,
+      25,
+      79,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_charge_1",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      195,
+      168,
+      150
+    ],
+    "placement": [
+      9,
+      25,
+      78,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_charge_2",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      195,
+      168,
+      150
+    ],
+    "placement": [
+      9,
+      25,
+      78,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_charge_3",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      195,
+      166,
+      150
+    ],
+    "placement": [
+      10,
+      25,
+      77,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_impact_0",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      680,
+      170,
+      150
+    ],
+    "placement": [
+      9,
+      19,
+      79,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_impact_1",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      680,
+      168,
+      150
+    ],
+    "placement": [
+      9,
+      19,
+      78,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_impact_2",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      680,
+      168,
+      150
+    ],
+    "placement": [
+      9,
+      19,
+      78,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_impact_3",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      680,
+      166,
+      150
+    ],
+    "placement": [
+      10,
+      19,
+      77,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_cast_0",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      855,
+      170,
+      172
+    ],
+    "placement": [
+      14,
+      20,
+      69,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_cast_1",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      855,
+      168,
+      172
+    ],
+    "placement": [
+      14,
+      20,
+      68,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_cast_2",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      855,
+      168,
+      172
+    ],
+    "placement": [
+      14,
+      20,
+      68,
+      70
+    ]
+  },
+  {
+    "key": "forest_guardian_cast_3",
+    "source": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      855,
+      166,
+      172
+    ],
+    "placement": [
+      14,
+      20,
+      68,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_idle",
+    "source": "독늪_군주의_세_가지_모습.png",
+    "rect": [
+      15,
+      380,
+      390,
+      350
+    ],
+    "foot": [
+      211,
+      707
+    ],
+    "placement": [
+      23,
+      57,
+      144,
+      130
+    ]
+  },
+  {
+    "key": "swamp_lord_cast",
+    "source": "독늪_군주의_세_가지_모습.png",
+    "rect": [
+      420,
+      330,
+      430,
+      410
+    ],
+    "foot": [
+      635,
+      708
+    ],
+    "placement": [
+      16,
+      38,
+      159,
+      152
+    ]
+  },
+  {
+    "key": "swamp_lord_charge",
+    "source": "독늪_군주의_세_가지_모습.png",
+    "rect": [
+      955,
+      420,
+      480,
+      310
+    ],
+    "foot": [
+      1180,
+      709
+    ],
+    "placement": [
+      13,
+      71,
+      178,
+      115
+    ]
+  },
+  {
+    "key": "swamp_lord_field_0",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      12,
+      186,
+      170,
+      156
+    ],
+    "placement": [
+      10,
+      20,
+      76,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_field_1",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      374,
+      186,
+      168,
+      156
+    ],
+    "placement": [
+      11,
+      20,
+      75,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_field_2",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      736,
+      186,
+      168,
+      156
+    ],
+    "placement": [
+      11,
+      20,
+      75,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_field_3",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      1098,
+      186,
+      166,
+      156
+    ],
+    "placement": [
+      11,
+      20,
+      74,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_cast_0",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      12,
+      342,
+      170,
+      211
+    ],
+    "placement": [
+      20,
+      12,
+      56,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_cast_1",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      374,
+      342,
+      168,
+      211
+    ],
+    "placement": [
+      20,
+      12,
+      56,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_cast_2",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      736,
+      342,
+      168,
+      211
+    ],
+    "placement": [
+      20,
+      12,
+      56,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_cast_3",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      1098,
+      342,
+      166,
+      211
+    ],
+    "placement": [
+      21,
+      12,
+      55,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_charge_0",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      12,
+      721,
+      170,
+      125
+    ],
+    "placement": [
+      5,
+      27,
+      86,
+      63
+    ]
+  },
+  {
+    "key": "swamp_lord_charge_1",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      374,
+      721,
+      168,
+      125
+    ],
+    "placement": [
+      5,
+      26,
+      86,
+      64
+    ]
+  },
+  {
+    "key": "swamp_lord_charge_2",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      736,
+      721,
+      168,
+      125
+    ],
+    "placement": [
+      5,
+      26,
+      86,
+      64
+    ]
+  },
+  {
+    "key": "swamp_lord_charge_3",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      1098,
+      721,
+      166,
+      125
+    ],
+    "placement": [
+      5,
+      26,
+      86,
+      65
+    ]
+  },
+  {
+    "key": "swamp_lord_impact_0",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      12,
+      856,
+      170,
+      181
+    ],
+    "placement": [
+      15,
+      15,
+      66,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_impact_1",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      374,
+      856,
+      168,
+      181
+    ],
+    "placement": [
+      16,
+      15,
+      65,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_impact_2",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      736,
+      856,
+      168,
+      181
+    ],
+    "placement": [
+      16,
+      15,
+      65,
+      70
+    ]
+  },
+  {
+    "key": "swamp_lord_impact_3",
+    "source": "독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+    "rect": [
+      1098,
+      856,
+      166,
+      181
+    ],
+    "placement": [
+      16,
+      15,
+      64,
+      70
+    ]
+  },
+  {
+    "key": "lava_colossus_idle",
+    "source": "용암_거신_보스_스프라이트_시트.png",
+    "rect": [
+      20,
+      340,
+      410,
+      490
+    ],
+    "foot": [
+      235,
+      812
+    ],
+    "placement": [
+      34,
+      41,
+      119,
+      142
+    ]
+  },
+  {
+    "key": "lava_colossus_cast",
+    "source": "용암_거신_보스_스프라이트_시트.png",
+    "rect": [
+      440,
+      270,
+      460,
+      555
+    ],
+    "foot": [
+      670,
+      812
+    ],
+    "placement": [
+      29,
+      21,
+      133,
+      161
+    ]
+  },
+  {
+    "key": "lava_colossus_charge",
+    "source": "용암_거신_보스_스프라이트_시트.png",
+    "rect": [
+      910,
+      350,
+      530,
+      500
+    ],
+    "foot": [
+      1175,
+      820
+    ],
+    "placement": [
+      19,
+      42,
+      154,
+      145
+    ]
+  },
+  {
+    "key": "lava_colossus_fall_0",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      394,
+      170,
+      159
+    ],
+    "placement": [
+      11,
+      13,
+      75,
+      70
+    ]
+  },
+  {
+    "key": "lava_colossus_fall_1",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      394,
+      168,
+      159
+    ],
+    "placement": [
+      11,
+      13,
+      74,
+      70
+    ]
+  },
+  {
+    "key": "lava_colossus_fall_2",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      394,
+      168,
+      159
+    ],
+    "placement": [
+      11,
+      13,
+      74,
+      70
+    ]
+  },
+  {
+    "key": "lava_colossus_fall_3",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      394,
+      166,
+      159
+    ],
+    "placement": [
+      12,
+      13,
+      73,
+      70
+    ]
+  },
+  {
+    "key": "lava_colossus_impact_0",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      553,
+      170,
+      126
+    ],
+    "placement": [
+      5,
+      25,
+      86,
+      64
+    ]
+  },
+  {
+    "key": "lava_colossus_impact_1",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      553,
+      168,
+      126
+    ],
+    "placement": [
+      5,
+      24,
+      86,
+      65
+    ]
+  },
+  {
+    "key": "lava_colossus_impact_2",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      553,
+      168,
+      126
+    ],
+    "placement": [
+      5,
+      24,
+      86,
+      65
+    ]
+  },
+  {
+    "key": "lava_colossus_impact_3",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      553,
+      166,
+      126
+    ],
+    "placement": [
+      5,
+      24,
+      86,
+      65
+    ]
+  },
+  {
+    "key": "lava_colossus_field_0",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      682,
+      170,
+      133
+    ],
+    "placement": [
+      5,
+      20,
+      86,
+      67
+    ]
+  },
+  {
+    "key": "lava_colossus_field_1",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      682,
+      168,
+      133
+    ],
+    "placement": [
+      5,
+      20,
+      86,
+      68
+    ]
+  },
+  {
+    "key": "lava_colossus_field_2",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      682,
+      168,
+      133
+    ],
+    "placement": [
+      5,
+      20,
+      86,
+      68
+    ]
+  },
+  {
+    "key": "lava_colossus_field_3",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      682,
+      166,
+      133
+    ],
+    "placement": [
+      5,
+      19,
+      86,
+      69
+    ]
+  },
+  {
+    "key": "lava_colossus_cast_0",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      956,
+      170,
+      112
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      57
+    ]
+  },
+  {
+    "key": "lava_colossus_cast_1",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      956,
+      168,
+      112
+    ],
+    "placement": [
+      5,
+      38,
+      86,
+      57
+    ]
+  },
+  {
+    "key": "lava_colossus_cast_2",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      956,
+      168,
+      112
+    ],
+    "placement": [
+      5,
+      38,
+      86,
+      57
+    ]
+  },
+  {
+    "key": "lava_colossus_cast_3",
+    "source": "화산_보스_픽셀_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      956,
+      166,
+      112
+    ],
+    "placement": [
+      5,
+      38,
+      86,
+      58
+    ]
+  },
+  {
+    "key": "frost_queen_idle",
+    "source": "서리_여왕의_얼음_스프라이트_시트.png",
+    "rect": [
+      35,
+      285,
+      375,
+      490
+    ],
+    "foot": [
+      228,
+      758
+    ],
+    "placement": [
+      44,
+      50,
+      101,
+      132
+    ]
+  },
+  {
+    "key": "frost_queen_cast",
+    "source": "서리_여왕의_얼음_스프라이트_시트.png",
+    "rect": [
+      425,
+      190,
+      460,
+      590
+    ],
+    "foot": [
+      650,
+      760
+    ],
+    "placement": [
+      35,
+      24,
+      124,
+      159
+    ]
+  },
+  {
+    "key": "frost_queen_charge",
+    "source": "서리_여왕의_얼음_스프라이트_시트.png",
+    "rect": [
+      890,
+      280,
+      550,
+      530
+    ],
+    "foot": [
+      1160,
+      765
+    ],
+    "placement": [
+      23,
+      47,
+      149,
+      143
+    ]
+  },
+  {
+    "key": "frost_queen_impact_0",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      184,
+      170,
+      164
+    ],
+    "placement": [
+      12,
+      17,
+      73,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_impact_1",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      184,
+      168,
+      164
+    ],
+    "placement": [
+      12,
+      17,
+      72,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_impact_2",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      184,
+      168,
+      164
+    ],
+    "placement": [
+      12,
+      17,
+      72,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_impact_3",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      184,
+      166,
+      164
+    ],
+    "placement": [
+      13,
+      17,
+      71,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_field_0",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      355,
+      170,
+      168
+    ],
+    "placement": [
+      13,
+      17,
+      71,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_field_1",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      355,
+      168,
+      168
+    ],
+    "placement": [
+      13,
+      17,
+      70,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_field_2",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      355,
+      168,
+      168
+    ],
+    "placement": [
+      13,
+      17,
+      70,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_field_3",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      355,
+      166,
+      168
+    ],
+    "placement": [
+      14,
+      17,
+      69,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_summon_0",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      530,
+      170,
+      150
+    ],
+    "placement": [
+      9,
+      25,
+      79,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_summon_1",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      530,
+      168,
+      150
+    ],
+    "placement": [
+      9,
+      25,
+      78,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_summon_2",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      530,
+      168,
+      150
+    ],
+    "placement": [
+      9,
+      25,
+      78,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_summon_3",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      530,
+      166,
+      150
+    ],
+    "placement": [
+      10,
+      25,
+      77,
+      70
+    ]
+  },
+  {
+    "key": "frost_queen_cast_0",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      12,
+      720,
+      170,
+      128
+    ],
+    "placement": [
+      5,
+      30,
+      86,
+      65
+    ]
+  },
+  {
+    "key": "frost_queen_cast_1",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      374,
+      720,
+      168,
+      128
+    ],
+    "placement": [
+      5,
+      29,
+      86,
+      66
+    ]
+  },
+  {
+    "key": "frost_queen_cast_2",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      736,
+      720,
+      168,
+      128
+    ],
+    "placement": [
+      5,
+      29,
+      86,
+      66
+    ]
+  },
+  {
+    "key": "frost_queen_cast_3",
+    "source": "프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+    "rect": [
+      1098,
+      720,
+      166,
+      128
+    ],
+    "placement": [
+      5,
+      29,
+      86,
+      66
+    ]
+  },
+  {
+    "key": "twilight_king_idle",
+    "source": "황혼의_마왕_픽셀_스프라이트_시트.png",
+    "rect": [
+      20,
+      360,
+      385,
+      375
+    ],
+    "foot": [
+      220,
+      721
+    ],
+    "placement": [
+      36,
+      70,
+      116,
+      113
+    ]
+  },
+  {
+    "key": "twilight_king_cast",
+    "source": "황혼의_마왕_픽셀_스프라이트_시트.png",
+    "rect": [
+      430,
+      310,
+      460,
+      425
+    ],
+    "foot": [
+      650,
+      721
+    ],
+    "placement": [
+      30,
+      55,
+      138,
+      128
+    ]
+  },
+  {
+    "key": "twilight_king_charge",
+    "source": "황혼의_마왕_픽셀_스프라이트_시트.png",
+    "rect": [
+      865,
+      385,
+      575,
+      355
+    ],
+    "foot": [
+      1140,
+      720
+    ],
+    "placement": [
+      14,
+      78,
+      173,
+      107
+    ]
+  },
+  {
+    "key": "twilight_king_fall_0",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      30,
+      192,
+      158,
+      145
+    ],
+    "placement": [
+      10,
+      13,
+      76,
+      70
+    ]
+  },
+  {
+    "key": "twilight_king_fall_1",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      210,
+      192,
+      172,
+      145
+    ],
+    "placement": [
+      7,
+      13,
+      83,
+      70
+    ]
+  },
+  {
+    "key": "twilight_king_impact_0",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      420,
+      190,
+      172,
+      147
+    ],
+    "placement": [
+      7,
+      17,
+      82,
+      70
+    ]
+  },
+  {
+    "key": "twilight_king_impact_1",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      610,
+      190,
+      190,
+      147
+    ],
+    "placement": [
+      5,
+      20,
+      86,
+      67
+    ]
+  },
+  {
+    "key": "twilight_king_impact_2",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      820,
+      190,
+      188,
+      147
+    ],
+    "placement": [
+      5,
+      19,
+      86,
+      67
+    ]
+  },
+  {
+    "key": "twilight_king_impact_3",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      1240,
+      190,
+      190,
+      147
+    ],
+    "placement": [
+      5,
+      20,
+      86,
+      67
+    ]
+  },
+  {
+    "key": "twilight_king_field_0",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      14,
+      340,
+      182,
+      153
+    ],
+    "placement": [
+      7,
+      18,
+      83,
+      70
+    ]
+  },
+  {
+    "key": "twilight_king_field_1",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      410,
+      340,
+      178,
+      153
+    ],
+    "placement": [
+      8,
+      18,
+      81,
+      70
+    ]
+  },
+  {
+    "key": "twilight_king_field_2",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      818,
+      340,
+      180,
+      153
+    ],
+    "placement": [
+      7,
+      18,
+      82,
+      70
+    ]
+  },
+  {
+    "key": "twilight_king_field_3",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      1234,
+      340,
+      202,
+      153
+    ],
+    "placement": [
+      5,
+      22,
+      86,
+      65
+    ]
+  },
+  {
+    "key": "twilight_king_charge_0",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      14,
+      580,
+      182,
+      111
+    ],
+    "placement": [
+      5,
+      37,
+      86,
+      52
+    ]
+  },
+  {
+    "key": "twilight_king_charge_1",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      410,
+      580,
+      178,
+      111
+    ],
+    "placement": [
+      5,
+      36,
+      86,
+      54
+    ]
+  },
+  {
+    "key": "twilight_king_charge_2",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      818,
+      580,
+      180,
+      111
+    ],
+    "placement": [
+      5,
+      37,
+      86,
+      53
+    ]
+  },
+  {
+    "key": "twilight_king_charge_3",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      1234,
+      580,
+      202,
+      111
+    ],
+    "placement": [
+      5,
+      41,
+      86,
+      47
+    ]
+  },
+  {
+    "key": "twilight_king_frost_0",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      14,
+      695,
+      182,
+      133
+    ],
+    "placement": [
+      5,
+      29,
+      86,
+      63
+    ]
+  },
+  {
+    "key": "twilight_king_frost_1",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      410,
+      695,
+      178,
+      133
+    ],
+    "placement": [
+      5,
+      28,
+      86,
+      64
+    ]
+  },
+  {
+    "key": "twilight_king_frost_2",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      818,
+      695,
+      180,
+      133
+    ],
+    "placement": [
+      5,
+      28,
+      86,
+      64
+    ]
+  },
+  {
+    "key": "twilight_king_frost_3",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      1234,
+      695,
+      202,
+      133
+    ],
+    "placement": [
+      5,
+      33,
+      86,
+      57
+    ]
+  },
+  {
+    "key": "twilight_king_summon_0",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      14,
+      830,
+      182,
+      132
+    ],
+    "placement": [
+      5,
+      27,
+      86,
+      62
+    ]
+  },
+  {
+    "key": "twilight_king_summon_1",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      410,
+      830,
+      178,
+      132
+    ],
+    "placement": [
+      5,
+      26,
+      86,
+      64
+    ]
+  },
+  {
+    "key": "twilight_king_summon_2",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      818,
+      830,
+      180,
+      132
+    ],
+    "placement": [
+      5,
+      27,
+      86,
+      63
+    ]
+  },
+  {
+    "key": "twilight_king_summon_3",
+    "source": "트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+    "rect": [
+      1234,
+      830,
+      202,
+      132
+    ],
+    "placement": [
+      5,
+      32,
+      86,
+      56
+    ]
+  }
+]

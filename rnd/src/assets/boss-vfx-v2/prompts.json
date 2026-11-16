@@ -1,0 +1,63 @@
+{
+  "tool": "image_gen builtin",
+  "date": "2026-11-12",
+  "assets": [
+    {
+      "id": "forest_guardian",
+      "kinds": [
+        "cast",
+        "charge",
+        "impact",
+        "field"
+      ],
+      "source": "sources/forest_guardian.png",
+      "prompt": "Use case: style-transfer. Asset: production pixel-art animated VFX spritesheet for a mobile fantasy game, no characters. Reference image is the provided boss skill sheet; keep its pixel-art rendering and identity but make clearly consecutive motion frames. Create a strict 4-ROW by EIGHT-COLUMN grid, 32 complete separate frames, equal cell spacing with generous real TRANSPARENT padding. Output aspect ratio 8:4; each cell square. Every row is ONE evolving effect, frame1 through8 left to right, consistent anchor and scale within a row, no jitter, no neighboring frame overlap. Palette: forest guardian earth/leaf magic in emerald green, tan soil, warm golden impact light. Row1: a compact green root-energy ring charging from small wisps to a held glowing wreath, buildup sequence. Row2: a seamless horizontal rightward green leaf-and-earth dash wake, flowing leaves and tiny dirt motes, keep wake centered, loop. Row3: earth slam: bright contact spark, upward stone debris eruption, expanding gold shockwave, fragments falling, wispy dissipating dust; one continuous burst from contact through decay. Row4: low tan rock fragments and green leaf motes settling after a slam, the debris gradually drops and dissipates, one-shot aftermath. All ground-effect footprints are centered in the lower part of each cell with the same contact baseline at about 78% of cell height. No labels, no numbers, no gridlines, no HUD, no warning arrows, no text, no scenery, no character bodies. Effects remain inside their cell with at least 10% transparent gutters including glow. The art should be crisp readable pixel art, simple silhouettes at small size, restrained glow, no background haze. Animate substance changing shape across frames, don't merely increase size or duplicate the same picture. Preserve real transparent alpha."
+    },
+    {
+      "id": "swamp_lord",
+      "kinds": [
+        "cast",
+        "charge",
+        "impact",
+        "field"
+      ],
+      "source": "sources/swamp_lord.png",
+      "prompt": "Use case: style-transfer. Asset: production pixel-art animated VFX spritesheet for a mobile fantasy game, no characters. Reference image is the provided boss skill sheet; keep its pixel-art rendering and identity but make clearly consecutive motion frames. Create a strict 4-ROW by EIGHT-COLUMN grid, 32 complete separate frames, equal cell spacing with generous real TRANSPARENT padding. Output aspect ratio 8:4; each cell square. Every row is ONE evolving effect, frame1 through8 left to right, consistent anchor and scale within a row, no jitter, no neighboring frame overlap. Palette: swamp lord poison magic in lime/yellow-green with dark moss, small mud pebbles. Row1: a compact curling green poison mist charging from little wisps to a gathered toxic cloud, buildup. Row2: a seamless low horizontal rightward green slime/mud wake with tiny moving droplets, loop. Row3: poison splat: bright lime contact, low splash rises, droplets scatter, then fall back into shallow puddle; one continuous contact-to-decay burst. Row4: a shallow, steady-size green poison puddle, small bubbles swell/pop at staggered positions and fumes curl gently; SEAMLESS steady-state loop, frame8 naturally returns to frame1. All ground-effect footprints are centered in the lower part of each cell with the same contact baseline at about 78% of cell height. No labels, no numbers, no gridlines, no HUD, no warning arrows, no text, no scenery, no character bodies. Effects remain inside their cell with at least 10% transparent gutters including glow. The art should be crisp readable pixel art, simple silhouettes at small size, restrained glow, no background haze. Animate substance changing shape across frames, don't merely increase size or duplicate the same picture. Preserve real transparent alpha."
+    },
+    {
+      "id": "lava_colossus",
+      "kinds": [
+        "cast",
+        "fall",
+        "impact",
+        "field"
+      ],
+      "source": "sources/lava_colossus.png",
+      "prompt": "Use case: style-transfer. Asset: production pixel-art animated VFX spritesheet for a mobile fantasy game, no characters. Reference image is the provided boss skill sheet; keep its pixel-art rendering and identity but make clearly consecutive motion frames. Create a strict 4-ROW by EIGHT-COLUMN grid, 32 complete separate frames, equal cell spacing with generous real TRANSPARENT padding. Output aspect ratio 8:4; each cell square. Every row is ONE evolving effect, frame1 through8 left to right, consistent anchor and scale within a row, no jitter, no neighboring frame overlap. Palette: lava colossus fire/rock magic in vivid orange, hot gold and charcoal. Row1: a compact hot-orange rune ring gathering ember sparks, starts small and reaches a charged ready state. Row2: a fiery meteor pointing DOWN-LEFT, stable rock core size with animated fire tail and ember shedding, seamless loop; position movement is handled by the game. Row3: meteor hits: a hot white/gold contact flash, orange fiery shockwave and stones erupt, fragments drop and sparks die away; one continuous contact-to-decay burst, last frame only faint embers. Row4: dark cracked stone and orange ember aftermath, brief low smoke curls and cooling fragments settling, one-shot decay. All ground-effect footprints are centered in the lower part of each cell with the same contact baseline at about 78% of cell height. No labels, no numbers, no gridlines, no HUD, no warning arrows, no text, no scenery, no character bodies. Effects remain inside their cell with at least 10% transparent gutters including glow. The art should be crisp readable pixel art, simple silhouettes at small size, restrained glow, no background haze. Animate substance changing shape across frames, don't merely increase size or duplicate the same picture. Preserve real transparent alpha."
+    },
+    {
+      "id": "frost_queen",
+      "kinds": [
+        "cast",
+        "impact",
+        "field",
+        "summon"
+      ],
+      "source": "sources/frost_queen.png",
+      "prompt": "Use case: style-transfer. Asset: production pixel-art animated VFX spritesheet for a mobile fantasy game, no characters. Reference image is the provided boss skill sheet; keep its pixel-art rendering and identity but make clearly consecutive motion frames. Create a strict 4-ROW by EIGHT-COLUMN grid, 32 complete separate frames, equal cell spacing with generous real TRANSPARENT padding. Output aspect ratio 8:4; each cell square. Every row is ONE evolving effect, frame1 through8 left to right, consistent anchor and scale within a row, no jitter, no neighboring frame overlap. Palette: frost queen ice magic in icy cyan, white and royal blue. Row1: small snowflake wisps wind inward and gather as a compact cyan ring, buildup. Row2: frost strikes: cyan-white flash, crystalline shards rise from a small circular ice plate, peak, settle, and shed sparkles; one continuous contact-to-settle burst. Row3: a steady-size shallow cracked ice plate with small frost sparkles drifting around the rim; SEAMLESS steady-state loop, no shrinking or regrowing the entire plate. Row4: a snowflake rune portal gathers from faint arcs, shines, releases a thin column of frost motes then fades, one-shot summon arrival. All ground-effect footprints are centered in the lower part of each cell with the same contact baseline at about 78% of cell height. No labels, no numbers, no gridlines, no HUD, no warning arrows, no text, no scenery, no character bodies. Effects remain inside their cell with at least 10% transparent gutters including glow. The art should be crisp readable pixel art, simple silhouettes at small size, restrained glow, no background haze. Animate substance changing shape across frames, don't merely increase size or duplicate the same picture. Preserve real transparent alpha."
+    },
+    {
+      "id": "twilight_king",
+      "kinds": [
+        "cast",
+        "fall",
+        "impact",
+        "field",
+        "charge",
+        "summon"
+      ],
+      "source": "sources/twilight_king.png",
+      "prompt": "Use case: style-transfer. Asset: production pixel-art animated VFX spritesheet for a mobile fantasy game, no characters. Reference image is the provided boss skill sheet; keep its pixel-art rendering and identity but make clearly consecutive motion frames. Create a strict 6-ROW by EIGHT-COLUMN grid, 48 complete separate frames, equal cell spacing with generous real TRANSPARENT padding. Output aspect ratio 8:6; each cell square. Every row is ONE evolving effect, frame1 through8 left to right, consistent anchor and scale within a row, no jitter, no neighboring frame overlap. Palette: twilight king dark sorcery; purple/magenta and deep violet, green only for poison. NO ice, snowflakes, cyan or blue anywhere. Row1: a compact violet arcane ring with a small crowned glyph gathers purple wisps into a charged ready state. Row2: a violet-black meteor pointing DOWN-LEFT, stable rock core with flowing purple tail and tiny dark debris, seamless loop. Row3: dark meteor/void strike: violet-white contact flash, purple shockwave and black shards bloom, then fragments fall and shadow smoke thins; one continuous contact-to-decay burst. Row4: a shallow green poison pool with a purple outer rim, small skull-shaped fumes drift and bubbles pop; steady size, seamless loop. Row5: a seamless rightward violet dash wake with a small golden crowned tip and streaming dark cloth-like wisps, loop. Row6: a steady-size violet rune circle with small drifting dark soul wisps, softly pulsing purple runes; SEAMLESS steady-state loop, NOT a blue ice circle. Used as dark restraint field and summon portal. All ground-effect footprints are centered in the lower part of each cell with the same contact baseline at about 78% of cell height. No labels, no numbers, no gridlines, no HUD, no warning arrows, no text, no scenery, no character bodies. Effects remain inside their cell with at least 10% transparent gutters including glow. The art should be crisp readable pixel art, simple silhouettes at small size, restrained glow, no background haze. Animate substance changing shape across frames, don't merely increase size or duplicate the same picture. Preserve real transparent alpha."
+    }
+  ]
+}

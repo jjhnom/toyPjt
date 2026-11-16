@@ -1,0 +1,322 @@
+[
+  {
+    "index": 0,
+    "sourceBounds": [
+      27,
+      29,
+      278,
+      285
+    ],
+    "footX": 176.93935119887166,
+    "scale": 0.47232472324723246,
+    "placement": [
+      10,
+      5
+    ],
+    "opaque": 6871,
+    "transparent": 18342,
+    "edge": 0,
+    "hash": 2049809752,
+    "removedMatte": 10981
+  },
+  {
+    "index": 1,
+    "sourceBounds": [
+      26,
+      29,
+      276,
+      285
+    ],
+    "footX": 176.05954198473282,
+    "scale": 0.47232472324723246,
+    "placement": [
+      11,
+      5
+    ],
+    "opaque": 6929,
+    "transparent": 18305,
+    "edge": 0,
+    "hash": 3990279195,
+    "removedMatte": 10327
+  },
+  {
+    "index": 2,
+    "sourceBounds": [
+      26,
+      29,
+      275,
+      284
+    ],
+    "footX": 174.60262008733625,
+    "scale": 0.47232472324723246,
+    "placement": [
+      12,
+      5
+    ],
+    "opaque": 6987,
+    "transparent": 18214,
+    "edge": 0,
+    "hash": 603783501,
+    "removedMatte": 10736
+  },
+  {
+    "index": 3,
+    "sourceBounds": [
+      30,
+      27,
+      283,
+      284
+    ],
+    "footX": 170.8550932568149,
+    "scale": 0.47232472324723246,
+    "placement": [
+      13,
+      5
+    ],
+    "opaque": 6895,
+    "transparent": 18341,
+    "edge": 0,
+    "hash": 1467165012,
+    "removedMatte": 10890
+  },
+  {
+    "index": 4,
+    "sourceBounds": [
+      30,
+      23,
+      286,
+      283
+    ],
+    "footX": 175.05532503457815,
+    "scale": 0.47232472324723246,
+    "placement": [
+      11,
+      6
+    ],
+    "opaque": 6682,
+    "transparent": 18536,
+    "edge": 0,
+    "hash": 2582996900,
+    "removedMatte": 10928
+  },
+  {
+    "index": 5,
+    "sourceBounds": [
+      21,
+      22,
+      285,
+      283
+    ],
+    "footX": 172.8957219251337,
+    "scale": 0.47232472324723246,
+    "placement": [
+      12,
+      6
+    ],
+    "opaque": 6829,
+    "transparent": 18367,
+    "edge": 0,
+    "hash": 2165527773,
+    "removedMatte": 11256
+  },
+  {
+    "index": 6,
+    "sourceBounds": [
+      12,
+      19,
+      288,
+      283
+    ],
+    "footX": 172.24734042553192,
+    "scale": 0.47232472324723246,
+    "placement": [
+      13,
+      6
+    ],
+    "opaque": 6731,
+    "transparent": 18468,
+    "edge": 0,
+    "hash": 1704561837,
+    "removedMatte": 12009
+  },
+  {
+    "index": 7,
+    "sourceBounds": [
+      3,
+      16,
+      292,
+      283
+    ],
+    "footX": 169.6113416320885,
+    "scale": 0.47232472324723246,
+    "placement": [
+      14,
+      6
+    ],
+    "opaque": 6875,
+    "transparent": 18341,
+    "edge": 0,
+    "hash": 367711591,
+    "removedMatte": 10660
+  },
+  {
+    "index": 8,
+    "sourceBounds": [
+      5,
+      17,
+      292,
+      281
+    ],
+    "footX": 172.47368421052633,
+    "scale": 0.47232472324723246,
+    "placement": [
+      13,
+      7
+    ],
+    "opaque": 6807,
+    "transparent": 18371,
+    "edge": 0,
+    "hash": 3796861910,
+    "removedMatte": 10722
+  },
+  {
+    "index": 9,
+    "sourceBounds": [
+      0,
+      12,
+      307,
+      282
+    ],
+    "footX": 172.74964028776978,
+    "scale": 0.47232472324723246,
+    "placement": [
+      12,
+      6
+    ],
+    "opaque": 7281,
+    "transparent": 17157,
+    "edge": 0,
+    "hash": 3448084327,
+    "removedMatte": 9888
+  },
+  {
+    "index": 10,
+    "sourceBounds": [
+      0,
+      23,
+      288,
+      282
+    ],
+    "footX": 173.62849162011173,
+    "scale": 0.47232472324723246,
+    "placement": [
+      12,
+      6
+    ],
+    "opaque": 6944,
+    "transparent": 17758,
+    "edge": 0,
+    "hash": 2808162284,
+    "removedMatte": 9636
+  },
+  {
+    "index": 11,
+    "sourceBounds": [
+      6,
+      23,
+      282,
+      282
+    ],
+    "footX": 168.6401098901099,
+    "scale": 0.47232472324723246,
+    "placement": [
+      14,
+      6
+    ],
+    "opaque": 6981,
+    "transparent": 18222,
+    "edge": 0,
+    "hash": 2886775106,
+    "removedMatte": 10654
+  },
+  {
+    "index": 12,
+    "sourceBounds": [
+      15,
+      24,
+      280,
+      283
+    ],
+    "footX": 173.52878179384203,
+    "scale": 0.47232472324723246,
+    "placement": [
+      12,
+      6
+    ],
+    "opaque": 6869,
+    "transparent": 18331,
+    "edge": 0,
+    "hash": 2496908579,
+    "removedMatte": 9669
+  },
+  {
+    "index": 13,
+    "sourceBounds": [
+      15,
+      26,
+      277,
+      284
+    ],
+    "footX": 170.38297872340425,
+    "scale": 0.47232472324723246,
+    "placement": [
+      14,
+      5
+    ],
+    "opaque": 6969,
+    "transparent": 18202,
+    "edge": 0,
+    "hash": 3012042743,
+    "removedMatte": 11687
+  },
+  {
+    "index": 14,
+    "sourceBounds": [
+      20,
+      27,
+      276,
+      283
+    ],
+    "footX": 177.97388059701493,
+    "scale": 0.47232472324723246,
+    "placement": [
+      10,
+      6
+    ],
+    "opaque": 6957,
+    "transparent": 18288,
+    "edge": 0,
+    "hash": 1970948948,
+    "removedMatte": 10343
+  },
+  {
+    "index": 15,
+    "sourceBounds": [
+      30,
+      24,
+      279,
+      284
+    ],
+    "footX": 177.08725761772854,
+    "scale": 0.47232472324723246,
+    "placement": [
+      10,
+      5
+    ],
+    "opaque": 7001,
+    "transparent": 18250,
+    "edge": 0,
+    "hash": 1337639830,
+    "removedMatte": 10304
+  }
+]

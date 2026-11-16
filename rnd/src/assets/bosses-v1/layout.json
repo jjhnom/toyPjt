@@ -1,0 +1,45 @@
+{
+  "sourceRoot": ".agent/skills/design/20261112/bossmonster/",
+  "characterSize": 192,
+  "characterAnchor": [96,178],
+  "effectSize": 96,
+  "effectAnchor": [48,76],
+  "effectColumnBounds": {
+    "8": [[12,170],[192,168],[374,168],[554,168],[736,168],[916,168],[1098,166],[1278,164]],
+    "7": [[14,182],[212,180],[410,178],[610,184],[818,180],[1026,180],[1234,202]],
+    "2": [[30,158],[210,172]],
+    "5": [[420,172],[610,190],[820,188],[1030,186],[1240,190]]
+  },
+  "bosses": {
+    "forest_guardian": {
+      "character": "숲의_수호자_보스_스프라이트_시트.png", "scale": 0.26,
+      "poses": {"idle":{"rect":[80,40,530,530],"foot":[350,562]},"cast":{"rect":[700,55,700,548],"foot":[1060,555]},"charge":{"rect":[580,620,560,430],"foot":[925,1025]}},
+      "effects": "숲의_수호자_픽셀_vfx_스프라이트_시트.png",
+      "rows": {"charge":{"rect":[12,195,1430,150],"columns":8,"frames":[0,2,4,6],"footY":305},"impact":{"rect":[12,680,1430,150],"columns":8,"frames":[0,2,4,6],"footY":803},"cast":{"rect":[12,855,1430,172],"columns":8,"frames":[0,2,4,6],"footY":993}}
+    },
+    "swamp_lord": {
+      "character":"독늪_군주의_세_가지_모습.png", "scale":0.37,
+      "poses":{"idle":{"rect":[15,380,390,350],"foot":[211,707]},"cast":{"rect":[420,330,430,410],"foot":[635,708]},"charge":{"rect":[955,420,480,310],"foot":[1180,709]}},
+      "effects":"독성_늪_군주의_네온_스킬_스프라이트_시트.png",
+      "rows":{"field":{"rect":[10,186,1430,156],"columns":8,"frames":[0,2,4,6],"footY":311},"cast":{"rect":[10,342,1430,211],"columns":8,"frames":[0,2,4,6],"footY":534},"charge":{"rect":[10,721,1430,125],"columns":8,"frames":[0,2,4,6],"footY":818},"impact":{"rect":[10,856,1430,181],"columns":8,"frames":[0,2,4,6],"footY":1015}}
+    },
+    "lava_colossus": {
+      "character":"용암_거신_보스_스프라이트_시트.png", "scale":0.29,
+      "poses":{"idle":{"rect":[20,340,410,490],"foot":[235,812]},"cast":{"rect":[440,270,460,555],"foot":[670,812]},"charge":{"rect":[910,350,530,500],"foot":[1175,820]}},
+      "effects":"화산_보스_픽셀_vfx_스프라이트_시트.png",
+      "rows":{"fall":{"rect":[12,394,1430,159],"columns":8,"frames":[0,2,4,6],"center":true},"impact":{"rect":[12,553,1430,126],"columns":8,"frames":[0,2,4,6],"footY":654},"field":{"rect":[12,682,1430,133],"columns":8,"frames":[0,2,4,6],"footY":792},"cast":{"rect":[12,956,1430,112],"columns":8,"frames":[0,2,4,6],"footY":1030}}
+    },
+    "frost_queen": {
+      "character":"서리_여왕의_얼음_스프라이트_시트.png", "scale":0.27,
+      "poses":{"idle":{"rect":[35,285,375,490],"foot":[228,758]},"cast":{"rect":[425,190,460,590],"foot":[650,760]},"charge":{"rect":[890,280,550,530],"foot":[1160,765]}},
+      "effects":"프로스트_퀸_보스_얼음_vfx_스프라이트_시트.png",
+      "rows":{"impact":{"rect":[10,184,1430,164],"columns":8,"frames":[0,2,4,6],"footY":322},"field":{"rect":[10,355,1430,168],"columns":8,"frames":[0,2,4,6],"footY":497},"summon":{"rect":[10,530,1430,150],"columns":8,"frames":[0,2,4,6],"footY":640},"cast":{"rect":[10,720,1430,128],"columns":8,"frames":[0,2,4,6],"footY":811}}
+    },
+    "twilight_king": {
+      "character":"황혼의_마왕_픽셀_스프라이트_시트.png", "scale":0.30,
+      "poses":{"idle":{"rect":[20,360,385,375],"foot":[220,721]},"cast":{"rect":[430,310,460,425],"foot":[650,721]},"charge":{"rect":[865,385,575,355],"foot":[1140,720]}},
+      "effects":"트와일라잇_마왕_스킬_이펙트_스프라이트_시트.png",
+      "rows":{"fall":{"rect":[12,192,405,145],"columns":2,"frames":[0,1],"center":true},"impact":{"rect":[419,190,1018,147],"columns":5,"frames":[0,1,2,4],"footY":314},"field":{"rect":[12,340,1430,153],"columns":7,"frames":[0,2,4,6],"footY":467},"charge":{"rect":[12,580,1430,111],"columns":7,"frames":[0,2,4,6],"footY":662},"frost":{"rect":[12,695,1430,133],"columns":7,"frames":[0,2,4,6],"footY":795},"summon":{"rect":[12,830,1430,132],"columns":7,"frames":[0,2,4,6],"footY":933}}
+    }
+  }
+}

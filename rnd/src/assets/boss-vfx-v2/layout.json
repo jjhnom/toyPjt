@@ -1,0 +1,18 @@
+{
+  "size":96,
+  "anchor":[48,76],
+  "columns":8,
+  "bosses":{
+    "forest_guardian":{"rows":["cast","charge","impact","field"],"feet":[0.91,0.9,0.9,0.91]},
+    "swamp_lord":{"rows":["cast","charge","impact","field"],"feet":[0.91,0.9,0.9,0.91]},
+    "lava_colossus":{"rows":["cast","fall","impact","field"],"feet":[0.9,0.9,0.9,0.92]},
+    "frost_queen":{"rows":["cast","impact","field","summon"],"feet":[0.89,0.89,0.9,0.9]},
+    "twilight_king":{
+      "rows":["cast","fall","impact","field","charge","summon"],
+      "feet":[0.9,0.92,0.9,0.9,0.9,0.9],
+      "bounds":[[20,190],[220,170],[395,145],[550,160],[735,115],[885,150]],
+      "footY":[175,367,519,682,813,988],
+      "columns":[[30,180],[204,180],[380,180],[550,180],[722,180],[894,180],[1065,180],[1243,180]]
+    }
+  }
+}

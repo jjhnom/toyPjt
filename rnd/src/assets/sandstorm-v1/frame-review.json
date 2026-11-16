@@ -1,0 +1,146 @@
+[
+  {
+    "index": 0,
+    "scale": 0.3683241252302026,
+    "sourceBase": 286,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 1361,
+    "transparent": 34949,
+    "red": 0
+  },
+  {
+    "index": 1,
+    "scale": 0.3683241252302026,
+    "sourceBase": 275,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 2294,
+    "transparent": 33811,
+    "red": 0
+  },
+  {
+    "index": 2,
+    "scale": 0.3683241252302026,
+    "sourceBase": 284,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 3439,
+    "transparent": 32266,
+    "red": 0
+  },
+  {
+    "index": 3,
+    "scale": 0.3683241252302026,
+    "sourceBase": 279,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 4306,
+    "transparent": 31299,
+    "red": 0
+  },
+  {
+    "index": 4,
+    "scale": 0.3683241252302026,
+    "sourceBase": 272,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 4470,
+    "transparent": 31114,
+    "red": 0
+  },
+  {
+    "index": 5,
+    "scale": 0.3683241252302026,
+    "sourceBase": 279,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 4470,
+    "transparent": 31092,
+    "red": 0
+  },
+  {
+    "index": 6,
+    "scale": 0.3683241252302026,
+    "sourceBase": 276,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 4564,
+    "transparent": 31174,
+    "red": 0
+  },
+  {
+    "index": 7,
+    "scale": 0.3683241252302026,
+    "sourceBase": 282,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 4459,
+    "transparent": 31179,
+    "red": 0
+  },
+  {
+    "index": 8,
+    "scale": 0.3683241252302026,
+    "sourceBase": 252,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 3179,
+    "transparent": 32653,
+    "red": 0
+  },
+  {
+    "index": 9,
+    "scale": 0.3683241252302026,
+    "sourceBase": 258,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 2130,
+    "transparent": 34065,
+    "red": 0
+  },
+  {
+    "index": 10,
+    "scale": 0.3683241252302026,
+    "sourceBase": 257,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 1355,
+    "transparent": 34772,
+    "red": 0
+  },
+  {
+    "index": 11,
+    "scale": 0.3683241252302026,
+    "sourceBase": 272,
+    "anchor": [
+      96,
+      120
+    ],
+    "opaque": 545,
+    "transparent": 35784,
+    "red": 0
+  }
+]

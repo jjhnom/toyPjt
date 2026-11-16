@@ -110,7 +110,7 @@ export class WeaponComponent implements IComponent {
     this.reusableFireConfig.chainCount = this.spec.chainCount;
 
     this.fireCallback(this.reusableFireConfig);
-    soundManager.playShoot(this.spec.tier);
+    soundManager.playUnitAttack(this.spec.archetype);
 
     return target;
   }

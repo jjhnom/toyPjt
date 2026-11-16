@@ -1,0 +1,4226 @@
+[
+  {
+    "key": "forest_guardian_cast_0",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      0,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 202,
+    "transparent": 6455,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_cast_1",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      222,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 319,
+    "transparent": 6207,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_cast_2",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      444,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 649,
+    "transparent": 6402,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_cast_3",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      665,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 975,
+    "transparent": 5635,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_cast_4",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      887,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1173,
+    "transparent": 5330,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_cast_5",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1109,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1333,
+    "transparent": 5201,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_cast_6",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1331,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1643,
+    "transparent": 4752,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_cast_7",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1552,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1911,
+    "transparent": 4816,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_0",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      0,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 196,
+    "transparent": 6512,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_1",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      222,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 469,
+    "transparent": 5728,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_2",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      444,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      422
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 655,
+    "transparent": 5505,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_3",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      665,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 958,
+    "transparent": 5308,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_4",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      887,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1289,
+    "transparent": 4655,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_5",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1109,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1676,
+    "transparent": 4276,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_6",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1331,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      422
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 1926,
+    "transparent": 4269,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_charge_7",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1552,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1678,
+    "transparent": 4304,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_0",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      0,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      111,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 649,
+    "transparent": 7025,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_1",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      222,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      333,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 977,
+    "transparent": 6555,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_2",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      444,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      554.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1532,
+    "transparent": 5496,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_3",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      665,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      776,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 2069,
+    "transparent": 4893,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_4",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      887,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      998,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 2514,
+    "transparent": 4629,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_5",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1109,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1220,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 2127,
+    "transparent": 4843,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_6",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1331,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      1441.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1449,
+    "transparent": 5162,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_impact_7",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1552,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1663,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1246,
+    "transparent": 5791,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_0",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      0,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 743,
+    "transparent": 6439,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_1",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      222,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 705,
+    "transparent": 5897,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_2",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      444,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 687,
+    "transparent": 5909,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_3",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      665,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 592,
+    "transparent": 6157,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_4",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      887,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 553,
+    "transparent": 6398,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_5",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1109,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 497,
+    "transparent": 6771,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_6",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1331,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 447,
+    "transparent": 6741,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "forest_guardian_field_7",
+    "source": "sources/forest_guardian.png",
+    "rect": [
+      1552,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 423,
+    "transparent": 7338,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_0",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      0,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 408,
+    "transparent": 7865,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_1",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      222,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 515,
+    "transparent": 7416,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_2",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      444,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 774,
+    "transparent": 6797,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_3",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      665,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1165,
+    "transparent": 6392,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_4",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      887,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1747,
+    "transparent": 5720,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_5",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1109,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 2146,
+    "transparent": 5229,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_6",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1331,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 2737,
+    "transparent": 5016,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_cast_7",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1552,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      202
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 3009,
+    "transparent": 4743,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_0",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      0,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 607,
+    "transparent": 6740,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_1",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      222,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 862,
+    "transparent": 6505,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_2",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      444,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      422
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 1040,
+    "transparent": 5883,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_3",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      665,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1198,
+    "transparent": 5516,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_4",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      887,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1249,
+    "transparent": 5159,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_5",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1109,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1095,
+    "transparent": 5359,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_6",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1331,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      422
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 956,
+    "transparent": 5648,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_charge_7",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1552,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 666,
+    "transparent": 6558,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_0",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      0,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      111,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 599,
+    "transparent": 7237,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_1",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      222,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      333,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 891,
+    "transparent": 6406,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_2",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      444,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      554.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1281,
+    "transparent": 5395,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_3",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      665,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      776,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1809,
+    "transparent": 4468,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_4",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      887,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      998,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1736,
+    "transparent": 4443,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_5",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1109,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1220,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1251,
+    "transparent": 5313,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_6",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1331,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      1441.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 952,
+    "transparent": 6361,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_impact_7",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1552,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1663,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 592,
+    "transparent": 7180,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_0",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      0,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 808,
+    "transparent": 6656,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_1",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      222,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 875,
+    "transparent": 6445,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_2",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      444,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 927,
+    "transparent": 5807,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_3",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      665,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 960,
+    "transparent": 5646,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_4",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      887,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 968,
+    "transparent": 5813,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_5",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1109,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 912,
+    "transparent": 5830,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_6",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1331,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 912,
+    "transparent": 5745,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "swamp_lord_field_7",
+    "source": "sources/swamp_lord.png",
+    "rect": [
+      1552,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      867
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 807,
+    "transparent": 6512,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_0",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      0,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      200
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 484,
+    "transparent": 7784,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_1",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      222,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      200
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 549,
+    "transparent": 7456,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_2",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      444,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      200
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 685,
+    "transparent": 7331,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_3",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      665,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      200
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 845,
+    "transparent": 7057,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_4",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      887,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      200
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 970,
+    "transparent": 6881,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_5",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1109,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      200
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1147,
+    "transparent": 6784,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_6",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1331,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      200
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 1211,
+    "transparent": 6599,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_cast_7",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1552,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      200
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1314,
+    "transparent": 6480,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_fall_0",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      0,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 277,
+    "transparent": 8134,
+    "blue": 0,
+    "purple": 1
+  },
+  {
+    "key": "lava_colossus_fall_1",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      222,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 517,
+    "transparent": 7653,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_fall_2",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      444,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      422
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 729,
+    "transparent": 7196,
+    "blue": 0,
+    "purple": 1
+  },
+  {
+    "key": "lava_colossus_fall_3",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      665,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 926,
+    "transparent": 6981,
+    "blue": 0,
+    "purple": 1
+  },
+  {
+    "key": "lava_colossus_fall_4",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      887,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1066,
+    "transparent": 6665,
+    "blue": 0,
+    "purple": 1
+  },
+  {
+    "key": "lava_colossus_fall_5",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1109,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1316,
+    "transparent": 6583,
+    "blue": 0,
+    "purple": 11
+  },
+  {
+    "key": "lava_colossus_fall_6",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1331,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      422
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 1478,
+    "transparent": 6564,
+    "blue": 0,
+    "purple": 23
+  },
+  {
+    "key": "lava_colossus_fall_7",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1552,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      422
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1766,
+    "transparent": 6235,
+    "blue": 0,
+    "purple": 11
+  },
+  {
+    "key": "lava_colossus_impact_0",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      0,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      111,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 564,
+    "transparent": 7926,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_impact_1",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      222,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      333,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 904,
+    "transparent": 7214,
+    "blue": 0,
+    "purple": 3
+  },
+  {
+    "key": "lava_colossus_impact_2",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      444,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      554.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1194,
+    "transparent": 6762,
+    "blue": 0,
+    "purple": 4
+  },
+  {
+    "key": "lava_colossus_impact_3",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      665,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      776,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1641,
+    "transparent": 6112,
+    "blue": 0,
+    "purple": 8
+  },
+  {
+    "key": "lava_colossus_impact_4",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      887,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      998,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 2135,
+    "transparent": 5620,
+    "blue": 0,
+    "purple": 10
+  },
+  {
+    "key": "lava_colossus_impact_5",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1109,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1220,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1837,
+    "transparent": 6120,
+    "blue": 0,
+    "purple": 8
+  },
+  {
+    "key": "lava_colossus_impact_6",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1331,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      1441.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1214,
+    "transparent": 6958,
+    "blue": 0,
+    "purple": 7
+  },
+  {
+    "key": "lava_colossus_impact_7",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1552,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1663,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 962,
+    "transparent": 7220,
+    "blue": 0,
+    "purple": 4
+  },
+  {
+    "key": "lava_colossus_field_0",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      0,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 336,
+    "transparent": 8352,
+    "blue": 0,
+    "purple": 9
+  },
+  {
+    "key": "lava_colossus_field_1",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      222,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 670,
+    "transparent": 7613,
+    "blue": 0,
+    "purple": 23
+  },
+  {
+    "key": "lava_colossus_field_2",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      444,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 902,
+    "transparent": 6893,
+    "blue": 0,
+    "purple": 33
+  },
+  {
+    "key": "lava_colossus_field_3",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      665,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 1126,
+    "transparent": 6638,
+    "blue": 0,
+    "purple": 39
+  },
+  {
+    "key": "lava_colossus_field_4",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      887,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 1067,
+    "transparent": 6605,
+    "blue": 0,
+    "purple": 31
+  },
+  {
+    "key": "lava_colossus_field_5",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1109,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 704,
+    "transparent": 7170,
+    "blue": 0,
+    "purple": 19
+  },
+  {
+    "key": "lava_colossus_field_6",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1331,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 352,
+    "transparent": 7636,
+    "blue": 0,
+    "purple": 0
+  },
+  {
+    "key": "lava_colossus_field_7",
+    "source": "sources/lava_colossus.png",
+    "rect": [
+      1552,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      869
+    ],
+    "placement": [
+      10,
+      6,
+      76,
+      76
+    ],
+    "opaque": 164,
+    "transparent": 7926,
+    "blue": 0,
+    "purple": 1
+  },
+  {
+    "key": "frost_queen_cast_0",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      0,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 156,
+    "transparent": 3536,
+    "blue": 123,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_cast_1",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      222,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 197,
+    "transparent": 3224,
+    "blue": 151,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_cast_2",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      444,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 319,
+    "transparent": 3246,
+    "blue": 255,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_cast_3",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      665,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 532,
+    "transparent": 3236,
+    "blue": 455,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_cast_4",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      887,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 829,
+    "transparent": 3085,
+    "blue": 721,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_cast_5",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1109,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 912,
+    "transparent": 3563,
+    "blue": 794,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_cast_6",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1331,
+      0,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 966,
+    "transparent": 3403,
+    "blue": 764,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_cast_7",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1552,
+      0,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      197
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 979,
+    "transparent": 3575,
+    "blue": 753,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_0",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      0,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 672,
+    "transparent": 3009,
+    "blue": 634,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_1",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      222,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 775,
+    "transparent": 2975,
+    "blue": 671,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_2",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      444,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 1041,
+    "transparent": 2977,
+    "blue": 872,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_3",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      665,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 1343,
+    "transparent": 2976,
+    "blue": 1040,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_4",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      887,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 1736,
+    "transparent": 2975,
+    "blue": 1313,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_5",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1109,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 1439,
+    "transparent": 2976,
+    "blue": 1126,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_6",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1331,
+      222,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 1029,
+    "transparent": 2979,
+    "blue": 839,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_impact_7",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1552,
+      222,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      419
+    ],
+    "placement": [
+      9,
+      6,
+      79,
+      79
+    ],
+    "opaque": 836,
+    "transparent": 2989,
+    "blue": 692,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_0",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      0,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      111,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1198,
+    "transparent": 3255,
+    "blue": 1109,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_1",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      222,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      333,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1217,
+    "transparent": 3218,
+    "blue": 1083,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_2",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      444,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      554.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1291,
+    "transparent": 3296,
+    "blue": 1140,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_3",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      665,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      776,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1412,
+    "transparent": 3214,
+    "blue": 1204,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_4",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      887,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      998,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1369,
+    "transparent": 3210,
+    "blue": 1176,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_5",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1109,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1220,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1311,
+    "transparent": 3223,
+    "blue": 1159,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_6",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1331,
+      444,
+      221,
+      221
+    ],
+    "foot": [
+      1441.5,
+      644
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      77
+    ],
+    "opaque": 1289,
+    "transparent": 3307,
+    "blue": 1151,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_field_7",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1552,
+      444,
+      222,
+      221
+    ],
+    "foot": [
+      1663,
+      644
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      77
+    ],
+    "opaque": 1246,
+    "transparent": 3217,
+    "blue": 1160,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_0",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      0,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      111,
+      865
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 226,
+    "transparent": 3160,
+    "blue": 159,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_1",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      222,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      333,
+      865
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 583,
+    "transparent": 3133,
+    "blue": 445,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_2",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      444,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      554.5,
+      865
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 1103,
+    "transparent": 3210,
+    "blue": 850,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_3",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      665,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      776,
+      865
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1358,
+    "transparent": 3132,
+    "blue": 1036,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_4",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      887,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      998,
+      865
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1522,
+    "transparent": 3132,
+    "blue": 1184,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_5",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1109,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1220,
+      865
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 1145,
+    "transparent": 3132,
+    "blue": 897,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_6",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1331,
+      665,
+      221,
+      222
+    ],
+    "foot": [
+      1441.5,
+      865
+    ],
+    "placement": [
+      10,
+      6,
+      77,
+      78
+    ],
+    "opaque": 915,
+    "transparent": 3210,
+    "blue": 772,
+    "purple": 0
+  },
+  {
+    "key": "frost_queen_summon_7",
+    "source": "sources/frost_queen.png",
+    "rect": [
+      1552,
+      665,
+      222,
+      222
+    ],
+    "foot": [
+      1663,
+      865
+    ],
+    "placement": [
+      9,
+      6,
+      78,
+      78
+    ],
+    "opaque": 512,
+    "transparent": 3132,
+    "blue": 421,
+    "purple": 0
+  },
+  {
+    "key": "twilight_king_cast_0",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      30,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      120,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 1221,
+    "transparent": 2251,
+    "blue": 0,
+    "purple": 1162
+  },
+  {
+    "key": "twilight_king_cast_1",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      204,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      294,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 1343,
+    "transparent": 2252,
+    "blue": 0,
+    "purple": 1284
+  },
+  {
+    "key": "twilight_king_cast_2",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      380,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      470,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 1537,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1456
+  },
+  {
+    "key": "twilight_king_cast_3",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      550,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      640,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 1786,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1701
+  },
+  {
+    "key": "twilight_king_cast_4",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      722,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      812,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 1980,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1867
+  },
+  {
+    "key": "twilight_king_cast_5",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      894,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      984,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 2253,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 2120
+  },
+  {
+    "key": "twilight_king_cast_6",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1065,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      1155,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 1789,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1701
+  },
+  {
+    "key": "twilight_king_cast_7",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1243,
+      20,
+      180,
+      190
+    ],
+    "foot": [
+      1333,
+      175
+    ],
+    "placement": [
+      8,
+      6,
+      81,
+      86
+    ],
+    "opaque": 1362,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1308
+  },
+  {
+    "key": "twilight_king_fall_0",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      30,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      120,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 959,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 885
+  },
+  {
+    "key": "twilight_king_fall_1",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      204,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      294,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 1460,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1335
+  },
+  {
+    "key": "twilight_king_fall_2",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      380,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      470,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 1727,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1565
+  },
+  {
+    "key": "twilight_king_fall_3",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      550,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      640,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 1923,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1747
+  },
+  {
+    "key": "twilight_king_fall_4",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      722,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      812,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 2047,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1856
+  },
+  {
+    "key": "twilight_king_fall_5",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      894,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      984,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 1837,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1651
+  },
+  {
+    "key": "twilight_king_fall_6",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1065,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      1155,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 1251,
+    "transparent": 2250,
+    "blue": 0,
+    "purple": 1158
+  },
+  {
+    "key": "twilight_king_fall_7",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1243,
+      220,
+      180,
+      170
+    ],
+    "foot": [
+      1333,
+      367
+    ],
+    "placement": [
+      5,
+      6,
+      86,
+      81
+    ],
+    "opaque": 946,
+    "transparent": 2251,
+    "blue": 0,
+    "purple": 879
+  },
+  {
+    "key": "twilight_king_impact_0",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      30,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      120,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 829,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 783
+  },
+  {
+    "key": "twilight_king_impact_1",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      204,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      294,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 1711,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 1579
+  },
+  {
+    "key": "twilight_king_impact_2",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      380,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      470,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 2369,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 2119
+  },
+  {
+    "key": "twilight_king_impact_3",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      550,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      640,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 2780,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 2511
+  },
+  {
+    "key": "twilight_king_impact_4",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      722,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      812,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 2795,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 2650
+  },
+  {
+    "key": "twilight_king_impact_5",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      894,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      984,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 2532,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 2492
+  },
+  {
+    "key": "twilight_king_impact_6",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1065,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      1155,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 2115,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 2108
+  },
+  {
+    "key": "twilight_king_impact_7",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1243,
+      395,
+      180,
+      145
+    ],
+    "foot": [
+      1333,
+      519
+    ],
+    "placement": [
+      5,
+      17,
+      86,
+      69
+    ],
+    "opaque": 1796,
+    "transparent": 3282,
+    "blue": 0,
+    "purple": 1796
+  },
+  {
+    "key": "twilight_king_field_0",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      30,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      120,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 1264,
+    "transparent": 2695,
+    "blue": 7,
+    "purple": 290
+  },
+  {
+    "key": "twilight_king_field_1",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      204,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      294,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 1751,
+    "transparent": 2680,
+    "blue": 4,
+    "purple": 234
+  },
+  {
+    "key": "twilight_king_field_2",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      380,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      470,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 2217,
+    "transparent": 2680,
+    "blue": 0,
+    "purple": 239
+  },
+  {
+    "key": "twilight_king_field_3",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      550,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      640,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 2824,
+    "transparent": 2680,
+    "blue": 1,
+    "purple": 188
+  },
+  {
+    "key": "twilight_king_field_4",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      722,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      812,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 3070,
+    "transparent": 2680,
+    "blue": 2,
+    "purple": 178
+  },
+  {
+    "key": "twilight_king_field_5",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      894,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      984,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 2834,
+    "transparent": 2680,
+    "blue": 0,
+    "purple": 168
+  },
+  {
+    "key": "twilight_king_field_6",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1065,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      1155,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 2271,
+    "transparent": 2680,
+    "blue": 1,
+    "purple": 249
+  },
+  {
+    "key": "twilight_king_field_7",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1243,
+      550,
+      180,
+      160
+    ],
+    "foot": [
+      1333,
+      682
+    ],
+    "placement": [
+      5,
+      13,
+      86,
+      76
+    ],
+    "opaque": 1904,
+    "transparent": 2714,
+    "blue": 2,
+    "purple": 272
+  },
+  {
+    "key": "twilight_king_charge_0",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      30,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      120,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 730,
+    "transparent": 4489,
+    "blue": 0,
+    "purple": 730
+  },
+  {
+    "key": "twilight_king_charge_1",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      204,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      294,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 1079,
+    "transparent": 4486,
+    "blue": 0,
+    "purple": 1027
+  },
+  {
+    "key": "twilight_king_charge_2",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      380,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      470,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 1656,
+    "transparent": 4486,
+    "blue": 0,
+    "purple": 1432
+  },
+  {
+    "key": "twilight_king_charge_3",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      550,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      640,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 1887,
+    "transparent": 4486,
+    "blue": 0,
+    "purple": 1664
+  },
+  {
+    "key": "twilight_king_charge_4",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      722,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      812,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 1865,
+    "transparent": 4486,
+    "blue": 0,
+    "purple": 1627
+  },
+  {
+    "key": "twilight_king_charge_5",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      894,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      984,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 1559,
+    "transparent": 4486,
+    "blue": 0,
+    "purple": 1431
+  },
+  {
+    "key": "twilight_king_charge_6",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1065,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      1155,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 1265,
+    "transparent": 4486,
+    "blue": 0,
+    "purple": 1152
+  },
+  {
+    "key": "twilight_king_charge_7",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1243,
+      735,
+      180,
+      115
+    ],
+    "foot": [
+      1333,
+      813
+    ],
+    "placement": [
+      5,
+      39,
+      86,
+      55
+    ],
+    "opaque": 897,
+    "transparent": 4489,
+    "blue": 0,
+    "purple": 897
+  },
+  {
+    "key": "twilight_king_summon_0",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      30,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      120,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 732,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 714
+  },
+  {
+    "key": "twilight_king_summon_1",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      204,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      294,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 859,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 816
+  },
+  {
+    "key": "twilight_king_summon_2",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      380,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      470,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 937,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 882
+  },
+  {
+    "key": "twilight_king_summon_3",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      550,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      640,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 1155,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 1068
+  },
+  {
+    "key": "twilight_king_summon_4",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      722,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      812,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 1210,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 1096
+  },
+  {
+    "key": "twilight_king_summon_5",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      894,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      984,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 1135,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 997
+  },
+  {
+    "key": "twilight_king_summon_6",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1065,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      1155,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 980,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 924
+  },
+  {
+    "key": "twilight_king_summon_7",
+    "source": "sources/twilight_king.png",
+    "rect": [
+      1243,
+      885,
+      180,
+      150
+    ],
+    "foot": [
+      1333,
+      988
+    ],
+    "placement": [
+      14,
+      37,
+      69,
+      57
+    ],
+    "opaque": 826,
+    "transparent": 5283,
+    "blue": 0,
+    "purple": 785
+  }
+]

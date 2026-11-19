@@ -32,7 +32,7 @@ test('26 shipped boss files match supplied assets, and all 19 real skills use th
  assert.equal(bossSkillSound('forest_guardian','FROST'),undefined);
 });
 
-test('all skills warn once per plan, activate at the damage deadline once, and retain identical damage callbacks',()=>{
+test('all skills warn once per plan, follow their cast policy and retain identical damage callbacks',()=>{
  for(const id of BOSS_IDS)for(let sequence=0;sequence<BOSS_PROFILES[id].patterns.length;sequence++){
   const plan=planBossAttack(id,3,sequence,{x:360,y:300,speed:105},{x:360,y:650});
   const sound=fakeSound(),audio=new BossAudioController(sound),heard=[],silent=[];
@@ -48,7 +48,7 @@ test('all skills warn once per plan, activate at the damage deadline once, and r
    h.update(delta);baseline.update(delta);
    assert.deepEqual(heard,silent,id);
   }
-  assert.equal(sound.events.filter(e=>e===skill.cast).length,1,id);
+  assert.equal(sound.events.filter(e=>e===skill.cast).length,skill.repeatedImpact?2:1,id);
   if(skill.fall)assert.equal(sound.events.filter(e=>e===skill.fall).length,1,id);
   if(skill.loop)assert.equal(sound.events.filter(e=>Array.isArray(e)&&e[0]==='stop').length,1,id);
   assert.equal(h.slots.some(s=>s.active),false);
@@ -67,6 +67,65 @@ test('warning and fall cannot trigger a hit early; a long frame skips stale fall
   assert.equal(sound.events.at(-1),'boss_lava_meteor_impact');assert.equal(damage.length,1);
   assert.equal(sound.events.includes('boss_lava_meteor'),false);
  }
+});
+
+test('queen barrage has one warning, nine quiet impacts and one full impact at the ten actual deadlines',()=>{
+ const sound=fakeSound(),events=[];sound.playBoss=(id,options)=>events.push({id,options});
+ const audio=new BossAudioController(sound),hits=[],h=new EncounterHazards(scene(),(...args)=>hits.push(args),undefined,audio);
+ const plan=planBossAttack('frost_queen',2,2,{x:360,y:300,speed:80},{x:360,y:630});
+ for(const attack of plan.attacks)h.add(attack.kind,attack.x,attack.y,10,7,{...attack,bossId:'frost_queen',patternId:4});
+ assert.equal(events.filter(e=>e.id==='boss_attack_warning').length,1);
+ let age=0;
+ for(const attack of plan.attacks){h.update(attack.warningMs-age-1);assert.equal(hits.length,events.filter(e=>e.id==='boss_frost_eruption').length);h.update(1);age=attack.warningMs;}
+ const impacts=events.filter(e=>e.id==='boss_frost_eruption');
+ assert.equal(hits.length,10);assert.equal(impacts.length,10);
+ assert.deepEqual(impacts.map(e=>e.options),Array.from({length:10},(_,i)=>({gainScale:i===9?1:.35,restart:true})));
+ h.update(1);assert.equal(events.filter(e=>e.id==='boss_frost_eruption').length,10);
+});
+
+test('a delayed barrage frame coalesces expired impact sounds while retaining all ten combat resolutions',()=>{
+ const sound=fakeSound(),events=[];sound.playBoss=(id,options)=>events.push({id,options});
+ const audio=new BossAudioController(sound),hits=[],h=new EncounterHazards(scene(),(...args)=>hits.push(args),undefined,audio);
+ const plan=planBossAttack('frost_queen',1,2,{x:360,y:300,speed:80},{x:360,y:630});
+ for(const attack of plan.attacks)h.add(attack.kind,attack.x,attack.y,10,7,{...attack,bossId:'frost_queen',patternId:4});
+ h.update(plan.attacks.at(-1).warningMs);
+ assert.equal(hits.length,10);
+ assert.deepEqual(events.filter(e=>e.id==='boss_frost_eruption'),[{id:'boss_frost_eruption',options:{gainScale:1,restart:true}}]);
+});
+
+test('barrage retriggers keep two bounded voices, preserve quiet gain during bus changes and do not replay muted hits',async()=>{
+ const f=await mixer(),audio=new BossAudioController(f.sound),h=new EncounterHazards(scene(),()=>{},undefined,audio);
+ const plan=planBossAttack('frost_queen',1,2,{x:360,y:300,speed:80},{x:360,y:630});
+ for(const attack of plan.attacks)h.add(attack.kind,attack.x,attack.y,10,7,{...attack,bossId:'frost_queen',patternId:4});
+ f.advance(1100);h.update(1100);
+ assert.ok(Math.abs(f.ctx.gains.at(-1).gain.value-.65*.35)<1e-9);
+ f.sound.setBossVolume('bossCast',.5);assert.ok(Math.abs(f.ctx.gains.at(-1).gain.value-.65*.35*.5)<1e-9);
+ f.sound.setBossVolume('bossCast',1);
+ let age=1100;
+ for(const attack of plan.attacks.slice(1)){
+  const delta=attack.warningMs-age;f.advance(delta);h.update(delta);age=attack.warningMs;
+  assert.ok(f.sound.getDiagnostics().activeBySound.boss_frost_eruption<=2);
+ }
+ assert.equal(f.sound.getDiagnostics().played,11);assert.equal(f.sound.getDiagnostics().skippedVoiceLimit,0);
+ assert.equal(f.sound.getDiagnostics().skippedCooldown,0);assert.equal(f.ctx.gains.at(-1).gain.value,.65);
+ h.clear();f.advance(150);assert.equal(f.sound.getDiagnostics().activeVoices,0);
+ for(const attack of plan.attacks)h.add(attack.kind,attack.x,attack.y,10,7,{...attack,bossId:'frost_queen',patternId:5});
+ f.advance(1100);h.update(1100);f.sound.setEnabled(false);f.advance(360);h.update(360);
+ f.sound.setEnabled(true);const played=f.sound.getDiagnostics().played;h.update(0);
+ assert.equal(f.sound.getDiagnostics().played,played);
+ f.advance(180);h.update(180);assert.equal(f.sound.getDiagnostics().played,played+1);
+ h.clear();f.advance(150);h.update(5000);assert.equal(f.sound.getDiagnostics().activeVoices,0);
+ await f.sound.dispose();
+});
+
+test('a late penultimate barrage sound cannot consume the final impact cooldown',async()=>{
+ const f=await mixer(),audio=new BossAudioController(f.sound),h=new EncounterHazards(scene(),()=>{},undefined,audio);
+ const plan=planBossAttack('frost_queen',1,2,{x:360,y:300,speed:80},{x:360,y:630});
+ for(const attack of plan.attacks)h.add(attack.kind,attack.x,attack.y,10,7,{...attack,bossId:'frost_queen',patternId:4});
+ f.advance(2700);h.update(2700);assert.equal(f.sound.getDiagnostics().activeBySound.boss_frost_eruption,0);
+ f.advance(20);h.update(20);assert.equal(f.sound.getDiagnostics().activeBySound.boss_frost_eruption,1);
+ assert.equal(f.ctx.gains.at(-1).gain.value,.65);assert.equal(f.sound.getDiagnostics().skippedCooldown,0);
+ await f.sound.dispose();
 });
 
 test('overlapping fields share one loop until their last actual end, with 150ms fade and no scheduled duration',async()=>{

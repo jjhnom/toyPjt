@@ -23,7 +23,7 @@ const commonGains: Partial<Record<BossSoundId, number>> = {
 export const BOSS_SOUNDS = Object.fromEntries(BOSS_SOUND_IDS.map(id => {
     const loop = id.endsWith('_loop'), common = commonGains[id] !== undefined;
     return [id, {
-        group: 'sfx', intervalMs: loop ? 0 : id === 'boss_attack_warning' ? 250 : 80, maxVoices: 1,
+        group: 'sfx', intervalMs: loop ? 0 : id === 'boss_attack_warning' ? 250 : 80, maxVoices: id === 'boss_frost_eruption' ? 2 : 1,
         priority: id === 'boss_death' ? 9 : common ? 8 : loop ? 4 : 6,
         bossBus: loop ? 'bossLoop' : common ? 'bossUI' : 'bossCast', loop,
         sampleGain: loop ? loopGains[id as BossLoopId] : commonGains[id] ?? .65,
@@ -31,7 +31,7 @@ export const BOSS_SOUNDS = Object.fromEntries(BOSS_SOUND_IDS.map(id => {
     } satisfies SoundDefinition];
 })) as Record<BossSoundId, SoundDefinition>;
 
-export interface BossSkillSound { cast: BossSoundId; fall?: BossSoundId; loop?: BossLoopId }
+export interface BossSkillSound { cast: BossSoundId; fall?: BossSoundId; loop?: BossLoopId; repeatedImpact?: { gainScale: number; finalGainScale: number } }
 const SKILLS: Record<BossId, Partial<Record<BossPattern, BossSkillSound>>> = {
     forest_guardian: { CHARGE: { cast: 'boss_forest_charge' }, METEOR: { cast: 'boss_forest_slam' }, ROOTS: {cast:'boss_forest_slam'} },
     swamp_lord: {
@@ -41,7 +41,7 @@ const SKILLS: Record<BossId, Partial<Record<BossPattern, BossSkillSound>>> = {
     },
     lava_colossus: { METEOR: { fall: 'boss_lava_meteor_fall', cast: 'boss_lava_meteor_impact' }, FISSURE: {cast:'boss_lava_meteor_impact'} },
     frost_queen: {
-        METEOR: { cast: 'boss_frost_eruption' },
+        METEOR: { cast: 'boss_frost_eruption', repeatedImpact: { gainScale: .35, finalGainScale: 1 } },
         FROST: { cast: 'boss_frost_eruption', loop: 'boss_frost_field_loop' },
         SUMMON: { cast: 'boss_frost_summon' }
     },

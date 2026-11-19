@@ -36,6 +36,27 @@ test('visual observers share warning/impact timing and cannot prevent damage whe
  h.update(1);assert.equal(damage.length,1);assert.equal(h.visualFailed,true);
 });
 
+test('successful encounter cleanup restores visuals after a rendering failure without interrupting damage or audio',()=>{
+ let fail=true,starts=0,impacts=0,hits=0,audioImpacts=0;
+ const h=new EncounterHazards(scene(),()=>{hits++;},{
+  start(){starts++;},draw(_i,_s,impact){if(impact){if(fail)throw Error('temporary GPU failure');impacts++;}},end(){},clear(){}
+ },{start(){},draw(_i,_s,impact){if(impact)audioImpacts++;},end(){},clear(){}});
+ const add=()=>h.add('METEOR',360,650,10,7,{bossId:'lava_colossus',warningMs:1100});
+ add();h.update(1100);assert.equal(hits,1);assert.equal(audioImpacts,1);assert.equal(impacts,0);
+ fail=false;h.update(1);assert.equal(hits,1);
+ h.clear();add();h.update(1099);assert.equal(hits,1);h.update(1);
+ assert.equal(starts,2);assert.equal(impacts,1);assert.equal(hits,2);assert.equal(audioImpacts,2);
+});
+
+test('failed visual cleanup remains isolated until a later cleanup succeeds',()=>{
+ let failCleanup=true,starts=0,hits=0;
+ const h=new EncounterHazards(scene(),()=>{hits++;},{start(){starts++;},draw(){},end(){},
+  clear(){if(failCleanup)throw Error('context unavailable');}});
+ const add=()=>h.add('METEOR',360,650,10,7,{bossId:'lava_colossus',warningMs:1100});
+ h.clear();add();h.update(1100);assert.equal(starts,0);assert.equal(hits,1);
+ failCleanup=false;h.clear();add();h.update(1100);assert.equal(starts,1);assert.equal(hits,2);
+});
+
 test('hazard visual identity resets on reuse and persistent duration stays in the combat owner',()=>{
  const views=[],damage=[];
  const h=new EncounterHazards(scene(),(...args)=>damage.push(args),{start(i,s){views.push([i,s.bossId]);},draw(){},end(){},clear(){}});

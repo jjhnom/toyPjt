@@ -12,6 +12,7 @@ class Node {
  disconnect(){this.disconnected=true;this.connections=[];}
 }
 class Gain extends Node {gain=new Param();}
+class WaveShaper extends Node {curve=null;oversample='none';}
 class Oscillator extends Node {
  frequency=new Param();onended=null;started=false;ended=false;stopAt=Infinity;type='sine';
  constructor(ctx){super();this.ctx=ctx;}
@@ -21,7 +22,8 @@ class Oscillator extends Node {
 }
 export class FakeAudioContext {
  state='suspended';currentTime=0;destination={};onstatechange=null;gains=[];oscillators=[];resumeCalls=0;suspendCalls=0;closeCalls=0;
- buffers=[];decodeCalls=0;
+ buffers=[];decodeCalls=0;waveShapers=[];
+ createWaveShaper(){if(this.failWaveShaper)throw Error('wave shaper unavailable');const node=new WaveShaper();this.waveShapers.push(node);return node;}
  createBufferSource(){const o=new Oscillator(this);o.buffer=null;this.buffers.push(o);return o;}
  decodeAudioData(){this.decodeCalls++;return Promise.resolve({duration:.3});}
  createGain(){if(this.failGain)throw Error('gain unavailable');const g=new Gain();this.gains.push(g);return g;}

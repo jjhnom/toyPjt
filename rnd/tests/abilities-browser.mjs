@@ -93,6 +93,22 @@ try {
   assert.equal(await evaluate('gs.squad.health.currentHp'),33);
   assert.equal(await evaluate('gs.joystick.activePointerId'),moving); assert.ok(await evaluate('gs.joystick.dirX>0'));
   await touch('touchEnd');
+  // The opposite order must also preserve the movement finger after skill release.
+  await ready();
+  await touch('touchStart',[point(2,520,1230)]);
+  await touch('touchStart',[point(2,520,1230),point(1,130,1230)]);
+  await touch('touchMove',[point(2,520,1230),point(1,185,1230)]);
+  const reverseMoving=await evaluate('gs.joystick.activePointerId');assert.ok(reverseMoving!==null);
+  await touch('touchEnd',[point(2,520,1230)]);await sleep(100);
+  assert.equal(await evaluate('gs.squad.health.currentHp'),33);
+  assert.equal(await evaluate('gs.joystick.activePointerId'),reverseMoving);
+  assert.ok(await evaluate('gs.joystick.dirX>0'));
+  await touch('touchEnd');
+  for(const [x,y] of [[640,900],[130,400],[300,1230]]){
+    await touch('touchStart',[point(1,x,y)]);
+    assert.equal(await evaluate('gs.joystick.activePointerId'),null,`non-movement area ${x},${y}`);
+    await touch('touchEnd');
+  }
   // Releasing the moving finger over the button must clear that finger, without casting.
   await ready(); await touch('touchStart',[point(1,130,1230)]); await touch('touchMove',[point(1,520,1230)]);
   await touch('touchEnd'); await sleep(100);

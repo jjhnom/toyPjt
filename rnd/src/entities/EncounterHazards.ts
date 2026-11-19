@@ -56,7 +56,8 @@ export class EncounterHazards {
     for (const slot of this.slots) slot.active = false;
     this.graphics.clear();
     try{this.audio?.clear();}catch{/* Audio cleanup cannot block encounter cleanup. */}
-    try{this.visuals?.clear();}catch{this.visualFailed=true;}
+    // Retry rendering only after a clean encounter reset; a failed reset stays isolated.
+    try{this.visuals?.clear();this.visualFailed=false;}catch{this.visualFailed=true;}
   }
 
   private paint(event:'start'|'draw'|'end',index:number,state:HazardView,impact=false):void {

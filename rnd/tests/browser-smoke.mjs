@@ -26,9 +26,14 @@ try {
   let id = 0;
   const pending = new Map();
   const errors = [];
+  const requests = new Map();
+  const networkErrors = [];
   socket.onmessage = event => {
     const message = JSON.parse(event.data);
     if (message.method === 'Runtime.exceptionThrown') errors.push(message.params.exceptionDetails);
+    if(message.method==='Network.requestWillBeSent')requests.set(message.params.requestId,message.params.request.url);
+    if(message.method==='Network.loadingFailed')networkErrors.push({url:requests.get(message.params.requestId),error:message.params.errorText});
+    if(message.method==='Network.loadingFinished'||message.method==='Network.loadingFailed')requests.delete(message.params.requestId);
     if (message.id) {
       const request = pending.get(message.id);
       pending.delete(message.id);
@@ -52,8 +57,8 @@ try {
       if (await evaluate(expression)) return;
       await sleep(100);
     }
-    const context = await evaluate("JSON.stringify({ scenes: window.smash?.scene.scenes.map(s => [s.sys.settings.key, s.sys.settings.status]), canvas: document.querySelector('canvas')?.getBoundingClientRect().toJSON() })");
-    throw new Error(`Timed out: ${expression}; context=${context}; errors=${JSON.stringify(errors)}`);
+    const context = await evaluate("JSON.stringify({url:location.href,ready:document.readyState,scenes: window.smash?.scene.scenes.map(s => [s.sys.settings.key, s.sys.settings.status]), canvas: document.querySelector('canvas')?.getBoundingClientRect().toJSON() })");
+    throw new Error(`Timed out: ${expression}; context=${context}; errors=${JSON.stringify(errors)}; networkErrors=${JSON.stringify(networkErrors.slice(-10))}; pendingRequests=${JSON.stringify([...requests.values()].slice(-15))}`);
   };
   const tap = async (x, y) => {
     const bounds = await evaluate("document.querySelector('canvas').getBoundingClientRect().toJSON()");
@@ -77,6 +82,7 @@ try {
   };
   await send('Runtime.enable');
   await send('Page.enable');
+  await send('Network.enable');
   await send('Emulation.setDeviceMetricsOverride', { width: 720, height: 1280, deviceScaleFactor: 1, mobile: true });
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 2 });
   await send('Page.navigate', { url: process.env.SMASH_TEST_URL ?? 'http://127.0.0.1:5173/' });

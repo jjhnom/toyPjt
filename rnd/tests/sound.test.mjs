@@ -11,7 +11,8 @@ const make=()=>{const ctx=new FakeAudioContext();let time=0,creates=0;const mana
 test('lazy mixer preserves all four tones and routes group gains through a single master',async()=>{
  const f=make(),m=f.manager;m.playShoot(1);assert.equal(f.creates(),0);assert.equal(await m.unlockFromUserGesture(),true);
  assert.equal(f.ctx.gains.length,3);const [master,sfx,ui]=f.ctx.gains;
- assert.equal(sfx.connections[0],master);assert.equal(ui.connections[0],master);assert.equal(master.connections[0],f.ctx.destination);
+ assert.equal(sfx.connections[0],master);assert.equal(ui.connections[0],master);
+ assert.equal(master.connections[0],f.ctx.waveShapers[0]);assert.equal(f.ctx.waveShapers[0].connections[0],f.ctx.destination);
  for(const [tier,hz,wave]of[[1,620,'triangle'],[2,760,'triangle'],[3,920,'sawtooth']]){f.advance(100);m.playShoot(tier);const o=f.ctx.oscillators.at(-1);assert.equal(o.frequency.calls[0][1],hz);assert.equal(o.type,wave);assert.equal(o.connections[0].connections[0],sfx);}
  f.advance(100);m.playHit();assert.equal(f.ctx.oscillators.at(-1).frequency.calls[0][1],220);
  m.playExplosion();assert.equal(f.ctx.oscillators.at(-1).frequency.calls[0][1],140);

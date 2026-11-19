@@ -4,6 +4,7 @@ import { BOSS_SOUND_IDS } from '../config/bossSoundData';
 import type { BossSoundId, BossLoopId, BossSoundBus } from '../config/bossSoundData';
 import type {DroneArchetype,EnemyArchetype} from '../types/game';
 import type { SoundGroup, SoundId } from '../config/soundData';
+import { createAudioOutputGuard } from './audioMix';
 export type { SoundGroup, SoundId } from '../config/soundData';
 export interface SoundSettings {
     enabled: boolean;
@@ -24,12 +25,14 @@ interface Voice {
     gain: GainNode;
     finished: boolean;
     stopping?: boolean;
+    gainScale: number;
 }
 const volume = (value: number): number => Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0;
 /** Owns audio only. Playback never waits for activation and cannot gate a game event. */
 export class SoundManager {
     private ctx: AudioContext | null = null;
     private master: GainNode | null = null;
+    private outputGuard?: WaveShaperNode;
     private groups: Record<SoundGroup, GainNode> | null = null;
     private settings: SoundSettings = { enabled: true, masterVolume: 1, sfxVolume: 1, uiVolume: 1 };
     private readonly voices = new Set<Voice>();
@@ -69,7 +72,7 @@ export class SoundManager {
         const activeBySound = Object.fromEntries(Object.keys(SOUND_DEFINITIONS).map(id=>[id,0])) as Record<SoundId,number>;
         for (const voice of this.voices)
             activeBySound[voice.id]++;
-        return { ...this.counters, loadedSamples:this.encoded.size,decodedSamples:this.buffers.size,activeVoices: this.voices.size, activeBySound, contextState: this.ctx?.state ?? 'uninitialized', background: this.backgrounds.size > 0, unlocked: this.unlocked, disposed: this.disposed };
+        return { ...this.counters, outputGuard:!!this.outputGuard, loadedSamples:this.encoded.size,decodedSamples:this.buffers.size,activeVoices: this.voices.size, activeBySound, contextState: this.ctx?.state ?? 'uninitialized', background: this.backgrounds.size > 0, unlocked: this.unlocked, disposed: this.disposed };
     }
     /** Fetch during boot without creating an AudioContext. Never queue past combat events. */
     public preloadCombatSounds():Promise<void> {
@@ -124,7 +127,7 @@ export class SoundManager {
                 const def = SOUND_DEFINITIONS[voice.id];
                 if (def.bossBus !== bus || voice.stopping) continue;
                 if (this.bossVolumes[bus] === 0) this.stopVoice(voice, false);
-                else this.ramp(voice.gain.gain, (def.sampleGain ?? def.gain) * this.bossVolumes[bus], this.ctx?.currentTime ?? 0);
+                else this.ramp(voice.gain.gain, (def.sampleGain ?? def.gain) * voice.gainScale * this.bossVolumes[bus], this.ctx?.currentTime ?? 0);
             }
         } catch { this.counters.audioErrors++; }
     }
@@ -134,7 +137,7 @@ export class SoundManager {
             this.releaseGraph();
         if (this.ctx)
             return this.ctx;
-        let ctx: AudioContext | null = null, master: GainNode | undefined, sfx: GainNode | undefined, ui: GainNode | undefined;
+        let ctx: AudioContext | null = null, master: GainNode | undefined, sfx: GainNode | undefined, ui: GainNode | undefined, outputGuard: WaveShaperNode | undefined;
         try {
             if (this.options.createContext)
                 ctx = this.options.createContext();
@@ -153,9 +156,14 @@ export class SoundManager {
             master.gain.setValueAtTime(0, ctx.currentTime);
             sfx.connect(master);
             ui.connect(master);
-            master.connect(ctx.destination);
+            outputGuard = createAudioOutputGuard(ctx);
+            if (outputGuard) {
+                master.connect(outputGuard);
+                outputGuard.connect(ctx.destination);
+            } else master.connect(ctx.destination);
             this.ctx = ctx;
             this.master = master;
+            this.outputGuard = outputGuard;
             this.groups = { sfx, ui };
             this.unlocked = false;
             const owned = ctx;
@@ -174,7 +182,7 @@ export class SoundManager {
         }
         catch {
             this.counters.audioErrors++;
-            for (const node of [ui, sfx, master]) {
+            for (const node of [ui, sfx, master, outputGuard]) {
                 try {
                     node?.disconnect();
                 }
@@ -321,7 +329,13 @@ export class SoundManager {
     public playCombat(id:CombatSoundId):void {this.playSound(id);}
     public playUnitAttack(id:DroneArchetype):void {this.playSound(ATTACK_SOUNDS[id]);}
     public playEnemyDeath(id:EnemyArchetype):void {this.playSound(enemyDeathSound(id));}
-    public playBoss(id: BossSoundId): void { if (!SOUND_DEFINITIONS[id].loop) this.playSound(id); }
+    public playBoss(id: BossSoundId, options?: { gainScale?: number; restart?: boolean }): void {
+        if (SOUND_DEFINITIONS[id].loop) return;
+        const gainScale = volume(options?.gainScale ?? 1);
+        if (gainScale === 0) return;
+        if (options?.restart) this.stopBossSound(id, 20);
+        this.playSound(id, 1, gainScale);
+    }
     public startBossLoop(id: BossLoopId): void {
         for (const voice of this.voices) {
             if (voice.id !== id) continue;
@@ -354,7 +368,7 @@ export class SoundManager {
             voice.stopping = true;
         } catch { this.stopVoice(voice, false); }
     }
-    private playSound(id: SoundId, tier = 1): void {
+    private playSound(id: SoundId, tier = 1, gainScale = 1): void {
         this.counters.requested++;
         const def = SOUND_DEFINITIONS[id], ctx = this.ctx;
         if (!this.settings.enabled || this.settings.masterVolume === 0 || this.settings[def.group === 'sfx' ? 'sfxVolume' : 'uiVolume'] === 0 || (def.bossBus && this.bossVolumes[def.bossBus] === 0)) {
@@ -401,7 +415,7 @@ export class SoundManager {
             if(buffer){
                 (osc as AudioBufferSourceNode).buffer=buffer;
                 (osc as AudioBufferSourceNode).loop = def.loop ?? false;
-                const level = (def.sampleGain ?? def.gain) * (def.bossBus ? this.bossVolumes[def.bossBus] : 1);
+                const level = (def.sampleGain ?? def.gain) * gainScale * (def.bossBus ? this.bossVolumes[def.bossBus] : 1);
                 gain.gain.setValueAtTime(def.loop ? 0 : level,now);
                 if (def.loop) gain.gain.linearRampToValueAtTime(level, now + .03);
             }else{
@@ -416,7 +430,7 @@ export class SoundManager {
             }
             osc.connect(gain);
             gain.connect(this.groups[def.group]);
-            voice = { id, priority: def.priority, osc, gain, finished: false };
+            voice = { id, priority: def.priority, osc, gain, gainScale, finished: false };
             const current = voice;
             osc.onended = () => this.releaseVoice(current);
             this.voices.add(voice);
@@ -477,7 +491,7 @@ export class SoundManager {
         this.stopVoices(false);
         if (this.ctx)
             this.ctx.onstatechange = null;
-        for (const node of [this.groups?.sfx, this.groups?.ui, this.master]) {
+        for (const node of [this.groups?.sfx, this.groups?.ui, this.master, this.outputGuard]) {
             try {
                 node?.disconnect();
             }
@@ -485,6 +499,7 @@ export class SoundManager {
         }
         this.ctx = null;
         this.master = null;
+        this.outputGuard = undefined;
         this.groups = null;
         this.unlocked = false;
         this.buffers.clear();this.decoding.clear();

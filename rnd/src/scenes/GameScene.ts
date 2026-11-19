@@ -374,7 +374,7 @@ export class GameScene extends Phaser.Scene {
 
     // HUD & 가상 조이스틱 생성
     this.createHud();
-    this.joystick = new VirtualJoystick(this);
+    this.joystick = new VirtualJoystick(this, () => this.squad.movement.stop());
 
     const onHidden = () => {
       if (this.runEnded) return;

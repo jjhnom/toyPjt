@@ -1,5 +1,5 @@
 import type { HazardView, HazardVisualSink } from '../entities/EncounterHazards';
-import { bossSkillSound } from '../config/bossSoundData';
+import { BOSS_SOUNDS, bossSkillSound } from '../config/bossSoundData';
 import type { BossSkillSound } from '../config/bossSoundData';
 import type { SoundManager } from './SoundManager';
 
@@ -9,8 +9,9 @@ interface PatternAudio {
     skill: BossSkillSound;
     activated: boolean;
     falling: boolean;
+    lastWarningMs: number;
 }
-interface SlotAudio { group: PatternAudio; active: boolean }
+interface SlotAudio { group: PatternAudio; active: boolean; impacted: boolean; warningMs: number }
 
 /** Observes hazard time only; audio failure or suppression never changes combat. */
 export class BossAudioController implements HazardVisualSink {
@@ -44,10 +45,11 @@ export class BossAudioController implements HazardVisualSink {
             }
         }
         if (!group) {
-            group = { life: state.sourceLife, pattern: state.patternId, skill, activated: false, falling: false };
+            group = { life: state.sourceLife, pattern: state.patternId, skill, activated: false, falling: false, lastWarningMs: state.warningMs };
             this.sound.playBoss('boss_attack_warning');
         }
-        this.slots.set(index, { group, active: false });
+        group.lastWarningMs = Math.max(group.lastWarningMs, state.warningMs);
+        this.slots.set(index, { group, active: false, impacted: false, warningMs: state.warningMs });
     }
     public draw(index: number, state: HazardView, impact: boolean): void {
         const slot = this.slots.get(index);
@@ -58,7 +60,21 @@ export class BossAudioController implements HazardVisualSink {
             group.falling = true;
             this.sound.playBoss(group.skill.fall);
         }
-        if (impact && !group.activated) {
+        if (impact && group.skill.repeatedImpact && !slot.impacted) {
+            slot.impacted = true;
+            // Coalesce stale sounds, including a late hit that would suppress an imminent hit's cooldown.
+            let newerDue = false;
+            for (const other of this.slots.values()) {
+                if (other.group === group && other.warningMs > slot.warningMs && other.warningMs <= state.age + BOSS_SOUNDS[group.skill.cast].intervalMs) {
+                    newerDue = true;
+                    break;
+                }
+            }
+            if (!newerDue) this.sound.playBoss(group.skill.cast, {
+                gainScale: slot.warningMs === group.lastWarningMs ? group.skill.repeatedImpact.finalGainScale : group.skill.repeatedImpact.gainScale,
+                restart: true
+            });
+        } else if (impact && !group.skill.repeatedImpact && !group.activated) {
             group.activated = true;
             if (group.skill.fall) this.sound.stopBossSound(group.skill.fall);
             this.sound.playBoss(group.skill.cast);

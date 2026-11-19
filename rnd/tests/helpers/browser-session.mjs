@@ -7,9 +7,11 @@ import { join } from 'node:path';
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 export async function browserSession() {
   const profile = await mkdtemp(join(tmpdir(), 'smash-roadmap-'));
+  const hardware = process.env.SMASH_BROWSER_RENDERER === 'hardware';
   const browser = spawn(process.env.SMASH_BROWSER_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe', [
-    '--headless=new', '--no-first-run', '--no-default-browser-check', '--enable-unsafe-swiftshader',
-    ...(process.env.SMASH_BROWSER_NO_SANDBOX==='1'?['--no-sandbox','--disable-gpu']:[]),
+    '--headless=new', '--no-first-run', '--no-default-browser-check',
+    ...(hardware?['--use-angle=d3d11','--enable-gpu','--disable-software-rasterizer']:['--enable-unsafe-swiftshader']),
+    ...(process.env.SMASH_BROWSER_NO_SANDBOX==='1'?['--no-sandbox',...hardware?[]:['--disable-gpu']]:[]),
     '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'
   ], { windowsHide: true, stdio: 'ignore' });
   let socket;
@@ -26,9 +28,15 @@ export async function browserSession() {
     await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
     let id = 0;
     let mainLoader, attachedLoader;
-    const pending = new Map(), errors = [], diagnostics = [], requests = new Map();
+    const pending = new Map(), errors = [], diagnostics = [], requests = new Map(), eventListeners = new Map();
+    const onEvent = (method, listener) => {
+      const listeners=eventListeners.get(method)??new Set();
+      eventListeners.set(method,listeners);listeners.add(listener);
+      return ()=>{listeners.delete(listener);if(!listeners.size)eventListeners.delete(method);};
+    };
     socket.onmessage = event => {
       const message = JSON.parse(event.data);
+      if(message.method)for(const listener of eventListeners.get(message.method)??[])listener(message.params);
       if(message.method==='Page.frameNavigated'&&!message.params.frame.parentId)mainLoader=message.params.frame.loaderId;
       if (message.method === 'Runtime.exceptionThrown') errors.push(message.params.exceptionDetails);
       if(message.method==='Network.requestWillBeSent')requests.set(message.params.requestId,message.params.request.url);
@@ -88,6 +96,6 @@ export async function browserSession() {
     await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 2 });
     await send('Page.navigate', { url: process.env.SMASH_TEST_URL ?? 'http://127.0.0.1:5173/' });
     await attach();
-    return { send, evaluate, waitFor, tap, click, attach, errors, close };
+    return { send, evaluate, waitFor, tap, click, attach, errors, close, onEvent };
   } catch (error) { close(); throw error; }
 }

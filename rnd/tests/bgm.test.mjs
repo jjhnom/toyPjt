@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {EventEmitter} from 'node:events';
 import {load} from './helpers/skill-fixture.mjs';
 import {FakeAudioContext,flush} from './helpers/fake-audio.mjs';
 const {BgmManager}=load('src/systems/BgmManager.ts');
 const {BGM_TRACKS}=load('src/config/bgmData.ts');
+const {AUDIO_OUTPUT_CEILING}=load('src/systems/audioMix.ts');
 const {SoundManager}=load('src/systems/SoundManager.ts');
 const {installSoundLifecycle}=load('src/systems/soundLifecycle.ts');
 
@@ -35,12 +37,38 @@ function fixture(locked=false){
  return{bgm,sound,scene,game,tags,step(ms){game.events.emit('step',0,ms);},active(){return sound.sounds.filter(s=>!s.pendingRemove);}};
 }
 
-test('three shipped BGM OGG files match supplied originals and keep the guide mixing levels',()=>{
+test('three shipped BGM files keep approved bytes, Vorbis format, duration and guide mixing levels',()=>{
+ // Pinned after comparing the shipped files with the supplied 2026-11-16 originals.
+ // CI checks the release assets directly; the local authoring folder is not tracked.
+ const approved={
+  bgm_lobby:{sha256:'bc324d2491bf68b047edf7faa846b30792e478124926c764b6bc01b1200ed2de',samples:1428837n},
+  bgm_battle:{sha256:'c03e708a3531d662d80c5626a1d27b1d642a54273e3f674adc3779e82f563c1d',samples:1007213n},
+  bgm_twilight:{sha256:'82bc155ee9d438bf7d9d91275417e611b99565e79bcc6e24b423701c8c7e8b0b',samples:865352n}
+ };
+ assert.deepEqual(Object.keys(BGM_TRACKS).sort(),Object.keys(approved).sort());
  assert.deepEqual(Object.values(BGM_TRACKS).map(t=>t.volume),[.22,.17,.15]);
- for(const track of Object.values(BGM_TRACKS)){
+ for(const [key,track] of Object.entries(BGM_TRACKS)){
   const bytes=readFileSync(`public/audio/bgm/${track.file}`);
-  assert.equal(bytes.subarray(0,4).toString(),'OggS');
-  assert.deepEqual(bytes,readFileSync(`.agent/skills/sound/20261116/audio/ogg/${track.file}`));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),approved[key].sha256,`${key}: approved audio changed`);
+  assert.equal(bytes.subarray(0,4).toString(),'OggS',key);
+  const packetStart=27+bytes[26];
+  assert.equal(bytes[packetStart],1,`${key}: identification packet`);
+  assert.equal(bytes.subarray(packetStart+1,packetStart+7).toString(),'vorbis',key);
+  assert.equal(bytes.readUInt32LE(packetStart+7),0,`${key}: Vorbis version`);
+  assert.equal(bytes[packetStart+11],2,`${key}: stereo`);
+  assert.equal(bytes.readUInt32LE(packetStart+12),32000,`${key}: sample rate`);
+  let offset=0,lastPage=0;
+  while(offset<bytes.length){
+   lastPage=offset;
+   assert.equal(bytes.subarray(offset,offset+4).toString(),'OggS',`${key}: page at ${offset}`);
+   const segments=bytes[offset+26];
+   let bodyLength=0;
+   for(let i=0;i<segments;i++)bodyLength+=bytes[offset+27+i];
+   offset+=27+segments+bodyLength;
+  }
+  assert.equal(offset,bytes.length,`${key}: complete pages`);
+  assert.ok(bytes[lastPage+5]&4,`${key}: end of stream`);
+  assert.equal(bytes.readBigUInt64LE(lastPage+6),approved[key].samples,`${key}: duration in PCM samples`);
  }
 });
 
@@ -53,6 +81,17 @@ test('music waits for a gesture and only starts the latest scene request, withou
  for(let i=0;i<100;i++)f.bgm.play(f.scene,'bgm_battle');
  assert.equal(f.bgm.getDiagnostics().starts,1);assert.equal(f.sound.listenerCount('unlocked'),1);
  assert.equal(f.active()[0].audio.loop,true);assert.equal(f.sound.loopEndOffset,0);f.bgm.dispose();
+});
+
+test('rapid BGM changes preserve the headroom reserved by the Web Audio output guard',()=>{
+ const max=Math.max(...Object.values(BGM_TRACKS).map(t=>t.volume));
+ assert.ok(max+AUDIO_OUTPUT_CEILING<1);
+ const f=fixture();f.bgm.play(f.scene,'bgm_lobby');f.bgm.unlockFromUserGesture();f.step(600);
+ for(let i=0;i<120;i++){
+  f.bgm.play(f.scene,Object.keys(BGM_TRACKS)[i%3]);f.step(10+i%97);
+  assert.ok(f.active().reduce((sum,sound)=>sum+sound.volume,0)<=max+1e-9);
+ }
+ f.bgm.dispose();
 });
 
 test('rapid crossfades preserve actual fade levels, keep at most two tracks and release every cancelled tail',()=>{
